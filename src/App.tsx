@@ -8,7 +8,12 @@ import { authService } from './services/authService';
 import { BehaviorState, Infraction, InfractionCategory } from './types';
 
 function App() {
-  const [behaviorState, setBehaviorState] = useState<BehaviorState>(behaviorService.getCurrentState());
+  const [behaviorState, setBehaviorState] = useState<BehaviorState>({
+    currentPoints: 100,
+    maxPoints: 100,
+    infractions: [],
+    lastReset: new Date(),
+  }); // Estado inicial
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [categories, setCategories] = useState<InfractionCategory[]>([]); // Estado para armazenar as categorias
@@ -20,13 +25,28 @@ function App() {
       setIsAuthenticated(authenticated);
       setIsAdmin(authService.isAdmin());
     };
-    
+
     checkAuth();
   }, []);
 
-  // Carregar estado inicial
+  // Carregar histórico de comportamentos e estado inicial
   useEffect(() => {
-    setBehaviorState(behaviorService.getCurrentState());
+    const loadBehaviorState = async () => {
+      try {
+        const infractions = await behaviorService.getBehaviorRecords(); // Busca o histórico do backend
+        const currentPoints = infractions.reduce((acc, inf) => acc + inf.points, 100); // Calcula os pontos atuais
+        setBehaviorState({
+          currentPoints: Math.max(0, currentPoints), // Não permite valores negativos
+          maxPoints: 100,
+          infractions,
+          lastReset: new Date(), // Pode ser ajustado para vir do backend no futuro
+        });
+      } catch (error) {
+        console.error('Erro ao carregar o estado do comportamento:', error);
+      }
+    };
+
+    loadBehaviorState();
   }, []);
 
   // Carregar as categorias de infrações
@@ -44,9 +64,31 @@ function App() {
   }, []);
 
   // Adicionar uma nova infração
-  const handleAddInfraction = (description: string, points: number) => {
-    const newState = behaviorService.addInfraction(description, points);
-    setBehaviorState(newState);
+  const handleAddInfraction = async (
+    description: string,
+    points: number,
+    saveAsPredefined: boolean,
+    behaviorTypeId: number | null // Adicionado o parâmetro behaviorTypeId
+  ) => {
+    try {
+      // Chama o backend para registrar o comportamento
+      await behaviorService.registerBehavior(description, points, saveAsPredefined, behaviorTypeId);
+
+      // Atualiza o histórico localmente após o registro
+      const newInfraction: Infraction = {
+        id: Date.now(),
+        description,
+        points,
+        timestamp: new Date(),
+      };
+      setBehaviorState((prevState) => ({
+        ...prevState,
+        currentPoints: Math.max(0, prevState.currentPoints + points), // Atualiza os pontos
+        infractions: [newInfraction, ...prevState.infractions], // Adiciona ao histórico
+      }));
+    } catch (error) {
+      console.error('Erro ao registrar o comportamento:', error);
+    }
   };
 
   // Resetar pontos
@@ -95,13 +137,10 @@ function App() {
       <main className="app-container">
         <div className="behavior-section">
           <BehaviorBar behaviorState={behaviorState} />
-          
+
           {isAdmin && (
             <div className="reset-section">
-              <button 
-                onClick={handleReset}
-                className="reset-button"
-              >
+              <button onClick={handleReset} className="reset-button">
                 Resetar Pontuação
               </button>
               <p className="reset-info">
@@ -113,17 +152,17 @@ function App() {
 
         {isAdmin && (
           <div className="form-section">
-            <InfractionForm 
+            <InfractionForm
               categories={categories} // Agora passa as categorias do estado
-              onAddInfraction={handleAddInfraction} 
+              onAddInfraction={handleAddInfraction} // Atualizado para usar o método do backend
             />
           </div>
         )}
 
         <div className={`history-section ${!isAdmin ? 'centered-history' : ''}`}>
-          <h3>Histórico de Infrações</h3>
+          <h3>Histórico de Comportamentos</h3>
           {behaviorState.infractions.length === 0 ? (
-            <p>Sem infrações registradas. Ótimo trabalho!</p>
+            <p>Sem comportamentos registrados. Ótimo trabalho!</p>
           ) : (
             <div className="infraction-list-container">
               <ul className="infraction-list">
@@ -131,7 +170,6 @@ function App() {
                   <li key={infraction.id}>
                     <strong>{infraction.description}</strong>
                     <div>
-                      {/* Exibe os pontos diretamente como enviados pelo backend */}
                       <span>{infraction.points} pontos</span>
                       <span style={{ float: 'right' }}>{formatDate(infraction.timestamp)}</span>
                     </div>

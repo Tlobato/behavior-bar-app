@@ -1,34 +1,43 @@
-// src/components/InfractionForm.tsx
 import React, { useState } from 'react';
 import { InfractionCategory } from '../types';
 
 interface InfractionFormProps {
   categories: InfractionCategory[];
-  onAddInfraction: (description: string, points: number) => void;
+  onAddInfraction: (
+    description: string,
+    points: number,
+    saveAsPredefined: boolean,
+    behaviorTypeId: number | null // Adicionado o quarto parâmetro
+  ) => void;
 }
 
 const InfractionForm: React.FC<InfractionFormProps> = ({ categories, onAddInfraction }) => {
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null); // Alterado para aceitar números ou null
-  const [customDescription, setCustomDescription] = useState<string>('');
-  const [customPoints, setCustomPoints] = useState<number>(5);
-  const [useCustom, setUseCustom] = useState<boolean>(false);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null); // Para categorias pré-definidas
+  const [customDescription, setCustomDescription] = useState<string>(''); // Para descrição personalizada
+  const [customPoints, setCustomPoints] = useState<number>(5); // Para pontos personalizados
+  const [useCustom, setUseCustom] = useState<boolean>(false); // Alterna entre pré-definido e personalizado
+  const [isPositive, setIsPositive] = useState<boolean>(false); // Define se é comportamento positivo ou negativo
+  const [saveAsPredefined, setSaveAsPredefined] = useState<boolean>(false); // Define se o comportamento será salvo como pré-definido
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (useCustom) {
-      // Usar dados personalizados
+      // Comportamento Personalizado
       if (customDescription.trim() && customPoints > 0) {
-        onAddInfraction(customDescription.trim(), -customPoints); // Garante que os pontos sejam negativos
+        const points = isPositive ? customPoints : -customPoints; // Ajusta o sinal dos pontos
+        onAddInfraction(customDescription.trim(), points, saveAsPredefined, null); // Passa null para behaviorTypeId
         setCustomDescription('');
         setCustomPoints(5);
+        setIsPositive(false); // Reseta para comportamento negativo por padrão
+        setSaveAsPredefined(false); // Reseta o estado do checkbox
       }
     } else {
-      // Usar categoria pré-definida
-      if (selectedCategory !== null) { // Verifica se uma categoria foi selecionada
+      // Comportamento Pré-definido
+      if (selectedCategory !== null) {
         const category = categories.find(cat => cat.id === selectedCategory);
         if (category) {
-          onAddInfraction(category.description, category.pointsDeduction);
+          onAddInfraction(category.description, category.pointsDeduction, false, selectedCategory); // Passa o ID da categoria
           setSelectedCategory(null); // Reseta o estado para nenhum selecionado
         }
       }
@@ -40,7 +49,7 @@ const InfractionForm: React.FC<InfractionFormProps> = ({ categories, onAddInfrac
       <h3>Registrar Comportamento</h3>
 
       <div className="form-toggle" style={{
-        marginBottom: '15px',
+        marginBottom: '10px',
         display: 'flex',
         flexDirection: 'column',
         gap: '8px'
@@ -65,6 +74,7 @@ const InfractionForm: React.FC<InfractionFormProps> = ({ categories, onAddInfrac
 
       <form onSubmit={handleSubmit}>
         {!useCustom ? (
+          // Comportamento Pré-definido
           <div className="category-selector">
             <label htmlFor="category-select">Selecione a categoria:</label>
             <select
@@ -89,16 +99,17 @@ const InfractionForm: React.FC<InfractionFormProps> = ({ categories, onAddInfrac
             </select>
           </div>
         ) : (
+          // Comportamento Personalizado
           <div className="custom-infraction">
             <div style={{ marginBottom: '10px' }}>
-              <label htmlFor="description">Descrição da infração:</label>
+              <label htmlFor="description">Descrição do comportamento:</label>
               <input
                 id="description"
                 type="text"
                 value={customDescription}
                 onChange={(e) => setCustomDescription(e.target.value)}
-                placeholder="Ex: Não fez a lição de casa"
-                required={useCustom}
+                placeholder="Ex: Ajudou um colega com a lição de casa"
+                required
                 style={{
                   width: '100%',
                   padding: '8px',
@@ -109,8 +120,19 @@ const InfractionForm: React.FC<InfractionFormProps> = ({ categories, onAddInfrac
               />
             </div>
 
+            <div style={{ marginBottom: '10px' }}>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={isPositive}
+                  onChange={(e) => setIsPositive(e.target.checked)} // Alterna entre positivo e negativo
+                />
+                {' '}É um comportamento positivo?
+              </label>
+            </div>
+
             <div>
-              <label htmlFor="points">Pontos a deduzir:</label>
+              <label htmlFor="points">{isPositive ? 'Pontos a acrescentar:' : 'Pontos a deduzir:'}</label>
               <input
                 id="points"
                 type="number"
@@ -118,7 +140,7 @@ const InfractionForm: React.FC<InfractionFormProps> = ({ categories, onAddInfrac
                 max="20"
                 value={customPoints}
                 onChange={(e) => setCustomPoints(Number(e.target.value))}
-                required={useCustom}
+                required
                 style={{
                   width: '100%',
                   padding: '8px',
@@ -127,6 +149,17 @@ const InfractionForm: React.FC<InfractionFormProps> = ({ categories, onAddInfrac
                   border: '1px solid #ccc'
                 }}
               />
+            </div>
+
+            <div style={{ marginBottom: '10px', marginTop: '10px' }}>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={saveAsPredefined}
+                  onChange={(e) => setSaveAsPredefined(e.target.checked)} // Alterna entre salvar ou não como pré-definido
+                />
+                {' '}Salvar como pré-definido?
+              </label>
             </div>
           </div>
         )}
@@ -140,11 +173,11 @@ const InfractionForm: React.FC<InfractionFormProps> = ({ categories, onAddInfrac
               border: 'none',
               borderRadius: '4px',
               padding: '10px 15px',
-              marginTop: '15px',
+              marginTop: '10px',
               cursor: 'pointer'
             }}
           >
-            Registrar Infração
+            Registrar Comportamento
           </button>
         </div>
       </form>

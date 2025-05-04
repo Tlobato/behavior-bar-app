@@ -46,7 +46,7 @@ const getCurrentState = (): BehaviorState => {
   return loadData();
 };
 
-// Adicionar uma nova infração
+// Adicionar uma nova infração (local)
 const addInfraction = (description: string, points: number): BehaviorState => {
   const state = loadData();
   const newInfraction: Infraction = {
@@ -93,9 +93,41 @@ const getInfractionCategories = async (): Promise<InfractionCategory[]> => {
   }
 };
 
+// Registrar um comportamento no backend
+const registerBehavior = async (description: string, points: number, saveAsPredefined: boolean, behaviorTypeId: number | null): Promise<void> => {
+  try {
+    const payload = {
+      behaviorTypeId, // ID do comportamento pré-definido
+      customDescription: behaviorTypeId === null ? description : null, // Apenas para comportamentos personalizados
+      points, // Pontuação associada
+      saveAsPredefined, // Flag para salvar como pré-definido
+    };
+
+    console.log('Payload enviado:', payload); // Log para verificar o que está sendo enviado
+
+    await axios.post('/api/behavior-records', payload); // Faz a chamada POST para o backend
+  } catch (error) {
+    console.error('Erro ao registrar comportamento:', error);
+    throw error; // Lança o erro para ser tratado no frontend
+  }
+};
+
+// Listar o histórico de comportamentos do backend
+const getBehaviorRecords = async (): Promise<Infraction[]> => {
+  try {
+    const response = await axios.get('/api/behavior-records'); // Faz a chamada GET para o backend
+    return response.data; // Retorna a lista de registros
+  } catch (error) {
+    console.error('Erro ao buscar histórico de comportamentos:', error);
+    return []; // Retorna um array vazio em caso de erro
+  }
+};
+
 export const behaviorService = {
   getCurrentState,
   addInfraction,
   resetPoints,
-  getInfractionCategories
+  getInfractionCategories,
+  registerBehavior, // Novo método para registrar comportamento no backend
+  getBehaviorRecords, // Novo método para listar o histórico de comportamentos
 };

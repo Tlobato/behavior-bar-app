@@ -4,14 +4,14 @@ import { User } from '../types';
 // Usuários mockados para testes
 const mockUsers = [
   {
-    id: '1',
+    id: 1,
     username: 'admin',
     password: 'admin123',
     role: 'admin',
     name: 'Administrador'
   },
   {
-    id: '2',
+    id: 2,
     username: 'crianca',
     password: '123456',
     role: 'user',

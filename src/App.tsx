@@ -1,4 +1,3 @@
-// src/App.tsx
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import BehaviorBar from './components/BehaviorBar';
@@ -6,12 +5,13 @@ import InfractionForm from './components/InfractionForm';
 import Login from './components/Login';
 import { behaviorService } from './services/behaviorService';
 import { authService } from './services/authService';
-import { BehaviorState, Infraction } from './types';
+import { BehaviorState, Infraction, InfractionCategory } from './types';
 
 function App() {
   const [behaviorState, setBehaviorState] = useState<BehaviorState>(behaviorService.getCurrentState());
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [categories, setCategories] = useState<InfractionCategory[]>([]); // Estado para armazenar as categorias
 
   // Verificar autenticação
   useEffect(() => {
@@ -27,6 +27,20 @@ function App() {
   // Carregar estado inicial
   useEffect(() => {
     setBehaviorState(behaviorService.getCurrentState());
+  }, []);
+
+  // Carregar as categorias de infrações
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const fetchedCategories = await behaviorService.getInfractionCategories(); // Busca as categorias do backend
+        setCategories(fetchedCategories); // Atualiza o estado com as categorias
+      } catch (error) {
+        console.error('Erro ao carregar categorias:', error);
+      }
+    };
+
+    loadCategories();
   }, []);
 
   // Adicionar uma nova infração
@@ -100,7 +114,7 @@ function App() {
         {isAdmin && (
           <div className="form-section">
             <InfractionForm 
-              categories={behaviorService.getInfractionCategories()} 
+              categories={categories} // Agora passa as categorias do estado
               onAddInfraction={handleAddInfraction} 
             />
           </div>
@@ -117,7 +131,8 @@ function App() {
                   <li key={infraction.id}>
                     <strong>{infraction.description}</strong>
                     <div>
-                      <span>-{infraction.points} pontos</span>
+                      {/* Exibe os pontos diretamente como enviados pelo backend */}
+                      <span>{infraction.points} pontos</span>
                       <span style={{ float: 'right' }}>{formatDate(infraction.timestamp)}</span>
                     </div>
                   </li>

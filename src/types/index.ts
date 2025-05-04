@@ -2,7 +2,7 @@
 
 // Tipo para uma infração individual
 export interface Infraction {
-    id: string;
+    id: number;
     description: string;  // Ex: "Não arrumou a cama"
     points: number;       // Quantos pontos são deduzidos (ex: 5)
     timestamp: Date;      // Quando ocorreu
@@ -18,14 +18,14 @@ export interface Infraction {
   
   // Tipo para as categorias de infrações pré-definidas
   export interface InfractionCategory {
-    id: string;
+    id: number;
     name: string;        // Ex: "Tarefas domésticas"
     description: string; // Ex: "Não cumpriu com obrigações da casa"
     pointsDeduction: number; // Quantos pontos são deduzidos
   }
 
   export interface User {
-    id: string;
+    id: number;
     username: string;
     role: 'admin' | 'user';
     name: string;

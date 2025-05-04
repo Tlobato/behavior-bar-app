@@ -8,28 +8,28 @@ interface InfractionFormProps {
 }
 
 const InfractionForm: React.FC<InfractionFormProps> = ({ categories, onAddInfraction }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null); // Alterado para aceitar números ou null
   const [customDescription, setCustomDescription] = useState<string>('');
   const [customPoints, setCustomPoints] = useState<number>(5);
   const [useCustom, setUseCustom] = useState<boolean>(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (useCustom) {
       // Usar dados personalizados
       if (customDescription.trim() && customPoints > 0) {
-        onAddInfraction(customDescription.trim(), customPoints);
+        onAddInfraction(customDescription.trim(), -customPoints); // Garante que os pontos sejam negativos
         setCustomDescription('');
         setCustomPoints(5);
       }
     } else {
       // Usar categoria pré-definida
-      if (selectedCategory) {
+      if (selectedCategory !== null) { // Verifica se uma categoria foi selecionada
         const category = categories.find(cat => cat.id === selectedCategory);
         if (category) {
           onAddInfraction(category.description, category.pointsDeduction);
-          setSelectedCategory('');
+          setSelectedCategory(null); // Reseta o estado para nenhum selecionado
         }
       }
     }
@@ -38,8 +38,8 @@ const InfractionForm: React.FC<InfractionFormProps> = ({ categories, onAddInfrac
   return (
     <div className="infraction-form">
       <h3>Registrar Comportamento</h3>
-      
-      <div className="form-toggle" style={{ 
+
+      <div className="form-toggle" style={{
         marginBottom: '15px',
         display: 'flex',
         flexDirection: 'column',
@@ -62,28 +62,28 @@ const InfractionForm: React.FC<InfractionFormProps> = ({ categories, onAddInfrac
           {' '}Personalizado
         </label>
       </div>
-      
+
       <form onSubmit={handleSubmit}>
         {!useCustom ? (
           <div className="category-selector">
             <label htmlFor="category-select">Selecione a categoria:</label>
-            <select 
+            <select
               id="category-select"
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+              value={selectedCategory ?? ''} // Usa uma string vazia se selectedCategory for null
+              onChange={(e) => setSelectedCategory(Number(e.target.value))} // Converte para número
               required
-              style={{ 
-                width: '100%', 
-                padding: '8px', 
+              style={{
+                width: '100%',
+                padding: '8px',
                 marginTop: '5px',
                 borderRadius: '4px',
-                border: '1px solid #ccc' 
+                border: '1px solid #ccc'
               }}
             >
               <option value="">-- Selecione uma opção --</option>
               {categories.map(category => (
                 <option key={category.id} value={category.id}>
-                  {category.name} (-{category.pointsDeduction} pontos)
+                  {category.name} ({category.pointsDeduction} pontos)
                 </option>
               ))}
             </select>
@@ -99,16 +99,16 @@ const InfractionForm: React.FC<InfractionFormProps> = ({ categories, onAddInfrac
                 onChange={(e) => setCustomDescription(e.target.value)}
                 placeholder="Ex: Não fez a lição de casa"
                 required={useCustom}
-                style={{ 
-                  width: '100%', 
-                  padding: '8px', 
+                style={{
+                  width: '100%',
+                  padding: '8px',
                   marginTop: '5px',
                   borderRadius: '4px',
-                  border: '1px solid #ccc' 
+                  border: '1px solid #ccc'
                 }}
               />
             </div>
-            
+
             <div>
               <label htmlFor="points">Pontos a deduzir:</label>
               <input
@@ -119,20 +119,20 @@ const InfractionForm: React.FC<InfractionFormProps> = ({ categories, onAddInfrac
                 value={customPoints}
                 onChange={(e) => setCustomPoints(Number(e.target.value))}
                 required={useCustom}
-                style={{ 
-                  width: '100%', 
-                  padding: '8px', 
+                style={{
+                  width: '100%',
+                  padding: '8px',
                   marginTop: '5px',
                   borderRadius: '4px',
-                  border: '1px solid #ccc' 
+                  border: '1px solid #ccc'
                 }}
               />
             </div>
           </div>
         )}
-        
+
         <div className="form-buttons">
-          <button 
+          <button
             type="submit"
             style={{
               backgroundColor: '#f44336',

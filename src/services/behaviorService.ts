@@ -1,39 +1,5 @@
-// src/services/behaviorService.ts
 import { BehaviorState, Infraction, InfractionCategory } from '../types';
-
-// Categorias padrão de infrações
-const DEFAULT_CATEGORIES: InfractionCategory[] = [
-  { 
-    id: 'chores', 
-    name: 'Não Lavar a Louça', 
-    description: 'Não lavou a louça.',
-    pointsDeduction: 3
-  },
-  {
-    id: 'dishonesty',
-    name: 'Desonestidade',
-    description: 'Mentiu ou foi desonesta.',
-    pointsDeduction: 10
-  },
-  {
-    id: 'disobedience',
-    name: 'Desobediência',
-    description: 'Não seguiu as regras ou instruções.',
-    pointsDeduction: 10
-  },
-  {
-    id: 'respect',
-    name: 'Falta de respeito',
-    description: 'Comportamento desrespeitoso.',
-    pointsDeduction: 10
-  },
-  {
-    id: 'make the bed',
-    name: 'Não Arrumar a cama',
-    description: 'Não arrumou a cama.',
-    pointsDeduction: 10
-  }
-];
+import axios from 'axios'; // Usaremos Axios para realizar as requisições HTTP
 
 // Estado inicial do comportamento
 const INITIAL_STATE: BehaviorState = {
@@ -84,21 +50,21 @@ const getCurrentState = (): BehaviorState => {
 const addInfraction = (description: string, points: number): BehaviorState => {
   const state = loadData();
   const newInfraction: Infraction = {
-    id: Date.now().toString(),
+    id: Date.now(),
     description,
-    points,
+    points, // Valor já com o sinal correto (positivo ou negativo)
     timestamp: new Date()
   };
-  
-  // Calcular novos pontos (não permitindo valores negativos)
-  const newPoints = Math.max(0, state.currentPoints - points);
-  
+
+  // Corrige o cálculo de pontos na barra, somando diretamente
+  const newPoints = Math.max(0, state.currentPoints + points);
+
   const newState: BehaviorState = {
     ...state,
     currentPoints: newPoints,
     infractions: [newInfraction, ...state.infractions]
   };
-  
+
   saveData(newState);
   return newState;
 };
@@ -116,9 +82,15 @@ const resetPoints = (): BehaviorState => {
   return newState;
 };
 
-// Obter categorias de infrações
-const getInfractionCategories = (): InfractionCategory[] => {
-  return DEFAULT_CATEGORIES;
+// Buscar categorias de infrações do backend
+const getInfractionCategories = async (): Promise<InfractionCategory[]> => {
+  try {
+    const response = await axios.get('/api/behavior-types'); // Exemplo de rota
+    return response.data; // Assumindo que o backend retorna um array de categorias
+  } catch (error) {
+    console.error('Erro ao buscar categorias de infrações:', error);
+    return []; // Retorna um array vazio em caso de erro
+  }
 };
 
 export const behaviorService = {

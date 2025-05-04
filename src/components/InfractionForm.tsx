@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { InfractionCategory } from '../types';
 
 interface InfractionFormProps {
@@ -18,6 +18,11 @@ const InfractionForm: React.FC<InfractionFormProps> = ({ categories, onAddInfrac
   const [useCustom, setUseCustom] = useState<boolean>(false); // Alterna entre pré-definido e personalizado
   const [isPositive, setIsPositive] = useState<boolean>(false); // Define se é comportamento positivo ou negativo
   const [saveAsPredefined, setSaveAsPredefined] = useState<boolean>(false); // Define se o comportamento será salvo como pré-definido
+
+  // Adiciona um log para inspecionar as categorias recebidas
+  useEffect(() => {
+    console.log('Categorias recebidas do backend:', categories);
+  }, [categories]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

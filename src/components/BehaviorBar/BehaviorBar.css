@@ -1,0 +1,39 @@
+/* src/components/BehaviorBar/BehaviorBar.css */
+
+/* Contêiner principal da barra */
+.behavior-bar-container {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Exibição de pontuação */
+  .score-display {
+    margin-bottom: 10px;
+  }
+  
+  .score-text {
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+  
+  /* Contêiner da barra de comportamento */
+  .bar-container {
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 8px;
+    height: 30px;
+    margin: 10px 0;
+    overflow: hidden;
+  }
+  
+  /* Preenchimento da barra */
+  .bar-fill {
+    height: 100%;
+    transition: width 0.5s ease-in-out, background-color 0.5s ease-in-out;
+  }
+  
+  /* Mensagem de status */
+  .status-message {
+    font-size: 1rem;
+    margin-top: 10px;
+  }

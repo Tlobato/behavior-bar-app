@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import BehaviorBar from './components/BehaviorBar';
 import InfractionForm from './components/InfractionForm';
 import Login from './components/Login';
 import Modal from './components/Modal/Modal'; // Ajuste para importar o Modal corretamente
 import { behaviorService } from './services/behaviorService';
 import { authService } from './services/authService';
 import { BehaviorState, Infraction, InfractionCategory } from './types';
+import BehaviorBar from './components/BehaviorBar/BehaviorBar';
 
 function App() {
   const [behaviorState, setBehaviorState] = useState<BehaviorState>({

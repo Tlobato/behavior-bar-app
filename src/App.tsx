@@ -36,11 +36,12 @@ function App() {
     const loadBehaviorState = async () => {
       try {
         const infractions = await behaviorService.getBehaviorRecords(); // Busca o histórico do backend
-        const currentPoints = infractions.reduce((acc, inf) => acc + inf.points, 100); // Calcula os pontos atuais
+        const activeInfractions = infractions.filter((inf) => inf.ativo); // Filtra apenas os registros ativos
+        const currentPoints = activeInfractions.reduce((acc, inf) => acc + inf.points, 100); // Calcula os pontos atuais
         setBehaviorState({
           currentPoints: Math.max(0, currentPoints), // Não permite valores negativos
           maxPoints: 100,
-          infractions,
+          infractions: activeInfractions,
           lastReset: new Date(), // Pode ser ajustado para vir do backend no futuro
         });
       } catch (error) {
@@ -89,6 +90,7 @@ function App() {
         customDescription: behaviorTypeId ? undefined : description, // Substituímos null por undefined
         points,
         timestamp: new Date(),
+        ativo: true, // Novos registros são sempre ativos
       };
   
       setBehaviorState((prevState) => ({
@@ -101,10 +103,24 @@ function App() {
     }
   };
 
-  // Resetar pontos
-  const handleReset = () => {
-    const newState = behaviorService.resetPoints();
-    setBehaviorState(newState);
+  // Resetar o histórico e a barra
+  const confirmReset = async () => {
+    try {
+      // Chama o serviço para resetar o histórico no backend
+      await behaviorService.resetBehaviorRecords();
+
+      // Atualiza o estado local para refletir o reset
+      setBehaviorState({
+        currentPoints: 100,
+        maxPoints: 100,
+        infractions: [],
+        lastReset: new Date(), // Atualiza a data do reset
+      });
+
+      closeModal(); // Fecha o modal após o reset
+    } catch (error) {
+      console.error('Erro ao resetar o histórico:', error);
+    }
   };
 
   // Função para abrir o modal
@@ -115,12 +131,6 @@ function App() {
   // Função para fechar o modal
   const closeModal = () => {
     setIsModalOpen(false);
-  };
-
-  // Função para confirmar o reset e fechar o modal
-  const confirmReset = () => {
-    handleReset();
-    closeModal();
   };
 
   // Formatar data para exibição

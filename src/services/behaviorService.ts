@@ -53,7 +53,8 @@ const addInfraction = (description: string, points: number): BehaviorState => {
     id: Date.now(),
     description,
     points, // Valor já com o sinal correto (positivo ou negativo)
-    timestamp: new Date()
+    timestamp: new Date(),
+    ativo: true, // Novas infrações locais são sempre ativas
   };
 
   // Corrige o cálculo de pontos na barra, somando diretamente
@@ -62,24 +63,22 @@ const addInfraction = (description: string, points: number): BehaviorState => {
   const newState: BehaviorState = {
     ...state,
     currentPoints: newPoints,
-    infractions: [newInfraction, ...state.infractions]
+    infractions: [newInfraction, ...state.infractions],
   };
 
   saveData(newState);
   return newState;
 };
 
-// Resetar pontuação para o máximo
-const resetPoints = (): BehaviorState => {
-  const state = loadData();
-  const newState: BehaviorState = {
-    ...state,
-    currentPoints: state.maxPoints,
-    lastReset: new Date()
-  };
-  
-  saveData(newState);
-  return newState;
+// Resetar histórico no backend
+const resetBehaviorRecords = async (): Promise<void> => {
+  try {
+    await axios.put('/api/behavior-records/reset'); // Faz a chamada PUT para o backend
+    console.log('Histórico resetado com sucesso.');
+  } catch (error) {
+    console.error('Erro ao resetar o histórico:', error);
+    throw error; // Lança o erro para ser tratado no frontend
+  }
 };
 
 // Buscar categorias de infrações do backend
@@ -130,7 +129,7 @@ const getBehaviorRecords = async (): Promise<Infraction[]> => {
 export const behaviorService = {
   getCurrentState,
   addInfraction,
-  resetPoints,
+  resetBehaviorRecords, // Novo método para resetar histórico no backend
   getInfractionCategories,
   registerBehavior, // Novo método para registrar comportamento no backend
   getBehaviorRecords, // Novo método para listar o histórico de comportamentos

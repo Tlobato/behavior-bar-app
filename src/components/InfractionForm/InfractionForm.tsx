@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { InfractionCategory } from '../types';
-import { getInfractionCategories } from '../services/behaviorService'; // Importa a função para buscar categorias
+import { InfractionCategory } from '../../types';
+import { getInfractionCategories } from '../../services/behaviorService'; // Importa a função para buscar categorias
+import './InfractionForm.css';
 
 interface InfractionFormProps {
   categories: InfractionCategory[];

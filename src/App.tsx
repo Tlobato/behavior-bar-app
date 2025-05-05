@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import InfractionForm from './components/InfractionForm';
+import InfractionForm from './components/InfractionForm/InfractionForm';
 import Login from './components/Login';
 import Modal from './components/Modal/Modal'; // Ajuste para importar o Modal corretamente
 import { behaviorService } from './services/behaviorService';

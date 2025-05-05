@@ -24,7 +24,8 @@
 .app-container {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 30px;
+  gap: 30px; /* Espaço entre os elementos */
+  padding-top: 80px; /* Espaço abaixo do header fixo */
 }
 
 .behavior-section {
@@ -100,6 +101,8 @@
 @media (min-width: 768px) {
   .app-container {
     grid-template-columns: 1fr 1fr;
+    gap: 30px; /* Espaço entre os elementos no grid */
+    padding-top: 80px; /* Espaço abaixo do header fixo */
   }
   
   .behavior-section {

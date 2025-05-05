@@ -9,6 +9,7 @@ import { BehaviorState, Infraction, InfractionCategory } from './types';
 import BehaviorBar from './components/BehaviorBar/BehaviorBar';
 import BehaviorHistory from './components/BehaviorHistory/BehaviorHistory'; // Novo componente de histórico
 import { formatDate } from './utils/dateUtils'; // Importa a função de utilitário
+import Header from './components/Header/Header'; // Importa o Header
 
 function App() {
   const [behaviorState, setBehaviorState] = useState<BehaviorState>({
@@ -155,17 +156,8 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <div className="header-content">
-          <div className="header-title-container">
-            <h1>Behavior Bar</h1>
-            <p className="app-description">
-              Um sistema para acompanhar e melhorar o comportamento.
-            </p>
-          </div>
-          <button className="logout-button" onClick={handleLogout}>Sair</button>
-        </div>
-      </header>
+      {/* Header */}
+      <Header projectName="Behavior Bar" userName="João Silva" onLogout={handleLogout} />
 
       <main className="app-container">
         <div className="behavior-section">

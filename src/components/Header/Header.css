@@ -1,0 +1,58 @@
+/* src/components/Header/Header.css */
+
+/* Estilo geral do header */
+.header {
+  width: 100%; /* Largura total */
+  position: fixed; /* Fixa no topo */
+  top: 0;
+  left: 0;
+  background-color: #fff; /* Fundo branco */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra leve */
+  padding: 0 30px; /* Aumenta o espaçamento interno */
+  height: 60px; /* Altura do header */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000; /* Certifica que o header fica acima de outros elementos */
+}
+
+/* Nome do projeto (à esquerda) */
+.project-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333; /* Cor do texto */
+  margin: 0;
+}
+
+/* Área do usuário (à direita) */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Espaço entre o nome e o ícone */
+  margin-right: 50px; /* Adiciona espaço entre os elementos e a borda direita */
+}
+
+.user-name {
+  font-size: 1rem;
+  color: #666;
+}
+
+.profile-icon {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+/* Botão de logout */
+.logout-button-header {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 15px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.logout-button-header:hover {
+  background-color: #d32f2f;
+}

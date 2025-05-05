@@ -3,6 +3,7 @@ import './App.css';
 import BehaviorBar from './components/BehaviorBar';
 import InfractionForm from './components/InfractionForm';
 import Login from './components/Login';
+import Modal from './components/Modal/Modal'; // Ajuste para importar o Modal corretamente
 import { behaviorService } from './services/behaviorService';
 import { authService } from './services/authService';
 import { BehaviorState, Infraction, InfractionCategory } from './types';
@@ -17,6 +18,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [categories, setCategories] = useState<InfractionCategory[]>([]); // Estado para armazenar as categorias
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // Estado para controlar o modal
 
   // Verificar autenticação
   useEffect(() => {
@@ -84,7 +86,7 @@ function App() {
         id: Date.now(),
         description: behaviorTypeId ? '' : description, // Deixa vazio se for pré-definido
         behaviorTypeName, // Nome do comportamento pré-definido (se aplicável)
-        customDescription: behaviorTypeId ? null : description, // Preenche apenas para personalizados
+        customDescription: behaviorTypeId ? undefined : description, // Substituímos null por undefined
         points,
         timestamp: new Date(),
       };
@@ -103,6 +105,22 @@ function App() {
   const handleReset = () => {
     const newState = behaviorService.resetPoints();
     setBehaviorState(newState);
+  };
+
+  // Função para abrir o modal
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  // Função para fechar o modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  // Função para confirmar o reset e fechar o modal
+  const confirmReset = () => {
+    handleReset();
+    closeModal();
   };
 
   // Formatar data para exibição
@@ -148,7 +166,7 @@ function App() {
 
           {isAdmin && (
             <div className="reset-section">
-              <button onClick={handleReset} className="reset-button">
+              <button onClick={openModal} className="reset-button">
                 Resetar Pontuação
               </button>
               <p className="reset-info">
@@ -176,7 +194,6 @@ function App() {
               <ul className="infraction-list">
                 {behaviorState.infractions.map((infraction: Infraction) => (
                   <li key={infraction.id}>
-                    {/* Ajuste para exibir o nome correto do comportamento */}
                     <strong>
                       {infraction.customDescription || infraction.behaviorTypeName || "Sem descrição disponível"}
                     </strong>
@@ -191,6 +208,15 @@ function App() {
           )}
         </div>
       </main>
+
+      {/* Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onConfirm={confirmReset}
+        title="Resetar Pontuação"
+        message="Tem certeza que deseja resetar a pontuação?"
+      />
     </div>
   );
 }

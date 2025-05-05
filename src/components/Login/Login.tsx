@@ -1,6 +1,7 @@
 // src/components/Login.tsx
 import React, { useState } from 'react';
-import { authService } from '../services/authService';
+import { authService } from '../../services/authService';
+import './Login.css';
 
 interface LoginProps {
   onLoginSuccess: () => void;

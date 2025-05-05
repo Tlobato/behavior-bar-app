@@ -8,6 +8,7 @@ import { authService } from './services/authService';
 import { BehaviorState, Infraction, InfractionCategory } from './types';
 import BehaviorBar from './components/BehaviorBar/BehaviorBar';
 import BehaviorHistory from './components/BehaviorHistory/BehaviorHistory'; // Novo componente de histórico
+import { formatDate } from './utils/dateUtils'; // Importa a função de utilitário
 
 function App() {
   const [behaviorState, setBehaviorState] = useState<BehaviorState>({
@@ -132,11 +133,6 @@ function App() {
   // Função para fechar o modal
   const closeModal = () => {
     setIsModalOpen(false);
-  };
-
-  // Formatar data para exibição
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleString();
   };
 
   // Função para lidar com o logout

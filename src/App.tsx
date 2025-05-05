@@ -7,6 +7,7 @@ import { behaviorService } from './services/behaviorService';
 import { authService } from './services/authService';
 import { BehaviorState, Infraction, InfractionCategory } from './types';
 import BehaviorBar from './components/BehaviorBar/BehaviorBar';
+import BehaviorHistory from './components/BehaviorHistory/BehaviorHistory'; // Novo componente de histórico
 
 function App() {
   const [behaviorState, setBehaviorState] = useState<BehaviorState>({
@@ -195,28 +196,12 @@ function App() {
           </div>
         )}
 
-        <div className={`history-section ${!isAdmin ? 'centered-history' : ''}`}>
-          <h3>Histórico de Comportamentos</h3>
-          {behaviorState.infractions.length === 0 ? (
-            <p>Sem comportamentos registrados. Ótimo trabalho!</p>
-          ) : (
-            <div className="infraction-list-container">
-              <ul className="infraction-list">
-                {behaviorState.infractions.map((infraction: Infraction) => (
-                  <li key={infraction.id}>
-                    <strong>
-                      {infraction.customDescription || infraction.behaviorTypeName || "Sem descrição disponível"}
-                    </strong>
-                    <div>
-                      <span>{infraction.points} pontos</span>
-                      <span style={{ float: 'right' }}>{formatDate(infraction.timestamp)}</span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
+        {/* Componente de Histórico */}
+        <BehaviorHistory
+          infractions={behaviorState.infractions} // Passa o histórico de infrações
+          formatDate={formatDate} // Passa a função de formatação de data
+          isAdmin={isAdmin} // Passa a flag de admin
+        />
       </main>
 
       {/* Modal */}

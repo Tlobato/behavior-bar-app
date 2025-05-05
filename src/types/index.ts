@@ -2,11 +2,13 @@
 
 // Tipo para uma infração individual
 export interface Infraction {
-    id: number;
-    description: string;  // Ex: "Não arrumou a cama"
-    points: number;       // Quantos pontos são deduzidos (ex: 5)
-    timestamp: Date;      // Quando ocorreu
-  }
+  id: number;
+  description: string; // Mantém para compatibilidade com o estado local
+  points: number;
+  timestamp: Date;
+  customDescription?: string | null; // Permite string ou null
+  behaviorTypeName?: string | null; // Permite string ou null
+}
   
   // Tipo para a configuração/estado de comportamento
   export interface BehaviorState {

@@ -116,6 +116,10 @@ const registerBehavior = async (description: string, points: number, saveAsPrede
 const getBehaviorRecords = async (): Promise<Infraction[]> => {
   try {
     const response = await axios.get('/api/behavior-records'); // Faz a chamada GET para o backend
+
+    // Log para inspecionar os dados retornados pelo backend
+    console.log('Histórico retornado pelo backend:', response.data);
+
     return response.data; // Retorna a lista de registros
   } catch (error) {
     console.error('Erro ao buscar histórico de comportamentos:', error);

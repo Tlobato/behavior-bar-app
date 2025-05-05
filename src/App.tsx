@@ -68,19 +68,27 @@ function App() {
     description: string,
     points: number,
     saveAsPredefined: boolean,
-    behaviorTypeId: number | null // Adicionado o parâmetro behaviorTypeId
+    behaviorTypeId: number | null
   ) => {
     try {
       // Chama o backend para registrar o comportamento
       await behaviorService.registerBehavior(description, points, saveAsPredefined, behaviorTypeId);
-
+  
+      // Localiza o nome do comportamento pré-definido, se behaviorTypeId for fornecido
+      const behaviorTypeName = behaviorTypeId
+        ? categories.find((category) => category.id === behaviorTypeId)?.name || "Sem descrição disponível"
+        : null;
+  
       // Atualiza o histórico localmente após o registro
       const newInfraction: Infraction = {
         id: Date.now(),
-        description,
+        description: behaviorTypeId ? '' : description, // Deixa vazio se for pré-definido
+        behaviorTypeName, // Nome do comportamento pré-definido (se aplicável)
+        customDescription: behaviorTypeId ? null : description, // Preenche apenas para personalizados
         points,
         timestamp: new Date(),
       };
+  
       setBehaviorState((prevState) => ({
         ...prevState,
         currentPoints: Math.max(0, prevState.currentPoints + points), // Atualiza os pontos
@@ -168,7 +176,10 @@ function App() {
               <ul className="infraction-list">
                 {behaviorState.infractions.map((infraction: Infraction) => (
                   <li key={infraction.id}>
-                    <strong>{infraction.description}</strong>
+                    {/* Ajuste para exibir o nome correto do comportamento */}
+                    <strong>
+                      {infraction.customDescription || infraction.behaviorTypeName || "Sem descrição disponível"}
+                    </strong>
                     <div>
                       <span>{infraction.points} pontos</span>
                       <span style={{ float: 'right' }}>{formatDate(infraction.timestamp)}</span>

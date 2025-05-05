@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { InfractionCategory } from '../types';
+import { getInfractionCategories } from '../services/behaviorService'; // Importa a função para buscar categorias
 
 interface InfractionFormProps {
   categories: InfractionCategory[];
@@ -19,19 +20,43 @@ const InfractionForm: React.FC<InfractionFormProps> = ({ categories, onAddInfrac
   const [isPositive, setIsPositive] = useState<boolean>(false); // Define se é comportamento positivo ou negativo
   const [saveAsPredefined, setSaveAsPredefined] = useState<boolean>(false); // Define se o comportamento será salvo como pré-definido
 
-  // Adiciona um log para inspecionar as categorias recebidas
-  useEffect(() => {
-    console.log('Categorias recebidas do backend:', categories);
-  }, [categories]);
+  const [localCategories, setLocalCategories] = useState<InfractionCategory[]>(categories); // Usa estado local para categorias
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Busca categorias do backend ao carregar o componente
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const initialCategories = await getInfractionCategories(); // Faz chamada ao backend
+        setLocalCategories(initialCategories); // Atualiza o estado local com as categorias
+        console.log('Categorias carregadas ao iniciar:', initialCategories); // Log para depuração
+      } catch (error) {
+        console.error('Erro ao carregar categorias:', error);
+      }
+    };
+
+    fetchCategories(); // Chama a função para buscar categorias
+  }, []); // Executa apenas ao carregar o componente
+
+  // Atualiza categorias dinamicamente após salvar um comportamento
+  const updateCategories = async () => {
+    try {
+      const updatedCategories = await getInfractionCategories(); // Faz chamada ao backend
+      setLocalCategories(updatedCategories); // Atualiza o estado local com as novas categorias
+      console.log('Categorias atualizadas:', updatedCategories); // Log para depuração
+    } catch (error) {
+      console.error('Erro ao atualizar categorias:', error);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (useCustom) {
       // Comportamento Personalizado
       if (customDescription.trim() && customPoints > 0) {
         const points = isPositive ? customPoints : -customPoints; // Ajusta o sinal dos pontos
-        onAddInfraction(customDescription.trim(), points, saveAsPredefined, null); // Passa null para behaviorTypeId
+        await onAddInfraction(customDescription.trim(), points, saveAsPredefined, null); // Passa null para behaviorTypeId
+        await updateCategories(); // Atualiza a lista de categorias após salvar
         setCustomDescription('');
         setCustomPoints(5);
         setIsPositive(false); // Reseta para comportamento negativo por padrão
@@ -40,9 +65,9 @@ const InfractionForm: React.FC<InfractionFormProps> = ({ categories, onAddInfrac
     } else {
       // Comportamento Pré-definido
       if (selectedCategory !== null) {
-        const category = categories.find(cat => cat.id === selectedCategory);
+        const category = localCategories.find(cat => cat.id === selectedCategory);
         if (category) {
-          onAddInfraction(category.description, category.pointsDeduction, false, selectedCategory); // Passa o ID da categoria
+          await onAddInfraction(category.description, category.pointsDeduction, false, selectedCategory); // Passa o ID da categoria
           setSelectedCategory(null); // Reseta o estado para nenhum selecionado
         }
       }
@@ -96,7 +121,7 @@ const InfractionForm: React.FC<InfractionFormProps> = ({ categories, onAddInfrac
               }}
             >
               <option value="">-- Selecione uma opção --</option>
-              {categories.map(category => (
+              {localCategories.map(category => (
                 <option key={category.id} value={category.id}>
                   {category.name} ({category.pointsDeduction} pontos)
                 </option>

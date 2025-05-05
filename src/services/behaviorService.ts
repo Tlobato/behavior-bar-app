@@ -83,7 +83,7 @@ const resetPoints = (): BehaviorState => {
 };
 
 // Buscar categorias de infrações do backend
-const getInfractionCategories = async (): Promise<InfractionCategory[]> => {
+export const getInfractionCategories = async (): Promise<InfractionCategory[]> => {
   try {
     const response = await axios.get('/api/behavior-types'); // Exemplo de rota
     return response.data; // Assumindo que o backend retorna um array de categorias

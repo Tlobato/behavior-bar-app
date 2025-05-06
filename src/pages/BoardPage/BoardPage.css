@@ -1,0 +1,39 @@
+.BoardPage {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .board-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding-top: 80px;
+  }
+  
+  .behavior-section {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .reset-section {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .reset-info {
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  .form-section {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }

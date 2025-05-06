@@ -1,0 +1,92 @@
+/* Página de Gerenciamento de Usuários */
+.user-management-page {
+  font-family: 'DM Sans', sans-serif;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.user-management-container {
+  max-width: 900px; /* Largura menor e centralizada */
+  margin: 0 auto;
+  padding: 20px;
+  padding-top: 80px; /* Adiciona espaço abaixo do Header */
+}
+
+.new-user-container {
+  background-color: white;
+  border-radius: 8px;
+  padding: 5px 15px; /* Reduz o padding interno para diminuir a altura */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra leve */
+  margin-bottom: 20px; /* Espaçamento abaixo do container */
+}
+
+.new-user-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.new-user-section h2 {
+  font-size: 1.2rem; /* Reduz o tamanho da fonte */
+  font-weight: 500;
+  color: #333;
+}
+
+.new-user-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px; /* Reduz o padding do botão */
+  font-size: 0.9rem; /* Reduz o tamanho da fonte do botão */
+  cursor: pointer;
+}
+
+.new-user-button:hover {
+  background-color: #45a049;
+}
+
+.table-container {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.user-table th,
+.user-table td {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.user-table th {
+  background-color: #f9f9f9;
+  font-weight: 600;
+}
+
+.user-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.action-button {
+  margin-right: 5px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.action-button.delete {
+  background-color: #f44336;
+  color: white;
+}
+
+.action-button.delete:hover {
+  background-color: #d32f2f;
+}

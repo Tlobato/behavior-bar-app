@@ -1,0 +1,104 @@
+/* Estilos do Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fundo escuro translúcido */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 30px; /* Aumenta o padding para mais espaço interno */
+  border-radius: 12px; /* Bordas arredondadas mais suaves */
+  width: 450px; /* Largura maior para acomodar os campos */
+  max-width: 90%; /* Ajusta para telas menores */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Sombra mais forte */
+  overflow: hidden;
+}
+
+.modal-content h2 {
+  font-size: 1.5rem; /* Tamanho maior para o título */
+  font-weight: 500; /* Peso da fonte para harmonizar com DM Sans */
+  margin-bottom: 10px; /* Espaçamento menor abaixo do título */
+  color: #333;
+  text-align: center; /* Centraliza o título */
+}
+
+.modal-divider {
+  width: 100%;
+  height: 2px;
+  background-color: #ccc; /* Cor do divider */
+  margin: 20px 0; /* Aumenta o espaçamento entre o título e os campos */
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column; /* Organiza os elementos verticalmente */
+  gap: 12px; /* Ajusta o espaçamento entre os campos */
+}
+
+.modal-content form label {
+  font-weight: 500; /* Peso médio da fonte */
+  color: #444; /* Tom mais suave para os textos */
+  text-align: left; /* Alinha os títulos dos campos à esquerda */
+}
+
+.modal-content form input,
+.modal-content form select {
+  width: 100%;
+  box-sizing: border-box; /* Inclui padding e border na largura total */
+  padding: 12px;
+  border: 1px solid #ccc; /* Borda mais clara */
+  border-radius: 8px; /* Bordas arredondadas */
+  font-size: 1rem; /* Tamanho médio da fonte */
+  color: #333;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.modal-content form input:focus,
+.modal-content form select:focus {
+  border-color: #4CAF50; /* Destaque verde ao focar */
+  outline: none;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center; /* Centraliza os botões */
+  gap: 15px; /* Espaçamento entre os botões */
+  margin-top: 20px;
+}
+
+.create-user-button,
+.cancel-button { /* Estilo compartilhado para ambos os botões */
+  background-color: #4CAF50; /* Botão de criar */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px; /* Padding interno uniforme */
+  width: 150px; /* Largura fixa para garantir que ambos tenham o mesmo tamanho */
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.create-user-button {
+  background-color: #4CAF50; /* Verde para criar */
+}
+
+.create-user-button:hover {
+  background-color: #45a049;
+}
+
+.cancel-button {
+  background-color: #f44336; /* Vermelho para cancelar */
+}
+
+.cancel-button:hover {
+  background-color: #d32f2f;
+}

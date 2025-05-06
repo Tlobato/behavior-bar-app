@@ -1,76 +1,63 @@
-// src/services/authService.ts
+import axios from 'axios';
 import { User } from '../types';
+import { jwtDecode } from "jwt-decode";
 
-// Usuários mockados para testes
-const mockUsers = [
-  {
-    id: 1,
-    username: 'admin',
-    password: 'admin123',
-    role: 'admin',
-    name: 'Administrador'
-  },
-  {
-    id: 2,
-    username: 'crianca',
-    password: '123456',
-    role: 'user',
-    name: 'Criança'
-  }
-];
-
-// Simula armazenamento de sessão
-let currentUser: User | null = null;
+const API_URL = 'http://localhost:8080/api/auth'; // URL base da API de autenticação
 
 export const authService = {
-  login(username: string, password: string): Promise<User | null> {
-    return new Promise((resolve) => {
-      // Simula um delay de rede
-      setTimeout(() => {
-        const user = mockUsers.find(
-          u => u.username === username && u.password === password
-        );
-        
-        if (user) {
-          // Não incluir a senha no objeto de usuário retornado
-          const { password, ...userWithoutPassword } = user;
-          currentUser = userWithoutPassword as User;
-          
-          // Salvar no localStorage para persistir entre refreshes
-          localStorage.setItem('currentUser', JSON.stringify(currentUser));
-          
-          resolve(currentUser);
-        } else {
-          resolve(null);
-        }
-      }, 500);
-    });
+  async login(username: string, password: string): Promise<User | null> {
+    try {
+      // Envia as credenciais para o backend
+      const response = await axios.post(`${API_URL}/login`, {
+        username,
+        password,
+      });
+
+      // Salva o token JWT retornado pelo backend
+      const { token } = response.data;
+      localStorage.setItem('token', token);
+
+      // Decodifica o token para obter informações do usuário
+      const decodedToken: { [key: string]: any } = jwtDecode(token);
+      const user: User = {
+        id: decodedToken.id, // Decodifique o ID do token, se disponível
+        username: decodedToken.sub, // "sub" é geralmente o email ou username no JWT
+        role: decodedToken.role.toLowerCase(), // Normaliza para minúsculas (admin | user)
+        name: decodedToken.name || '', // Adicione outros campos, se necessário
+      };
+
+      // Salva o usuário decodificado no localStorage para fácil acesso
+      localStorage.setItem('currentUser', JSON.stringify(user));
+
+      return user;
+    } catch (error) {
+      console.error('Erro ao fazer login:', error);
+      return null;
+    }
   },
-  
+
   logout(): void {
-    currentUser = null;
+    localStorage.removeItem('token');
     localStorage.removeItem('currentUser');
   },
-  
+
   getCurrentUser(): User | null {
-    if (currentUser) return currentUser;
-    
-    // Tentar recuperar do localStorage
+    // Verifica se o usuário está armazenado no localStorage
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
-      currentUser = JSON.parse(savedUser);
-      return currentUser;
+      return JSON.parse(savedUser);
     }
-    
     return null;
   },
-  
+
   isAuthenticated(): boolean {
-    return this.getCurrentUser() !== null;
+    // Verifica se existe um token JWT armazenado
+    const token = localStorage.getItem('token');
+    return !!token;
   },
-  
+
   isAdmin(): boolean {
     const user = this.getCurrentUser();
-    return user !== null && user.role === 'admin';
-  }
+    return user !== null && user.role === 'admin'; // Comparação com minúsculas
+  },
 };

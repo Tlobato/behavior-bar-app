@@ -1,4 +1,3 @@
-// src/components/Login.tsx
 import React, { useState } from 'react';
 import { authService } from '../../services/authService';
 import './Login.css';
@@ -8,8 +7,8 @@ interface LoginProps {
 }
 
 const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState(''); // Inicializa o campo vazio
+  const [password, setPassword] = useState(''); // Inicializa o campo vazio
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -17,10 +16,10 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
-    
+
     try {
       const user = await authService.login(username, password);
-      
+
       if (user) {
         onLoginSuccess();
       } else {
@@ -38,9 +37,9 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       <div className="login-card">
         <h2>Behavior Bar</h2>
         <p>Digite suas credenciais para acessar</p>
-        
+
         {error && <div className="error-message">{error}</div>}
-        
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="username">Nome de Usuário</label>
@@ -49,10 +48,11 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              autoComplete="off" /* Desativa o autocompletar */
               required
             />
           </div>
-          
+
           <div className="form-group">
             <label htmlFor="password">Senha</label>
             <input
@@ -60,20 +60,15 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password" /* Valor recomendado para senhas */
               required
             />
           </div>
-          
+
           <button type="submit" disabled={isLoading} className="login-button">
             {isLoading ? 'Carregando...' : 'Entrar'}
           </button>
         </form>
-        
-        <div className="login-help">
-          <p>Usuários para teste:</p>
-          <p>- Admin: admin / admin123</p>
-          <p>- Criança: crianca / 123456</p>
-        </div>
       </div>
     </div>
   );

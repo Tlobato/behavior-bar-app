@@ -12,7 +12,7 @@ export const userService = {
       return response.data.map((user: any) => ({
         id: user.id,
         name: user.nome, // Mapeia "nome" para "name"
-        username: user.email, // Mapeia "email" para "username"
+        email: user.email, // Mapeia "email" para "email"
         role: user.role, // Mantém o papel como está
       }));
     } catch (error) {
@@ -20,15 +20,27 @@ export const userService = {
       return []; // Retorna um array vazio em caso de erro
     }
   },
-
-  // Criar um novo usuário
-  async createUser(user: Omit<User, 'id'>): Promise<User | null> {
+  async createUser(user: Omit<User, 'id'>): Promise<{ id: number; nome: string; email: string; role: 'USER' | 'ADMIN' } | null> {
     try {
-      const response = await axios.post(API_URL, user); // Faz a chamada POST para criar um novo usuário
-      return response.data; // Retorna o usuário criado
+      const token = localStorage.getItem('token'); // Recupera o token JWT armazenado
+  
+      // Mapeia os campos para corresponder aos nomes esperados no backend
+      const payload = {
+        nome: user.name, // Mapeia "name" para "nome"
+        email: user.email,
+        senha: user.password,
+        role: user.role,
+      };
+  
+      const response = await axios.post(API_URL, payload, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Inclui o token JWT no cabeçalho
+        },
+      });
+      return response.data; // Retorna o formato esperado pelo backend
     } catch (error) {
       console.error('Erro ao criar usuário:', error);
-      return null; // Retorna null em caso de erro
+      return null;
     }
   },
 

@@ -49,11 +49,21 @@ const UserManagement: React.FC = () => {
     navigate(`/user/${userId}/board`);
   };
 
-  const handleCreateUser = async (userData: { name: string; username: string; senha: string; role: 'USER' | 'ADMIN' }) => {
+  const handleCreateUser = async (userData: { name: string; email: string; password: string; role: 'USER' | 'ADMIN' }) => {
     try {
-      const createdUser = await userService.createUser(userData); // Envia os dados diretamente sem conversão
+      const createdUser = await userService.createUser(userData);
+      console.log("Usuário criado retornado pelo backend:", createdUser);
+  
       if (createdUser) {
-        setUsers([...users, createdUser]); // Adiciona o novo usuário à lista
+        // Mapeia o usuário retornado pelo backend para o formato esperado no frontend
+        const mappedUser: User = {
+          id: createdUser.id,
+          name: createdUser.nome, // Agora conseguimos mapear "nome" para "name"
+          email: createdUser.email,
+          role: createdUser.role,
+        };
+  
+        setUsers([...users, mappedUser]); // Atualiza a lista de usuários
       } else {
         alert('Erro ao criar usuário.');
       }
@@ -96,7 +106,7 @@ const UserManagement: React.FC = () => {
                 {users.map(user => (
                   <tr key={user.id}>
                     <td>{user.name}</td>
-                    <td>{user.username}</td>
+                    <td>{user.email}</td>
                     <td>{user.role}</td>
                     <td className="action-icons">
                       <div

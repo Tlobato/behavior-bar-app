@@ -22,9 +22,10 @@ export const authService = {
       const decodedToken: { [key: string]: any } = jwtDecode(token);
       const user: User = {
         id: decodedToken.id, // Decodifica o ID do token, se disponível
-        username: decodedToken.sub, // "sub" geralmente é o email ou username no JWT
+        email: decodedToken.sub, // "sub" geralmente é o email ou username no JWT
         role: decodedToken.role, // Mantém o valor original do token (ADMIN | USER)
         name: decodedToken.name || '', // Adiciona outros campos, se necessário
+        password: decodedToken.password
       };
 
       // Salva o usuário decodificado no localStorage para fácil acesso

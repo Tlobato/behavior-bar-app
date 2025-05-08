@@ -4,14 +4,14 @@ import './UserCreateModal.css';
 interface UserCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreate: (userData: { name: string; username: string; senha: string; role: 'USER' | 'ADMIN' }) => void;
+  onCreate: (userData: { name: string; email: string; password: string; role: 'USER' | 'ADMIN' }) => void;
 }
 
 const UserCreateModal: React.FC<UserCreateModalProps> = ({ isOpen, onClose, onCreate }) => {
   const [userData, setUserData] = useState({
     name: '', // Nome inicial vazio
-    username: '', // Email inicial vazio
-    senha: '', // Senha inicial vazia
+    email: '', // Email inicial vazio
+    password: '', // Senha inicial vazia
     role: 'USER' as 'USER' | 'ADMIN', // Papel padrão como "USER"
   });
 
@@ -48,8 +48,8 @@ const UserCreateModal: React.FC<UserCreateModalProps> = ({ isOpen, onClose, onCr
           <label>Email:</label>
           <input
             type="email"
-            name="username"
-            value={userData.username}
+            name="email"
+            value={userData.email}
             onChange={handleInputChange}
             autoComplete="off" /* Desativa o autocompletar */
           />
@@ -57,8 +57,8 @@ const UserCreateModal: React.FC<UserCreateModalProps> = ({ isOpen, onClose, onCr
           <label>Senha:</label>
           <input
             type="password"
-            name="senha"
-            value={userData.senha}
+            name="password"
+            value={userData.password}
             onChange={handleInputChange}
             autoComplete="new-password" /* Valor recomendado para senhas */
           />

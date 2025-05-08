@@ -27,7 +27,8 @@ export interface InfractionCategory {
 
 export interface User {
   id: number;
-  username: string;
-  role: 'ADMIN' | 'USER';
   name: string;
+  role: 'ADMIN' | 'USER';
+  email: string;
+  password?: string;
 }

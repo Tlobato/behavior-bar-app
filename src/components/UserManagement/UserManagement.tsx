@@ -3,14 +3,15 @@ import './UserManagement.css';
 import { User } from '../../types';
 import { userService } from '../../services/userService';
 import { useNavigate } from 'react-router-dom';
-import Header from '../Header/Header'; // Importa o Header
+import { FaTrash, FaEdit, FaChartBar } from 'react-icons/fa'; // Importa ícones do React Icons
+import Header from '../Header/Header';
 import UserCreateModal from '../UserCreateModal/UserCreateModal'; // Importa o componente do modal
 
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // Estado para controlar o modal
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -48,16 +49,9 @@ const UserManagement: React.FC = () => {
     navigate(`/user/${userId}/board`);
   };
 
-  // Lidar com criação de usuário
   const handleCreateUser = async (userData: { name: string; username: string; senha: string; role: 'USER' | 'ADMIN' }) => {
     try {
-      // Normaliza o valor de role para minúsculas
-      const normalizedUserData = {
-        ...userData,
-        role: userData.role.toLowerCase() as 'admin' | 'user',
-      };
-
-      const createdUser = await userService.createUser(normalizedUserData);
+      const createdUser = await userService.createUser(userData); // Envia os dados diretamente sem conversão
       if (createdUser) {
         setUsers([...users, createdUser]); // Adiciona o novo usuário à lista
       } else {
@@ -104,16 +98,28 @@ const UserManagement: React.FC = () => {
                     <td>{user.name}</td>
                     <td>{user.username}</td>
                     <td>{user.role}</td>
-                    <td>
-                      <button onClick={() => handleAccessBoard(user.id)} className="action-button">
-                        <i className="fas fa-chart-bar"></i> Board
-                      </button>
-                      <button onClick={() => alert('Função de edição ainda não implementada.')} className="action-button">
-                        <i className="fas fa-edit"></i> Editar
-                      </button>
-                      <button onClick={() => handleDelete(user.id)} className="action-button delete">
-                        <i className="fas fa-trash"></i> Excluir
-                      </button>
+                    <td className="action-icons">
+                      <div
+                        className="action-icon"
+                        title="Board"
+                        onClick={() => handleAccessBoard(user.id)}
+                      >
+                        <FaChartBar />
+                      </div>
+                      <div
+                        className="action-icon"
+                        title="Editar"
+                        onClick={() => alert('Função de edição ainda não implementada.')}
+                      >
+                        <FaEdit />
+                      </div>
+                      <div
+                        className="action-icon delete-icon"
+                        title="Excluir"
+                        onClick={() => handleDelete(user.id)}
+                      >
+                        <FaTrash />
+                      </div>
                     </td>
                   </tr>
                 ))}

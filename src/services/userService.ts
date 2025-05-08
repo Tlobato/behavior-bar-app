@@ -8,7 +8,13 @@ export const userService = {
   async getUsers(): Promise<User[]> {
     try {
       const response = await axios.get(API_URL); // Faz a chamada GET para obter os usuários
-      return response.data; // Retorna a lista de usuários
+      // Mapeia os dados retornados do backend para os nomes usados no frontend
+      return response.data.map((user: any) => ({
+        id: user.id,
+        name: user.nome, // Mapeia "nome" para "name"
+        username: user.email, // Mapeia "email" para "username"
+        role: user.role, // Mantém o papel como está
+      }));
     } catch (error) {
       console.error('Erro ao buscar usuários:', error);
       return []; // Retorna um array vazio em caso de erro

@@ -28,6 +28,6 @@ export interface InfractionCategory {
 export interface User {
   id: number;
   username: string;
-  role: 'admin' | 'user';
+  role: 'ADMIN' | 'USER';
   name: string;
 }

@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { User } from '../types';
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from 'jwt-decode';
 
 const API_URL = 'http://localhost:8080/api/auth'; // URL base da API de autenticação
 
 export const authService = {
+  // Método de Login
   async login(username: string, password: string): Promise<User | null> {
     try {
       // Envia as credenciais para o backend
@@ -20,10 +21,10 @@ export const authService = {
       // Decodifica o token para obter informações do usuário
       const decodedToken: { [key: string]: any } = jwtDecode(token);
       const user: User = {
-        id: decodedToken.id, // Decodifique o ID do token, se disponível
-        username: decodedToken.sub, // "sub" é geralmente o email ou username no JWT
-        role: decodedToken.role.toLowerCase(), // Normaliza para minúsculas (admin | user)
-        name: decodedToken.name || '', // Adicione outros campos, se necessário
+        id: decodedToken.id, // Decodifica o ID do token, se disponível
+        username: decodedToken.sub, // "sub" geralmente é o email ou username no JWT
+        role: decodedToken.role, // Mantém o valor original do token (ADMIN | USER)
+        name: decodedToken.name || '', // Adiciona outros campos, se necessário
       };
 
       // Salva o usuário decodificado no localStorage para fácil acesso
@@ -36,13 +37,14 @@ export const authService = {
     }
   },
 
+  // Método de Logout
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('currentUser');
   },
 
+  // Obtém o usuário atual do localStorage
   getCurrentUser(): User | null {
-    // Verifica se o usuário está armazenado no localStorage
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
       return JSON.parse(savedUser);
@@ -50,14 +52,15 @@ export const authService = {
     return null;
   },
 
+  // Verifica se o usuário está autenticado
   isAuthenticated(): boolean {
-    // Verifica se existe um token JWT armazenado
     const token = localStorage.getItem('token');
-    return !!token;
+    return !!token; // Retorna true se o token existir
   },
 
+  // Verifica se o usuário é um administrador
   isAdmin(): boolean {
     const user = this.getCurrentUser();
-    return user !== null && user.role === 'admin'; // Comparação com minúsculas
+    return user !== null && user.role === 'ADMIN'; // Comparação com "ADMIN" em maiúsculas
   },
 };

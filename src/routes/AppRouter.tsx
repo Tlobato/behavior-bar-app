@@ -7,7 +7,7 @@ import UserManagement from '../components/UserManagement/UserManagement';
 import BoardPage from '../pages/BoardPage/BoardPage'; // Ajuste para importar o BoardPage
 
 // Componente para proteger rotas privadas
-const PrivateRoute: React.FC<{ children: JSX.Element; requiredRole?: 'admin' | 'user' }> = ({ children, requiredRole }) => {
+const PrivateRoute: React.FC<{ children: JSX.Element; requiredRole?: 'ADMIN' | 'USER' }> = ({ children, requiredRole }) => {
   const isAuthenticated = authService.isAuthenticated();
   const currentUser = authService.getCurrentUser();
 
@@ -15,7 +15,7 @@ const PrivateRoute: React.FC<{ children: JSX.Element; requiredRole?: 'admin' | '
     return <Navigate to="/login" />;
   }
 
-  if (requiredRole && currentUser?.role !== requiredRole) {
+  if (requiredRole && currentUser?.role !== requiredRole) { // Comparação direta usando valores da interface
     return <Navigate to="/" />;
   }
 
@@ -33,7 +33,7 @@ const AppRouter: React.FC = () => {
         <Route
           path="/users"
           element={
-            <PrivateRoute requiredRole="admin">
+            <PrivateRoute requiredRole="ADMIN">
               <UserManagement />
             </PrivateRoute>
           }
@@ -43,7 +43,7 @@ const AppRouter: React.FC = () => {
         <Route
           path="/user/:id/board"
           element={
-            <PrivateRoute requiredRole="user">
+            <PrivateRoute requiredRole="USER">
               <BoardPage />
             </PrivateRoute>
           }

@@ -9,8 +9,10 @@ import BehaviorBar from '../../components/BehaviorBar/BehaviorBar';
 import BehaviorHistory from '../../components/BehaviorHistory/BehaviorHistory';
 import Header from '../../components/Header/Header';
 import { formatDate } from '../../utils/dateUtils';
+import { useParams } from 'react-router-dom'; // Importa o hook useParams
 
 const BoardPage: React.FC = () => {
+  const { id } = useParams<{ id: string }>(); // Captura o ID do usuário da URL
   const [behaviorState, setBehaviorState] = useState<BehaviorState>({
     currentPoints: 100,
     maxPoints: 100,
@@ -23,8 +25,13 @@ const BoardPage: React.FC = () => {
   // Carregar histórico de comportamentos e categorias ao montar o componente
   useEffect(() => {
     const loadBehaviorState = async () => {
+      if (!id) {
+        console.error('Nenhum ID de usuário fornecido na URL.');
+        return;
+      }
+
       try {
-        const infractions = await behaviorService.getBehaviorRecords();
+        const infractions = await behaviorService.getBehaviorRecordsByUserId(Number(id)); // Chama o serviço com o ID do usuário
         const activeInfractions = infractions.filter((inf) => inf.ativo);
         const currentPoints = activeInfractions.reduce((acc, inf) => acc + inf.points, 100);
         setBehaviorState({
@@ -34,7 +41,7 @@ const BoardPage: React.FC = () => {
           lastReset: new Date(),
         });
       } catch (error) {
-        console.error('Erro ao carregar o estado do comportamento:', error);
+        console.error(`Erro ao carregar o estado do comportamento para o usuário ${id}:`, error);
       }
     };
 
@@ -49,7 +56,7 @@ const BoardPage: React.FC = () => {
 
     loadBehaviorState();
     loadCategories();
-  }, []);
+  }, [id]); // Recarrega os dados se o ID do usuário mudar
 
   // Adicionar uma nova infração
   const handleAddInfraction = async (

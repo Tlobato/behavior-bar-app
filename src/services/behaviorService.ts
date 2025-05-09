@@ -126,6 +126,21 @@ const getBehaviorRecords = async (): Promise<Infraction[]> => {
   }
 };
 
+// Buscar o histórico de comportamentos de um usuário específico
+const getBehaviorRecordsByUserId = async (userId: number): Promise<Infraction[]> => {
+  try {
+    const response = await axios.get(`/api/behavior-records/user/${userId}`); // Faz a chamada GET com o userId
+
+    // Log para verificar os dados retornados pelo backend
+    console.log(`Histórico retornado pelo backend para o usuário ${userId}:`, response.data);
+
+    return response.data; // Retorna a lista de registros
+  } catch (error) {
+    console.error(`Erro ao buscar histórico de comportamentos para o usuário ${userId}:`, error);
+    return []; // Retorna um array vazio em caso de erro
+  }
+};
+
 export const behaviorService = {
   getCurrentState,
   addInfraction,
@@ -133,4 +148,5 @@ export const behaviorService = {
   getInfractionCategories,
   registerBehavior, // Novo método para registrar comportamento no backend
   getBehaviorRecords, // Novo método para listar o histórico de comportamentos
+  getBehaviorRecordsByUserId, // Novo método para buscar registros por userId
 };

@@ -11,11 +11,16 @@ const PrivateRoute: React.FC<{ children: JSX.Element; requiredRole?: 'ADMIN' | '
   const isAuthenticated = authService.isAuthenticated();
   const currentUser = authService.getCurrentUser();
 
+  console.log('isAuthenticated:', isAuthenticated); // Log do estado de autenticação
+  console.log('currentUser:', currentUser); // Log do usuário atual
+
+  // Se o usuário não está autenticado, redireciona para login
   if (!isAuthenticated) {
     return <Navigate to="/login" />;
   }
 
-  if (requiredRole && currentUser?.role !== requiredRole) { // Comparação direta usando valores da interface
+  // Permite ADMIN acessar qualquer rota
+  if (requiredRole && currentUser?.role !== requiredRole && currentUser?.role !== 'ADMIN') {
     return <Navigate to="/" />;
   }
 

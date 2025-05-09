@@ -1,38 +1,51 @@
 .BoardPage {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  
-  .board-container {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 30px;
-    padding-top: 80px;
-  }
-  
-  .behavior-section {
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .reset-section {
-    margin-top: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .reset-info {
-    font-size: 0.9rem;
-    color: #666;
-  }
-  
-  .form-section {
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
+  max-width: 1000px; /* Aumenta o espaço máximo para acomodar os dois containers */
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.board-container {
+  display: grid;
+  grid-template-rows: auto auto; /* A primeira linha para a barra de comportamento */
+  grid-template-columns: 1fr 1fr; /* Configura duas colunas para os containers abaixo */
+  gap: 30px;
+  padding-top: 80px;
+}
+
+.behavior-section {
+  grid-column: span 2; /* A barra de comportamento ocupa toda a largura (duas colunas) */
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.reset-section {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reset-info {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Ajuste do estilo para o container de Registrar Comportamento */
+.form-section {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex; /* Garante flexibilidade */
+  flex-direction: column; /* Organiza o conteúdo verticalmente */
+  gap: 10px; /* Espaçamento interno entre os elementos */
+}
+
+.history-section {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

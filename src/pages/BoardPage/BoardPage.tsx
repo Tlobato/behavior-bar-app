@@ -4,16 +4,18 @@ import InfractionForm from '../../components/InfractionForm/InfractionForm';
 import Modal from '../../components/Modal/Modal';
 import { behaviorService } from '../../services/behaviorService';
 import { authService } from '../../services/authService';
-import { BehaviorState, Infraction, InfractionCategory } from '../../types';
+import { BehaviorState, InfractionCategory } from '../../types'; // Removemos 'Infraction' daqui
 import BehaviorBar from '../../components/BehaviorBar/BehaviorBar';
 import BehaviorHistory from '../../components/BehaviorHistory/BehaviorHistory';
 import Header from '../../components/Header/Header';
 import { formatDate } from '../../utils/dateUtils';
 import { useUser } from '../../context/UserContext'; // Importa o contexto do usuário
+import { useNavigate } from 'react-router-dom';
 
 const BoardPage: React.FC = () => {
   const { user } = useUser(); // Obtém o usuário clicado na lista pelo contexto
   const currentUser = authService.getCurrentUser(); // Obtém o usuário logado (ADMIN)
+  const navigate = useNavigate();
 
   const [behaviorState, setBehaviorState] = useState<BehaviorState>({
     currentPoints: 100,
@@ -23,6 +25,12 @@ const BoardPage: React.FC = () => {
   });
   const [categories, setCategories] = useState<InfractionCategory[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  // Função de logout
+  const handleLogout = () => {
+    authService.logout(); // Limpa o localStorage
+    navigate('/login'); // Redireciona para a tela de login
+  };
 
   useEffect(() => {
     if (!user) {
@@ -70,7 +78,7 @@ const BoardPage: React.FC = () => {
         console.error('Usuário não encontrado no contexto.');
         return;
       }
-  
+
       const payload = {
         behaviorTypeId, // ID do comportamento pré-definido
         customDescription: behaviorTypeId === null ? description : undefined, // Usa undefined em vez de null
@@ -78,9 +86,9 @@ const BoardPage: React.FC = () => {
         saveAsPredefined, // Flag para salvar como pré-definido
         userId: user.id, // Inclui o ID do usuário clicado
       };
-  
+
       console.log('Payload enviado:', payload);
-  
+
       // Salva o comportamento no backend
       await behaviorService.registerBehavior(
         payload.customDescription,
@@ -89,10 +97,10 @@ const BoardPage: React.FC = () => {
         payload.behaviorTypeId,
         payload.userId
       );
-  
+
       // Busca o histórico atualizado do backend
       const updatedInfractions = await behaviorService.getBehaviorRecordsByUserId(user.id);
-  
+
       // Atualiza o estado com os dados atualizados
       setBehaviorState((prevState) => ({
         ...prevState,
@@ -122,13 +130,12 @@ const BoardPage: React.FC = () => {
   return (
     <div className="BoardPage">
       {/* Header exibe o nome do usuário logado */}
-      <Header projectName="Behavior Bar" userName={currentUser?.name || 'Usuário'} onLogout={authService.logout} />
+      <Header projectName="Behavior Bar" userName={currentUser?.name || 'Usuário'} onLogout={handleLogout} />
 
       <main className="board-container">
+        {/* Barra de Comportamento */}
         <div className="behavior-section">
-          {/* BehaviorBar exibe o nome do usuário clicado */}
           <BehaviorBar behaviorState={behaviorState} userName={user?.name || 'Usuário'} />
-
           <div className="reset-section">
             <button onClick={() => setIsModalOpen(true)} className="reset-button">
               Resetar Pontuação
@@ -139,11 +146,15 @@ const BoardPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Registrar Comportamento */}
         <div className="form-section">
           <InfractionForm categories={categories} onAddInfraction={handleAddInfraction} />
         </div>
 
-        <BehaviorHistory infractions={behaviorState.infractions} formatDate={formatDate} isAdmin={authService.isAdmin()} />
+        {/* Histórico de Comportamentos */}
+        <div className="history-section">
+          <BehaviorHistory infractions={behaviorState.infractions} formatDate={formatDate} isAdmin={authService.isAdmin()} />
+        </div>
       </main>
 
       <Modal

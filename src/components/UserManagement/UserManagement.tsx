@@ -7,6 +7,7 @@ import { FaTrash, FaEdit, FaChartBar } from 'react-icons/fa';
 import Header from '../Header/Header';
 import UserCreateModal from '../UserCreateModal/UserCreateModal';
 import Modal from '../Modal/Modal'; // Importa o modal de confirmação
+import { authService } from '../../services/authService';
 
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -18,12 +19,23 @@ const UserManagement: React.FC = () => {
 
   const navigate = useNavigate();
 
+  // Obtém o usuário logado
+  const currentUser = authService.getCurrentUser();
+
+  // Função de logout
+  const handleLogout = () => {
+    authService.logout(); // Limpa o localStorage
+    navigate('/login'); // Redireciona para a tela de login
+  };
+
   // Carregar lista de usuários ao montar o componente
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const fetchedUsers = await userService.getUsers();
-        setUsers(fetchedUsers);
+        // Filtra apenas os usuários com role "USER"
+        const filteredUsers = fetchedUsers.filter(user => user.role === 'USER');
+        setUsers(filteredUsers);
       } catch (err) {
         console.error('Erro ao buscar usuários:', err);
         setError('Não foi possível carregar os usuários.');
@@ -34,7 +46,6 @@ const UserManagement: React.FC = () => {
 
     fetchUsers();
   }, []);
-
   // Excluir usuário
   const handleDelete = async () => {
     if (userToDelete !== null) {
@@ -63,7 +74,7 @@ const UserManagement: React.FC = () => {
     try {
       const createdUser = await userService.createUser(userData);
       console.log("Usuário criado retornado pelo backend:", createdUser);
-  
+
       if (createdUser) {
         const mappedUser: User = {
           id: createdUser.id,
@@ -82,7 +93,11 @@ const UserManagement: React.FC = () => {
 
   return (
     <div className="user-management-page">
-      <Header projectName="Behavior Bar" userName="João Silva" onLogout={() => console.log('Logout')} />
+      <Header
+        projectName="Behavior Bar"
+        userName={currentUser?.name || 'Usuário'}
+        onLogout={handleLogout} // Passa a função de logout para o Header
+      />
 
       <main className="user-management-container">
         <div className="new-user-container">

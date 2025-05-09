@@ -9,10 +9,12 @@ import BehaviorBar from '../../components/BehaviorBar/BehaviorBar';
 import BehaviorHistory from '../../components/BehaviorHistory/BehaviorHistory';
 import Header from '../../components/Header/Header';
 import { formatDate } from '../../utils/dateUtils';
-import { useParams } from 'react-router-dom'; // Importa o hook useParams
+import { useUser } from '../../context/UserContext'; // Importa o contexto do usuário
 
 const BoardPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>(); // Captura o ID do usuário da URL
+  const { user } = useUser(); // Obtém o usuário clicado na lista pelo contexto
+  const currentUser = authService.getCurrentUser(); // Obtém o usuário logado (ADMIN)
+
   const [behaviorState, setBehaviorState] = useState<BehaviorState>({
     currentPoints: 100,
     maxPoints: 100,
@@ -22,16 +24,15 @@ const BoardPage: React.FC = () => {
   const [categories, setCategories] = useState<InfractionCategory[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  // Carregar histórico de comportamentos e categorias ao montar o componente
   useEffect(() => {
-    const loadBehaviorState = async () => {
-      if (!id) {
-        console.error('Nenhum ID de usuário fornecido na URL.');
-        return;
-      }
+    if (!user) {
+      console.error('Usuário não encontrado no contexto.');
+      return;
+    }
 
+    const loadBehaviorState = async () => {
       try {
-        const infractions = await behaviorService.getBehaviorRecordsByUserId(Number(id)); // Chama o serviço com o ID do usuário
+        const infractions = await behaviorService.getBehaviorRecordsByUserId(user.id); // Usa o ID do usuário clicado
         const activeInfractions = infractions.filter((inf) => inf.ativo);
         const currentPoints = activeInfractions.reduce((acc, inf) => acc + inf.points, 100);
         setBehaviorState({
@@ -41,7 +42,7 @@ const BoardPage: React.FC = () => {
           lastReset: new Date(),
         });
       } catch (error) {
-        console.error(`Erro ao carregar o estado do comportamento para o usuário ${id}:`, error);
+        console.error('Erro ao carregar o estado do comportamento:', error);
       }
     };
 
@@ -56,9 +57,8 @@ const BoardPage: React.FC = () => {
 
     loadBehaviorState();
     loadCategories();
-  }, [id]); // Recarrega os dados se o ID do usuário mudar
+  }, [user]);
 
-  // Adicionar uma nova infração
   const handleAddInfraction = async (
     description: string,
     points: number,
@@ -86,7 +86,6 @@ const BoardPage: React.FC = () => {
     }
   };
 
-  // Resetar o histórico e a barra
   const confirmReset = async () => {
     try {
       await behaviorService.resetBehaviorRecords();
@@ -104,11 +103,13 @@ const BoardPage: React.FC = () => {
 
   return (
     <div className="BoardPage">
-      <Header projectName="Behavior Bar" userName="João Silva" onLogout={authService.logout} />
+      {/* Header exibe o nome do usuário logado */}
+      <Header projectName="Behavior Bar" userName={currentUser?.name || 'Usuário'} onLogout={authService.logout} />
 
       <main className="board-container">
         <div className="behavior-section">
-          <BehaviorBar behaviorState={behaviorState} />
+          {/* BehaviorBar exibe o nome do usuário clicado */}
+          <BehaviorBar behaviorState={behaviorState} userName={user?.name || 'Usuário'} />
 
           <div className="reset-section">
             <button onClick={() => setIsModalOpen(true)} className="reset-button">

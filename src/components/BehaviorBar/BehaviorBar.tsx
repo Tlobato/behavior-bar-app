@@ -5,9 +5,10 @@ import { BehaviorState } from '../../types';
 
 interface BehaviorBarProps {
   behaviorState: BehaviorState;
+  userName: string; // Adiciona a nova prop para o nome do usuário
 }
 
-const BehaviorBar: React.FC<BehaviorBarProps> = ({ behaviorState }) => {
+const BehaviorBar: React.FC<BehaviorBarProps> = ({ behaviorState, userName }) => {
   const { currentPoints, maxPoints } = behaviorState;
 
   // Cálculo da porcentagem para definir o tamanho da barra
@@ -22,7 +23,8 @@ const BehaviorBar: React.FC<BehaviorBarProps> = ({ behaviorState }) => {
 
   return (
     <div className="behavior-bar-container">
-      <h2>Barra de Comportamento</h2>
+      {/* Atualiza o título para incluir o nome do usuário */}
+      <h2>Barra de comportamento - {userName}</h2>
 
       <div className="score-display">
         <span className="score-text">{currentPoints} / {maxPoints} pontos</span>

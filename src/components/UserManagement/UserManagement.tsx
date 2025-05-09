@@ -8,6 +8,7 @@ import Header from '../Header/Header';
 import UserCreateModal from '../UserCreateModal/UserCreateModal';
 import Modal from '../Modal/Modal'; // Importa o modal de confirmação
 import { authService } from '../../services/authService';
+import { useUser } from '../../context/UserContext'; // Importa o contexto do usuário
 
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -18,6 +19,7 @@ const UserManagement: React.FC = () => {
   const [userToDelete, setUserToDelete] = useState<number | null>(null); // Armazena o ID do usuário a ser excluído
 
   const navigate = useNavigate();
+  const { setUser } = useUser(); // Usa o contexto para definir o usuário clicado
 
   // Obtém o usuário logado
   const currentUser = authService.getCurrentUser();
@@ -46,6 +48,7 @@ const UserManagement: React.FC = () => {
 
     fetchUsers();
   }, []);
+
   // Excluir usuário
   const handleDelete = async () => {
     if (userToDelete !== null) {
@@ -66,8 +69,9 @@ const UserManagement: React.FC = () => {
   };
 
   // Redirecionar para o board do usuário
-  const handleAccessBoard = (userId: number) => {
-    navigate(`/user/${userId}/board`);
+  const handleAccessBoard = (user: User) => {
+    setUser(user); // Define o usuário clicado no contexto
+    navigate(`/user/${user.id}/board`); // Redireciona para a página de board
   };
 
   const handleCreateUser = async (userData: { name: string; email: string; password: string; role: 'USER' | 'ADMIN' }) => {
@@ -131,7 +135,7 @@ const UserManagement: React.FC = () => {
                       <div
                         className="action-icon"
                         title="Board"
-                        onClick={() => handleAccessBoard(user.id)}
+                        onClick={() => handleAccessBoard(user)} // Passa o objeto completo do usuário
                       >
                         <FaChartBar />
                       </div>

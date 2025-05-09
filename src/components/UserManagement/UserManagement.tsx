@@ -3,15 +3,18 @@ import './UserManagement.css';
 import { User } from '../../types';
 import { userService } from '../../services/userService';
 import { useNavigate } from 'react-router-dom';
-import { FaTrash, FaEdit, FaChartBar } from 'react-icons/fa'; // Importa ícones do React Icons
+import { FaTrash, FaEdit, FaChartBar } from 'react-icons/fa';
 import Header from '../Header/Header';
-import UserCreateModal from '../UserCreateModal/UserCreateModal'; // Importa o componente do modal
+import UserCreateModal from '../UserCreateModal/UserCreateModal';
+import Modal from '../Modal/Modal'; // Importa o modal de confirmação
 
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false); // Controla o modal de exclusão
+  const [userToDelete, setUserToDelete] = useState<number | null>(null); // Armazena o ID do usuário a ser excluído
 
   const navigate = useNavigate();
 
@@ -33,15 +36,22 @@ const UserManagement: React.FC = () => {
   }, []);
 
   // Excluir usuário
-  const handleDelete = async (userId: number) => {
-    if (window.confirm('Tem certeza que deseja excluir este usuário?')) {
-      const success = await userService.deleteUser(userId);
+  const handleDelete = async () => {
+    if (userToDelete !== null) {
+      const success = await userService.deleteUser(userToDelete);
       if (success) {
-        setUsers(users.filter(user => user.id !== userId));
+        setUsers(users.filter(user => user.id !== userToDelete));
       } else {
         alert('Erro ao excluir usuário.');
       }
+      setIsDeleteModalOpen(false); // Fecha o modal após a exclusão
     }
+  };
+
+  // Abrir o modal de exclusão
+  const openDeleteModal = (userId: number) => {
+    setUserToDelete(userId); // Define o usuário a ser excluído
+    setIsDeleteModalOpen(true); // Abre o modal
   };
 
   // Redirecionar para o board do usuário
@@ -55,14 +65,12 @@ const UserManagement: React.FC = () => {
       console.log("Usuário criado retornado pelo backend:", createdUser);
   
       if (createdUser) {
-        // Mapeia o usuário retornado pelo backend para o formato esperado no frontend
         const mappedUser: User = {
           id: createdUser.id,
-          name: createdUser.nome, // Agora conseguimos mapear "nome" para "name"
+          name: createdUser.nome,
           email: createdUser.email,
           role: createdUser.role,
         };
-  
         setUsers([...users, mappedUser]); // Atualiza a lista de usuários
       } else {
         alert('Erro ao criar usuário.');
@@ -74,11 +82,9 @@ const UserManagement: React.FC = () => {
 
   return (
     <div className="user-management-page">
-      {/* Header */}
       <Header projectName="Behavior Bar" userName="João Silva" onLogout={() => console.log('Logout')} />
 
       <main className="user-management-container">
-        {/* Container de Novo Usuário */}
         <div className="new-user-container">
           <div className="new-user-section">
             <h2>Novo Usuário</h2>
@@ -86,11 +92,9 @@ const UserManagement: React.FC = () => {
           </div>
         </div>
 
-        {/* Mensagem de erro ou carregamento */}
         {isLoading && <p>Carregando usuários...</p>}
         {error && <p className="error-message">{error}</p>}
 
-        {/* Tabela de Usuários */}
         {!isLoading && !error && (
           <div className="table-container">
             <table className="user-table">
@@ -126,7 +130,7 @@ const UserManagement: React.FC = () => {
                       <div
                         className="action-icon delete-icon"
                         title="Excluir"
-                        onClick={() => handleDelete(user.id)}
+                        onClick={() => openDeleteModal(user.id)} // Abre o modal de exclusão
                       >
                         <FaTrash />
                       </div>
@@ -139,11 +143,19 @@ const UserManagement: React.FC = () => {
         )}
       </main>
 
-      {/* Modal de criação de usuário */}
       <UserCreateModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onCreate={handleCreateUser}
+      />
+
+      {/* Modal de exclusão */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)} // Fecha o modal
+        onConfirm={handleDelete} // Confirma a exclusão
+        title="Excluir Usuário"
+        message="Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita."
       />
     </div>
   );

@@ -58,7 +58,13 @@ export const userService = {
   // Excluir um usuário
   async deleteUser(id: number): Promise<boolean> {
     try {
-      await axios.delete(`${API_URL}/${id}`); // Faz a chamada DELETE para remover o usuário
+      const token = localStorage.getItem('token'); // Recupera o token JWT armazenado
+  
+      await axios.delete(`${API_URL}/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Inclui o token JWT no cabeçalho
+        },
+      });
       return true; // Retorna true se a exclusão for bem-sucedida
     } catch (error) {
       console.error('Erro ao excluir usuário:', error);

@@ -18,7 +18,7 @@ const loadData = (): BehaviorState => {
   if (!savedData) {
     return INITIAL_STATE;
   }
-  
+
   try {
     const parsedData = JSON.parse(savedData);
     // Converte strings de data de volta para objetos Date
@@ -93,13 +93,21 @@ export const getInfractionCategories = async (): Promise<InfractionCategory[]> =
 };
 
 // Registrar um comportamento no backend
-const registerBehavior = async (description: string, points: number, saveAsPredefined: boolean, behaviorTypeId: number | null): Promise<void> => {
+// Registrar um comportamento no backend
+const registerBehavior = async (
+  customDescription: string | undefined, // Ajuste aqui: aceita string ou undefined
+  points: number,
+  saveAsPredefined: boolean,
+  behaviorTypeId: number | null,
+  userId: number
+): Promise<void> => {
   try {
     const payload = {
       behaviorTypeId, // ID do comportamento pré-definido
-      customDescription: behaviorTypeId === null ? description : null, // Apenas para comportamentos personalizados
+      customDescription, // Usa diretamente como opcional (string | undefined)
       points, // Pontuação associada
       saveAsPredefined, // Flag para salvar como pré-definido
+      userId, // Inclui o ID do usuário no payload
     };
 
     console.log('Payload enviado:', payload); // Log para verificar o que está sendo enviado

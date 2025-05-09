@@ -66,20 +66,38 @@ const BoardPage: React.FC = () => {
     behaviorTypeId: number | null
   ) => {
     try {
-      await behaviorService.registerBehavior(description, points, saveAsPredefined, behaviorTypeId);
-
-      const newInfraction: Infraction = {
-        id: Date.now(),
-        description,
-        points,
-        timestamp: new Date(),
-        ativo: true,
+      if (!user) {
+        console.error('Usuário não encontrado no contexto.');
+        return;
+      }
+  
+      const payload = {
+        behaviorTypeId, // ID do comportamento pré-definido
+        customDescription: behaviorTypeId === null ? description : undefined, // Usa undefined em vez de null
+        points, // Pontuação associada
+        saveAsPredefined, // Flag para salvar como pré-definido
+        userId: user.id, // Inclui o ID do usuário clicado
       };
-
+  
+      console.log('Payload enviado:', payload);
+  
+      // Salva o comportamento no backend
+      await behaviorService.registerBehavior(
+        payload.customDescription,
+        payload.points,
+        payload.saveAsPredefined,
+        payload.behaviorTypeId,
+        payload.userId
+      );
+  
+      // Busca o histórico atualizado do backend
+      const updatedInfractions = await behaviorService.getBehaviorRecordsByUserId(user.id);
+  
+      // Atualiza o estado com os dados atualizados
       setBehaviorState((prevState) => ({
         ...prevState,
         currentPoints: Math.max(0, prevState.currentPoints + points),
-        infractions: [newInfraction, ...prevState.infractions],
+        infractions: updatedInfractions, // Substitui o histórico pelo atualizado
       }));
     } catch (error) {
       console.error('Erro ao registrar o comportamento:', error);

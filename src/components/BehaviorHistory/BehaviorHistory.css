@@ -2,38 +2,40 @@
 
 /* Seção do histórico */
 .history-section {
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    height: 350px;
-  }
-  
-  /* Área com rolagem para a lista de infrações */
-  .infraction-list-container {
-    flex-grow: 1;
-    overflow-y: auto;
-    padding-right: 5px; /* Espaço para a barra de rolagem */
-  }
-  
-  /* Lista de infrações */
-  .infraction-list {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .infraction-list li {
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 10px;
-    margin-bottom: 10px;
-  }
-  
-  /* Centralizar o histórico para não-admins */
-  .centered-history {
-    grid-column: 1 / -1 !important;
-    max-width: 100% !important;
-    margin: 0 auto !important;
-  }
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  height: 350px; /* Altura fixa do container externo */
+  overflow: hidden; /* Impede que o layout externo seja afetado */
+}
+
+/* Área com rolagem para a lista de infrações */
+.infraction-list-container {
+  flex-grow: 1;
+  overflow-y: auto; /* Ativa o scroll vertical */
+  height: 100%; /* Mantém o scroll dentro do espaço disponível */
+  padding-right: 5px; /* Espaço para a barra de rolagem */
+}
+
+/* Lista de infrações */
+.infraction-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.infraction-list li {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+/* Centralizar o histórico para não-admins */
+.centered-history {
+  grid-column: 1 / -1 !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+}

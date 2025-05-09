@@ -70,13 +70,13 @@ const addInfraction = (description: string, points: number): BehaviorState => {
   return newState;
 };
 
-// Resetar histórico no backend
-const resetBehaviorRecords = async (): Promise<void> => {
+// Resetar histórico no backend para um usuário específico
+const resetBehaviorRecords = async (userId: number): Promise<void> => {
   try {
-    await axios.put('/api/behavior-records/reset'); // Faz a chamada PUT para o backend
-    console.log('Histórico resetado com sucesso.');
+    await axios.put(`/api/behavior-records/reset/${userId}`); // Inclui o userId na URL
+    console.log(`Histórico resetado com sucesso para o usuário ${userId}.`);
   } catch (error) {
-    console.error('Erro ao resetar o histórico:', error);
+    console.error(`Erro ao resetar o histórico para o usuário ${userId}:`, error);
     throw error; // Lança o erro para ser tratado no frontend
   }
 };

@@ -78,7 +78,7 @@ const BoardPage: React.FC = () => {
         console.error('Usuário não encontrado no contexto.');
         return;
       }
-
+  
       const payload = {
         behaviorTypeId, // ID do comportamento pré-definido
         customDescription: behaviorTypeId === null ? description : undefined, // Usa undefined em vez de null
@@ -86,9 +86,9 @@ const BoardPage: React.FC = () => {
         saveAsPredefined, // Flag para salvar como pré-definido
         userId: user.id, // Inclui o ID do usuário clicado
       };
-
+  
       console.log('Payload enviado:', payload);
-
+  
       // Salva o comportamento no backend
       await behaviorService.registerBehavior(
         payload.customDescription,
@@ -97,15 +97,16 @@ const BoardPage: React.FC = () => {
         payload.behaviorTypeId,
         payload.userId
       );
-
+  
       // Busca o histórico atualizado do backend
-      const updatedInfractions = await behaviorService.getBehaviorRecordsByUserId(user.id);
-
-      // Atualiza o estado com os dados atualizados
+      const infractions = await behaviorService.getBehaviorRecordsByUserId(user.id); // Busca o histórico atualizado
+      const activeInfractions = infractions.filter((inf) => inf.ativo); // Filtra os registros ativos
+  
+      // Atualiza o estado com os dados filtrados
       setBehaviorState((prevState) => ({
         ...prevState,
         currentPoints: Math.max(0, prevState.currentPoints + points),
-        infractions: updatedInfractions, // Substitui o histórico pelo atualizado
+        infractions: activeInfractions, // Substitui o histórico pelo atualizado
       }));
     } catch (error) {
       console.error('Erro ao registrar o comportamento:', error);
@@ -114,13 +115,24 @@ const BoardPage: React.FC = () => {
 
   const confirmReset = async () => {
     try {
-      await behaviorService.resetBehaviorRecords();
+      if (!user || !user.id) { // Verifica se `user` e `user.id` estão definidos
+        console.error('Usuário não encontrado no contexto.');
+        return;
+      }
+  
+      await behaviorService.resetBehaviorRecords(user.id); // Passa o userId como argumento
+  
+      // Sincroniza o estado local com os dados filtrados do backend
+      const infractions = await behaviorService.getBehaviorRecordsByUserId(user.id); // Busca o histórico atualizado
+      const activeInfractions = infractions.filter((inf) => inf.ativo); // Filtra os registros ativos
+  
       setBehaviorState({
         currentPoints: 100,
         maxPoints: 100,
-        infractions: [],
+        infractions: activeInfractions,
         lastReset: new Date(),
       });
+  
       setIsModalOpen(false);
     } catch (error) {
       console.error('Erro ao resetar o histórico:', error);

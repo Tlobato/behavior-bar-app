@@ -12,32 +12,47 @@ const RewardsPage: React.FC = () => {
   const rewards = [
     {
       title: 'Cartão digital Roblox',
-      imageUrl: 'https://via.placeholder.com/250x150.png?text=Roblox',
+      imageUrl: null,
       points: 6000,
     },
     {
       title: 'Cartão-presente digital Xbox',
-      imageUrl: 'https://via.placeholder.com/250x150.png?text=Xbox',
+      imageUrl: null,
       points: 1035,
     },
     {
       title: 'Cartão-presente Microsoft',
-      imageUrl: 'https://via.placeholder.com/250x150.png?text=Microsoft',
+      imageUrl: null,
       points: 1035,
     },
     {
       title: 'Associação ao Xbox Game Pass Core',
-      imageUrl: 'https://via.placeholder.com/250x150.png?text=Game+Pass+Core',
+      imageUrl: null,
       points: 2500,
     },
     {
       title: 'PC Game Pass',
-      imageUrl: 'https://via.placeholder.com/250x150.png?text=PC+Game+Pass',
+      imageUrl: null,
       points: 3500,
     },
     {
       title: 'Microsoft Solitaire Collection Premium Edition',
-      imageUrl: 'https://via.placeholder.com/250x150.png?text=Solitaire+Collection',
+      imageUrl: null,
+      points: 500,
+    },
+    {
+      title: 'Microsoft Solitaire Collection Premium Edition',
+      imageUrl: null,
+      points: 500,
+    },
+    {
+      title: 'Microsoft Solitaire Collection Premium Edition',
+      imageUrl: null,
+      points: 500,
+    },
+    {
+      title: 'Microsoft Solitaire Collection Premium Edition',
+      imageUrl: null,
       points: 500,
     },
   ];
@@ -53,7 +68,7 @@ const RewardsPage: React.FC = () => {
       <div className="page-content">
         <Sidebar />
         <main className="main-content">
-          <h1 className="rewards-title">Recompensas Disponíveis</h1>
+          <h1 className="rewards-title">Recompensas</h1>
           <div className="rewards-grid">
             {rewards.map((reward, index) => (
               <RewardCard

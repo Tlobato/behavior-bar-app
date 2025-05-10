@@ -35,7 +35,7 @@ export interface User {
 
 export interface RewardCardProps {
   title: string; // Título do prêmio
-  imageUrl: string; // URL da imagem
+  imageUrl: string | null; // URL da imagem
   points: number; // Pontos necessários para resgatar
   isAvailable?: boolean; // Indica se o botão está funcional ou é um placeholder
   onClick?: () => void; // Função chamada ao clicar no botão

@@ -32,3 +32,11 @@ export interface User {
   email: string;
   password?: string;
 }
+
+export interface RewardCardProps {
+  title: string; // Título do prêmio
+  imageUrl: string; // URL da imagem
+  points: number; // Pontos necessários para resgatar
+  isAvailable?: boolean; // Indica se o botão está funcional ou é um placeholder
+  onClick?: () => void; // Função chamada ao clicar no botão
+}

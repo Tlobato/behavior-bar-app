@@ -2,9 +2,10 @@ import React, { JSX } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 import { authService } from '../services/authService';
-import BoardPage from '../pages/BoardPage/BoardPage'; // Ajuste para importar o BoardPage
+import BoardPage from '../pages/BoardPage/BoardPage';
 import UserManagement from '../pages/UserManagementPage/UserManagementPage';
 import Login from '../pages/LoginPage/LoginPage';
+import RewardsPage from '../pages/RewardsPage/RewardsPage'; // Importa a RewardsPage
 
 // Componente para proteger rotas privadas
 const PrivateRoute: React.FC<{ children: JSX.Element; requiredRole?: 'ADMIN' | 'USER' }> = ({ children, requiredRole }) => {
@@ -50,6 +51,16 @@ const AppRouter: React.FC = () => {
           element={
             <PrivateRoute requiredRole="USER">
               <BoardPage />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Rota de Recompensas */}
+        <Route
+          path="/rewards"
+          element={
+            <PrivateRoute requiredRole="USER">
+              <RewardsPage />
             </PrivateRoute>
           }
         />

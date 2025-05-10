@@ -1,0 +1,39 @@
+.RewardsPage {
+  display: flex;
+  flex-direction: column; /* Coloca o Header no topo */
+}
+
+.page-content {
+  display: flex; /* Sidebar e conteúdo principal lado a lado */
+}
+
+.sidebar {
+  flex-shrink: 0; /* Sidebar mantém sua largura fixa */
+}
+
+.main-content {
+  margin-left: 80px; /* Compensa a largura do Sidebar */
+  flex-grow: 1; /* Permite que o conteúdo principal ocupe o restante do espaço */
+  max-width: 1000px; /* Mantém o limite de largura */
+  margin: 0 auto;
+  padding: 20px;
+  padding-top: 80px; /* Adiciona espaço abaixo do Header */
+}
+
+.rewards-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.rewards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsivo */
+  gap: 40px; /* Aumenta o espaço entre os cards */
+  align-items: stretch; /* Garante que os cards tenham alturas uniformes */
+}
+
+.reward-card .reward-button {
+  margin-top: auto; /* Garante que o botão fique na parte inferior do card */
+}

@@ -2,12 +2,20 @@ import React, { useState } from 'react';
 import './RewardsPage.css';
 import Header from '../../components/Header/Header';
 import Sidebar from '../../components/Sidebar/Sidebar';
-import RewardCard from '../../components/RewardCard/RewardCard'; // Importa o componente de Card
-import Modal from '../../components/Modal/Modal'; // Importa o componente de Modal para o popup
+import RewardCard from '../../components/RewardCard/RewardCard';
+import Modal from '../../components/Modal/Modal';
+import NewRegistrationComponent from '../../components/NewRegistrationComponent/NewRegistrationComponent';
+import { usePageTitle } from '../../hooks/usePageTitle'; // Importação do hook
 
 const RewardsPage: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para controlar o modal
-  const [selectedReward, setSelectedReward] = useState<string | null>(null); // Estado para armazenar o prêmio selecionado
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedReward, setSelectedReward] = useState<string | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const pageName = usePageTitle(); // Uso do hook para obter o nome da página
+
+  const handleOpenCreateRewardModal = () => {
+    setIsCreateModalOpen(true);
+  };
 
   const rewards = [
     {
@@ -59,38 +67,63 @@ const RewardsPage: React.FC = () => {
 
   const handleRewardClick = (rewardTitle: string) => {
     setSelectedReward(rewardTitle);
-    setIsModalOpen(true); // Abre o modal ao clicar no botão
+    setIsModalOpen(true);
   };
 
   return (
     <div className="RewardsPage">
-      <Header projectName="Behavior Bar" userName="Stephanie Fakri" onLogout={() => console.log('Logout')} />
+      <Header 
+        projectName="Behavior Bar" 
+        userName="Stephanie Fakri" 
+        onLogout={() => console.log('Logout')} 
+        pageName={pageName} // Passando o nome da página como prop
+      />
       <div className="page-content">
         <Sidebar />
         <main className="main-content">
-          <h1 className="rewards-title">Recompensas</h1>
-          <div className="rewards-grid">
-            {rewards.map((reward, index) => (
-              <RewardCard
-                key={index}
-                title={reward.title}
-                imageUrl={reward.imageUrl}
-                points={reward.points}
-                isAvailable={true} // Agora os botões estão disponíveis
-                onClick={() => handleRewardClick(reward.title)} // Função chamada ao clicar no botão
+          <div className="rewards-container">
+            <div className="reward-registration-wrapper">
+              <NewRegistrationComponent
+                title="Nova Recompensa"
+                buttonText="Criar"
+                onButtonClick={handleOpenCreateRewardModal}
+                width='960px' // Definimos que ocupe 100% da largura do container
               />
-            ))}
+            </div>
+
+            <div className="rewards-grid">
+              {rewards.map((reward, index) => (
+                <RewardCard
+                  key={index}
+                  title={reward.title}
+                  imageUrl={reward.imageUrl}
+                  points={reward.points}
+                  isAvailable={true}
+                  onClick={() => handleRewardClick(reward.title)}
+                />
+              ))}
+            </div>
           </div>
         </main>
       </div>
+
+      {/* Modal para funcionalidade de resgate de prêmio */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title="Funcionalidade indisponível"
         message={`A funcionalidade de resgatar o prêmio "${selectedReward}" ainda será implementada.`}
-        onConfirm={function (): void {
-          throw new Error('Function not implemented.');
-        } }      />
+        onConfirm={() => setIsModalOpen(false)}
+      />
+
+      {/* Modal para criar nova recompensa */}
+      <Modal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        title="Criar Recompensa"
+        message="A funcionalidade para criar novas recompensas ainda será implementada."
+        onConfirm={() => setIsCreateModalOpen(false)}
+      />
     </div>
   );
 };

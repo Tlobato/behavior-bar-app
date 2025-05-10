@@ -4,19 +4,25 @@ import InfractionForm from '../../components/InfractionForm/InfractionForm';
 import Modal from '../../components/Modal/Modal';
 import { behaviorService } from '../../services/behaviorService';
 import { authService } from '../../services/authService';
-import { BehaviorState, InfractionCategory } from '../../types'; // Removemos 'Infraction' daqui
+import { BehaviorState, InfractionCategory } from '../../types';
 import BehaviorBar from '../../components/BehaviorBar/BehaviorBar';
 import BehaviorHistory from '../../components/BehaviorHistory/BehaviorHistory';
 import Header from '../../components/Header/Header';
 import { formatDate } from '../../utils/dateUtils';
-import { useUser } from '../../context/UserContext'; // Importa o contexto do usuário
+import { useUser } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../../components/Sidebar/Sidebar'; // Importa o Sidebar
+import Sidebar from '../../components/Sidebar/Sidebar';
+import { usePageTitle } from '../../hooks/usePageTitle'; // Importação do hook
 
 const BoardPage: React.FC = () => {
-  const { user } = useUser(); // Obtém o usuário clicado na lista pelo contexto
-  const currentUser = authService.getCurrentUser(); // Obtém o usuário logado (ADMIN)
+  const { user } = useUser();
+  const currentUser = authService.getCurrentUser();
   const navigate = useNavigate();
+  const pageName = usePageTitle(); // Uso do hook para obter o nome da página
+  
+  // Adicione logs para depuração se necessário
+  // console.log('URL atual:', window.location.pathname);
+  // console.log('pageName obtido:', pageName);
 
   const [behaviorState, setBehaviorState] = useState<BehaviorState>({
     currentPoints: 100,
@@ -140,14 +146,17 @@ const BoardPage: React.FC = () => {
     }
   };
 
-
-
   return (
     <div className="BoardPage">
-      <Header projectName="Behavior Bar" userName={currentUser?.name || 'Usuário'} onLogout={handleLogout} />
-      <div className="page-content"> {/* Sidebar e conteúdo principal */}
-        <Sidebar /> {/* Adiciona o Sidebar */}
-        <main className="main-content"> {/* Conteúdo principal deslocado ao lado do Sidebar */}
+      <Header 
+        projectName="Behavior Bar" 
+        userName={currentUser?.name || 'Usuário'} 
+        onLogout={handleLogout}
+        pageName={pageName} // Adição da prop pageName
+      />
+      <div className="page-content">
+        <Sidebar />
+        <main className="main-content">
           <div className="board-container">
             <div className="behavior-section">
               <BehaviorBar behaviorState={behaviorState} userName={user?.name || 'Usuário'} />

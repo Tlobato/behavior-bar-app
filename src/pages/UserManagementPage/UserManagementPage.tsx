@@ -9,6 +9,7 @@ import { useUser } from '../../context/UserContext'; // Importa o contexto do us
 import Header from '../../components/Header/Header';
 import UserCreateModal from '../../components/UserCreateModal/UserCreateModal';
 import Modal from '../../components/Modal/Modal';
+import NewRegistrationComponent from '../../components/NewRegistrationComponent/NewRegistrationComponent';
 
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -104,12 +105,11 @@ const UserManagement: React.FC = () => {
       />
 
       <main className="user-management-container">
-        <div className="new-user-container">
-          <div className="new-user-section">
-            <h2>Novo Usuário</h2>
-            <button onClick={() => setIsModalOpen(true)} className="new-user-button">Criar</button>
-          </div>
-        </div>
+        <NewRegistrationComponent
+          title="Novo Usuário"
+          buttonText="Criar"
+          onButtonClick={() => setIsModalOpen(true)}
+        />
 
         {isLoading && <p>Carregando usuários...</p>}
         {error && <p className="error-message">{error}</p>}

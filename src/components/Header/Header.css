@@ -57,3 +57,14 @@
 .logout-button-header:hover {
   background-color: #d32f2f;
 }
+
+/* Adicionar ao Header.css */
+.page-divider {
+  margin: 0 8px;
+  color: #666;
+}
+
+.page-name {
+  font-weight: normal;
+  font-size: 0.9em;
+}

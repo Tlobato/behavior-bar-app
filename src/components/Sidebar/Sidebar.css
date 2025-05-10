@@ -1,0 +1,47 @@
+/* Contêiner principal do menu lateral */
+.sidebar {
+  position: fixed;
+  top: 60px; /* Ajusta para começar abaixo do Header (60px de altura do Header) */
+  left: 0;
+  height: calc(100% - 60px); /* Reduz a altura para não sobrepor o Header */
+  width: 80px; /* Largura do menu lateral */
+  background-color: #f9f9f9; /* Cor de fundo */
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1); /* Sombra para dar destaque */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0;
+  z-index: 999; /* Sidebar abaixo do Header */
+}
+  
+  /* Estilo dos ícones */
+  .sidebar-icon {
+    width: 60px;
+    height: 60px;
+    margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff; /* Fundo dos ícones */
+    border-radius: 8px; /* Arredondamento das bordas */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+  
+  .sidebar-icon:hover {
+    background-color: #e0e0e0; /* Fundo ao passar o mouse */
+    transform: scale(1.1); /* Efeito de "zoom" ao passar o mouse */
+  }
+  
+  /* Estilo do ícone */
+  .icon {
+    font-size: 24px;
+    color: #333; /* Cor dos ícones */
+  }
+  
+  /* Ícone placeholder (estilização futura) */
+  .placeholder {
+    opacity: 0.5; /* Ícone mais apagado */
+    cursor: not-allowed; /* Indica que não está funcional */
+  }

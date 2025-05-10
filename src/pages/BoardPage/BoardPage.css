@@ -1,15 +1,30 @@
 .BoardPage {
-  max-width: 1000px; /* Aumenta o espaço máximo para acomodar os dois containers */
+  display: flex;
+  flex-direction: column; /* Coloca o Header no topo e Sidebar + conteúdo abaixo */
+}
+
+.page-content {
+  display: flex; /* Sidebar e conteúdo principal lado a lado */
+}
+
+.sidebar {
+  flex-shrink: 0; /* Sidebar mantém sua largura fixa */
+}
+
+.main-content {
+  margin-left: 80px; /* Compensa a largura do Sidebar */
+  flex-grow: 1; /* Permite que o conteúdo principal ocupe o restante do espaço */
+  max-width: 1000px; /* Mantém o limite de largura */
   margin: 0 auto;
-  padding: 20px;
+  padding: 20px; /* Espaçamento interno */
 }
 
 .board-container {
   display: grid;
-  grid-template-rows: auto auto; /* A primeira linha para a barra de comportamento */
-  grid-template-columns: 1fr 1fr; /* Configura duas colunas para os containers abaixo */
-  gap: 30px;
-  padding-top: 80px;
+  grid-template-rows: auto auto; /* Configura as linhas: barra de comportamento + containers abaixo */
+  grid-template-columns: 1fr 1fr; /* Configura duas colunas: Registrar Comportamento e Histórico */
+  gap: 20px; /* Espaço entre os containers */
+  padding-top: 80px; /* Espaço abaixo do Header */
 }
 
 .behavior-section {
@@ -18,6 +33,7 @@
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 4px; /* Espaço abaixo da barra de comportamento */
 }
 
 .reset-section {
@@ -32,7 +48,6 @@
   color: #666;
 }
 
-/* Ajuste do estilo para o container de Registrar Comportamento */
 .form-section {
   background-color: #f9f9f9;
   padding: 20px;

@@ -11,6 +11,7 @@ import Header from '../../components/Header/Header';
 import { formatDate } from '../../utils/dateUtils';
 import { useUser } from '../../context/UserContext'; // Importa o contexto do usuário
 import { useNavigate } from 'react-router-dom';
+import Sidebar from '../../components/Sidebar/Sidebar'; // Importa o Sidebar
 
 const BoardPage: React.FC = () => {
   const { user } = useUser(); // Obtém o usuário clicado na lista pelo contexto
@@ -78,7 +79,7 @@ const BoardPage: React.FC = () => {
         console.error('Usuário não encontrado no contexto.');
         return;
       }
-  
+
       const payload = {
         behaviorTypeId, // ID do comportamento pré-definido
         customDescription: behaviorTypeId === null ? description : undefined, // Usa undefined em vez de null
@@ -86,9 +87,9 @@ const BoardPage: React.FC = () => {
         saveAsPredefined, // Flag para salvar como pré-definido
         userId: user.id, // Inclui o ID do usuário clicado
       };
-  
+
       console.log('Payload enviado:', payload);
-  
+
       // Salva o comportamento no backend
       await behaviorService.registerBehavior(
         payload.customDescription,
@@ -97,11 +98,11 @@ const BoardPage: React.FC = () => {
         payload.behaviorTypeId,
         payload.userId
       );
-  
+
       // Busca o histórico atualizado do backend
       const infractions = await behaviorService.getBehaviorRecordsByUserId(user.id); // Busca o histórico atualizado
       const activeInfractions = infractions.filter((inf) => inf.ativo); // Filtra os registros ativos
-  
+
       // Atualiza o estado com os dados filtrados
       setBehaviorState((prevState) => ({
         ...prevState,
@@ -119,56 +120,55 @@ const BoardPage: React.FC = () => {
         console.error('Usuário não encontrado no contexto.');
         return;
       }
-  
+
       await behaviorService.resetBehaviorRecords(user.id); // Passa o userId como argumento
-  
+
       // Sincroniza o estado local com os dados filtrados do backend
       const infractions = await behaviorService.getBehaviorRecordsByUserId(user.id); // Busca o histórico atualizado
       const activeInfractions = infractions.filter((inf) => inf.ativo); // Filtra os registros ativos
-  
+
       setBehaviorState({
         currentPoints: 100,
         maxPoints: 100,
         infractions: activeInfractions,
         lastReset: new Date(),
       });
-  
+
       setIsModalOpen(false);
     } catch (error) {
       console.error('Erro ao resetar o histórico:', error);
     }
   };
 
+
+
   return (
     <div className="BoardPage">
-      {/* Header exibe o nome do usuário logado */}
       <Header projectName="Behavior Bar" userName={currentUser?.name || 'Usuário'} onLogout={handleLogout} />
-
-      <main className="board-container">
-        {/* Barra de Comportamento */}
-        <div className="behavior-section">
-          <BehaviorBar behaviorState={behaviorState} userName={user?.name || 'Usuário'} />
-          <div className="reset-section">
-            <button onClick={() => setIsModalOpen(true)} className="reset-button">
-              Resetar Pontuação
-            </button>
-            <p className="reset-info">
-              Última vez resetado: {formatDate(behaviorState.lastReset)}
-            </p>
+      <div className="page-content"> {/* Sidebar e conteúdo principal */}
+        <Sidebar /> {/* Adiciona o Sidebar */}
+        <main className="main-content"> {/* Conteúdo principal deslocado ao lado do Sidebar */}
+          <div className="board-container">
+            <div className="behavior-section">
+              <BehaviorBar behaviorState={behaviorState} userName={user?.name || 'Usuário'} />
+              <div className="reset-section">
+                <button onClick={() => setIsModalOpen(true)} className="reset-button">
+                  Resetar Pontuação
+                </button>
+                <p className="reset-info">
+                  Última vez resetado: {formatDate(behaviorState.lastReset)}
+                </p>
+              </div>
+            </div>
+            <div className="form-section">
+              <InfractionForm categories={categories} onAddInfraction={handleAddInfraction} />
+            </div>
+            <div className="history-section">
+              <BehaviorHistory infractions={behaviorState.infractions} formatDate={formatDate} isAdmin={authService.isAdmin()} />
+            </div>
           </div>
-        </div>
-
-        {/* Registrar Comportamento */}
-        <div className="form-section">
-          <InfractionForm categories={categories} onAddInfraction={handleAddInfraction} />
-        </div>
-
-        {/* Histórico de Comportamentos */}
-        <div className="history-section">
-          <BehaviorHistory infractions={behaviorState.infractions} formatDate={formatDate} isAdmin={authService.isAdmin()} />
-        </div>
-      </main>
-
+        </main>
+      </div>
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

@@ -2,6 +2,7 @@
 
 /* Estilo geral do header */
 .header {
+  z-index: 1001; /* Garante que o Header fique acima do Sidebar */
   width: 100%; /* Largura total */
   position: fixed; /* Fixa no topo */
   top: 0;

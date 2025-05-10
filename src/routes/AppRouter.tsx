@@ -3,8 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 
 import { authService } from '../services/authService';
 import Login from '../components/Login/Login';
-import UserManagement from '../components/UserManagement/UserManagement';
 import BoardPage from '../pages/BoardPage/BoardPage'; // Ajuste para importar o BoardPage
+import UserManagement from '../pages/UserManagementPage/UserManagementPage';
 
 // Componente para proteger rotas privadas
 const PrivateRoute: React.FC<{ children: JSX.Element; requiredRole?: 'ADMIN' | 'USER' }> = ({ children, requiredRole }) => {

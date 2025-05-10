@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import './UserManagement.css';
+import './UserManagementPage.css';
 import { User } from '../../types';
 import { userService } from '../../services/userService';
 import { useNavigate } from 'react-router-dom';
 import { FaTrash, FaEdit, FaChartBar } from 'react-icons/fa';
-import Header from '../Header/Header';
-import UserCreateModal from '../UserCreateModal/UserCreateModal';
-import Modal from '../Modal/Modal'; // Importa o modal de confirmação
 import { authService } from '../../services/authService';
 import { useUser } from '../../context/UserContext'; // Importa o contexto do usuário
+import Header from '../../components/Header/Header';
+import UserCreateModal from '../../components/UserCreateModal/UserCreateModal';
+import Modal from '../../components/Modal/Modal';
 
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);

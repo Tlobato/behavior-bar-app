@@ -5,11 +5,23 @@
   min-height: 100vh;
 }
 
-.user-management-container {
-  max-width: 900px; /* Largura menor e centralizada */
-  margin: 0 auto;
+/* Layout flexível com sidebar */
+.page-content {
+  display: flex;
+  min-height: calc(100vh - 80px); /* Altura total menos o header */
+}
+
+/* Estilo para o conteúdo principal ao lado da sidebar */
+.main-content {
+  flex: 1;
   padding: 20px;
-  padding-top: 80px; /* Adiciona espaço abaixo do Header */
+  margin-left: 250px; /* Largura do sidebar */
+}
+
+.user-management-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding-top: 20px;
 }
 
 .new-user-container {

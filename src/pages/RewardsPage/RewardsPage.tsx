@@ -5,13 +5,25 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import RewardCard from '../../components/RewardCard/RewardCard';
 import Modal from '../../components/Modal/Modal';
 import NewRegistrationComponent from '../../components/NewRegistrationComponent/NewRegistrationComponent';
-import { usePageTitle } from '../../hooks/usePageTitle'; // Importação do hook
+import { usePageTitle } from '../../hooks/usePageTitle';
+import { authService } from '../../services/authService'; // Importando o authService
+import { useNavigate } from 'react-router-dom'; // Importando useNavigate para o logout
 
 const RewardsPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedReward, setSelectedReward] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const pageName = usePageTitle(); // Uso do hook para obter o nome da página
+  const pageName = usePageTitle();
+  const navigate = useNavigate(); // Para redirecionamento após logout
+  
+  // Obtendo o usuário atual do authService
+  const currentUser = authService.getCurrentUser();
+
+  // Função de logout
+  const handleLogout = () => {
+    authService.logout();
+    navigate('/login');
+  };
 
   const handleOpenCreateRewardModal = () => {
     setIsCreateModalOpen(true);
@@ -74,9 +86,9 @@ const RewardsPage: React.FC = () => {
     <div className="RewardsPage">
       <Header 
         projectName="Behavior Bar" 
-        userName="Stephanie Fakri" 
-        onLogout={() => console.log('Logout')} 
-        pageName={pageName} // Passando o nome da página como prop
+        userName={currentUser?.name || 'Usuário'} // Usando o nome do usuário atual
+        onLogout={handleLogout} // Passando a função de logout
+        pageName={pageName} 
       />
       <div className="page-content">
         <Sidebar />
@@ -87,7 +99,7 @@ const RewardsPage: React.FC = () => {
                 title="Nova Recompensa"
                 buttonText="Criar"
                 onButtonClick={handleOpenCreateRewardModal}
-                width='960px' // Definimos que ocupe 100% da largura do container
+                width='960px'
               />
             </div>
 

@@ -24,7 +24,7 @@ const BehaviorBar: React.FC<BehaviorBarProps> = ({ behaviorState, userName }) =>
   return (
     <div className="behavior-bar-container">
       {/* Atualiza o título para incluir o nome do usuário */}
-      <h2>Barra de comportamento - {userName}</h2>
+      <h2>{userName}</h2>
 
       <div className="score-display">
         <span className="score-text">{currentPoints} / {maxPoints} pontos</span>

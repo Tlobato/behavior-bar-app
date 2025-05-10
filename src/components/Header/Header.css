@@ -68,3 +68,22 @@
   font-weight: normal;
   font-size: 0.9em;
 }
+
+/* Estilo para o ícone no header, similar ao sidebar */
+.header-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #555;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.header-icon:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #4CAF50;
+}

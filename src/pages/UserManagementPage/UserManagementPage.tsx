@@ -5,30 +5,31 @@ import { userService } from '../../services/userService';
 import { useNavigate } from 'react-router-dom';
 import { FaTrash, FaEdit, FaChartBar } from 'react-icons/fa';
 import { authService } from '../../services/authService';
-import { useUser } from '../../context/UserContext'; // Importa o contexto do usuário
+import { useUser } from '../../context/UserContext';
 import Header from '../../components/Header/Header';
 import UserCreateModal from '../../components/UserCreateModal/UserCreateModal';
 import Modal from '../../components/Modal/Modal';
 import NewRegistrationComponent from '../../components/NewRegistrationComponent/NewRegistrationComponent';
+import Sidebar from '../../components/Sidebar/Sidebar'; // Importação do Sidebar
+import { usePageTitle } from '../../hooks/usePageTitle'; // Importação do hook para o título da página
 
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false); // Controla o modal de exclusão
-  const [userToDelete, setUserToDelete] = useState<number | null>(null); // Armazena o ID do usuário a ser excluído
-
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+  const [userToDelete, setUserToDelete] = useState<number | null>(null);
+  
   const navigate = useNavigate();
-  const { setUser } = useUser(); // Usa o contexto para definir o usuário clicado
-
-  // Obtém o usuário logado
+  const { setUser } = useUser();
   const currentUser = authService.getCurrentUser();
+  const pageName = usePageTitle(); // Uso do hook para obter o nome da página
 
   // Função de logout
   const handleLogout = () => {
-    authService.logout(); // Limpa o localStorage
-    navigate('/login'); // Redireciona para a tela de login
+    authService.logout();
+    navigate('/login');
   };
 
   // Carregar lista de usuários ao montar o componente
@@ -59,20 +60,20 @@ const UserManagement: React.FC = () => {
       } else {
         alert('Erro ao excluir usuário.');
       }
-      setIsDeleteModalOpen(false); // Fecha o modal após a exclusão
+      setIsDeleteModalOpen(false);
     }
   };
 
   // Abrir o modal de exclusão
   const openDeleteModal = (userId: number) => {
-    setUserToDelete(userId); // Define o usuário a ser excluído
-    setIsDeleteModalOpen(true); // Abre o modal
+    setUserToDelete(userId);
+    setIsDeleteModalOpen(true);
   };
 
   // Redirecionar para o board do usuário
   const handleAccessBoard = (user: User) => {
-    setUser(user); // Define o usuário clicado no contexto
-    navigate(`/user/${user.id}/board`); // Redireciona para a página de board
+    setUser(user);
+    navigate(`/user/${user.id}/board`);
   };
 
   const handleCreateUser = async (userData: { name: string; email: string; password: string; role: 'USER' | 'ADMIN' }) => {
@@ -87,7 +88,7 @@ const UserManagement: React.FC = () => {
           email: createdUser.email,
           role: createdUser.role,
         };
-        setUsers([...users, mappedUser]); // Atualiza a lista de usuários
+        setUsers([...users, mappedUser]);
       } else {
         alert('Erro ao criar usuário.');
       }
@@ -101,66 +102,73 @@ const UserManagement: React.FC = () => {
       <Header
         projectName="Behavior Bar"
         userName={currentUser?.name || 'Usuário'}
-        onLogout={handleLogout} // Passa a função de logout para o Header
+        onLogout={handleLogout}
+        pageName={pageName} // Passa o nome da página para o Header
       />
+      
+      <div className="page-content"> {/* Container que agrupa Sidebar e conteúdo principal */}
+        <Sidebar /> {/* Adiciona o Sidebar */}
+        
+        <main className="main-content"> {/* Conteúdo principal */}
+          <div className="user-management-container">
+            <NewRegistrationComponent
+              title="Novo Usuário"
+              buttonText="Criar"
+              onButtonClick={() => setIsModalOpen(true)}
+            />
 
-      <main className="user-management-container">
-        <NewRegistrationComponent
-          title="Novo Usuário"
-          buttonText="Criar"
-          onButtonClick={() => setIsModalOpen(true)}
-        />
+            {isLoading && <p>Carregando usuários...</p>}
+            {error && <p className="error-message">{error}</p>}
 
-        {isLoading && <p>Carregando usuários...</p>}
-        {error && <p className="error-message">{error}</p>}
-
-        {!isLoading && !error && (
-          <div className="table-container">
-            <table className="user-table">
-              <thead>
-                <tr>
-                  <th>Nome</th>
-                  <th>Email</th>
-                  <th>Papel</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map(user => (
-                  <tr key={user.id}>
-                    <td>{user.name}</td>
-                    <td>{user.email}</td>
-                    <td>{user.role}</td>
-                    <td className="action-icons">
-                      <div
-                        className="action-icon"
-                        title="Board"
-                        onClick={() => handleAccessBoard(user)} // Passa o objeto completo do usuário
-                      >
-                        <FaChartBar />
-                      </div>
-                      <div
-                        className="action-icon"
-                        title="Editar"
-                        onClick={() => alert('Função de edição ainda não implementada.')}
-                      >
-                        <FaEdit />
-                      </div>
-                      <div
-                        className="action-icon delete-icon"
-                        title="Excluir"
-                        onClick={() => openDeleteModal(user.id)} // Abre o modal de exclusão
-                      >
-                        <FaTrash />
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {!isLoading && !error && (
+              <div className="table-container">
+                <table className="user-table">
+                  <thead>
+                    <tr>
+                      <th>Nome</th>
+                      <th>Email</th>
+                      <th>Papel</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users.map(user => (
+                      <tr key={user.id}>
+                        <td>{user.name}</td>
+                        <td>{user.email}</td>
+                        <td>{user.role}</td>
+                        <td className="action-icons">
+                          <div
+                            className="action-icon"
+                            title="Board"
+                            onClick={() => handleAccessBoard(user)}
+                          >
+                            <FaChartBar />
+                          </div>
+                          <div
+                            className="action-icon"
+                            title="Editar"
+                            onClick={() => alert('Função de edição ainda não implementada.')}
+                          >
+                            <FaEdit />
+                          </div>
+                          <div
+                            className="action-icon delete-icon"
+                            title="Excluir"
+                            onClick={() => openDeleteModal(user.id)}
+                          >
+                            <FaTrash />
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
-        )}
-      </main>
+        </main>
+      </div>
 
       <UserCreateModal
         isOpen={isModalOpen}
@@ -168,11 +176,10 @@ const UserManagement: React.FC = () => {
         onCreate={handleCreateUser}
       />
 
-      {/* Modal de exclusão */}
       <Modal
         isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)} // Fecha o modal
-        onConfirm={handleDelete} // Confirma a exclusão
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDelete}
         title="Excluir Usuário"
         message="Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita."
       />

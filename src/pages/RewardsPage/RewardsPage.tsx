@@ -5,9 +5,10 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import RewardCard from '../../components/RewardCard/RewardCard';
 import Modal from '../../components/Modal/Modal';
 import NewRegistrationComponent from '../../components/NewRegistrationComponent/NewRegistrationComponent';
+import RewardCreateModal from '../../components/RewardCreateModal/RewardCreateModal';
 import { usePageTitle } from '../../hooks/usePageTitle';
-import { authService } from '../../services/authService'; // Importando o authService
-import { useNavigate } from 'react-router-dom'; // Importando useNavigate para o logout
+import { authService } from '../../services/authService';
+import { useNavigate } from 'react-router-dom';
 
 const RewardsPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,7 +16,7 @@ const RewardsPage: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'redeem' | 'edit' | 'delete'>('redeem');
   const pageName = usePageTitle();
-  const navigate = useNavigate(); // Para redirecionamento após logout
+  const navigate = useNavigate();
   
   // Obtendo o usuário atual do authService
   const currentUser = authService.getCurrentUser();
@@ -29,6 +30,24 @@ const RewardsPage: React.FC = () => {
 
   const handleOpenCreateRewardModal = () => {
     setIsCreateModalOpen(true);
+  };
+
+  // Nova função para lidar com a criação de recompensas
+  const handleCreateReward = (rewardData: { 
+    title: string; 
+    description: string; 
+    points: number; 
+    imageUrl?: string | null;
+    active?: boolean;
+  }) => {
+    console.log('Recompensa a ser criada:', rewardData);
+    // Aqui você faria a chamada à API para criar a recompensa
+    // Por exemplo: rewardService.createReward(rewardData)
+    //   .then(response => { /* atualiza lista de recompensas */ })
+    //   .catch(error => { /* trata erro */ });
+    
+    // Por enquanto, apenas fechamos o modal
+    setIsCreateModalOpen(false);
   };
 
   const rewards = [
@@ -133,8 +152,8 @@ const RewardsPage: React.FC = () => {
     <div className="RewardsPage">
       <Header 
         projectName="Behavior Bar" 
-        userName={currentUser?.name || 'Usuário'} // Usando o nome do usuário atual
-        onLogout={handleLogout} // Passando a função de logout
+        userName={currentUser?.name || 'Usuário'}
+        onLogout={handleLogout}
         pageName={pageName} 
       />
       <div className="page-content">
@@ -179,13 +198,11 @@ const RewardsPage: React.FC = () => {
         onConfirm={() => setIsModalOpen(false)}
       />
 
-      {/* Modal para criar nova recompensa */}
-      <Modal
+      {/* Novo Modal para criar recompensas */}
+      <RewardCreateModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        title="Criar Recompensa"
-        message="A funcionalidade para criar novas recompensas ainda será implementada."
-        onConfirm={() => setIsCreateModalOpen(false)}
+        onCreate={handleCreateReward}
       />
     </div>
   );

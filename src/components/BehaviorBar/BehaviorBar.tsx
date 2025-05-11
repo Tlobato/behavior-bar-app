@@ -1,49 +1,42 @@
 // src/components/BehaviorBar/BehaviorBar.tsx
 import React from 'react';
-import './BehaviorBar.css'; // Importa os estilos específicos do componente
+import './BehaviorBar.css';
 import { BehaviorState } from '../../types';
 
 interface BehaviorBarProps {
   behaviorState: BehaviorState;
-  userName: string; // Adiciona a nova prop para o nome do usuário
+  userName: string;
 }
 
 const BehaviorBar: React.FC<BehaviorBarProps> = ({ behaviorState, userName }) => {
   const { currentPoints, maxPoints } = behaviorState;
-
-  // Cálculo da porcentagem para definir o tamanho da barra
+  
+  // Cálculo da porcentagem para definir o preenchimento da barra
   const percentage = (currentPoints / maxPoints) * 100;
-
-  // Determinar a cor da barra com base na pontuação
-  const getBarColor = () => {
-    if (percentage >= 90) return '#4CAF50'; // Verde para boa pontuação
-    if (percentage >= 70) return '#FFC107'; // Amarelo para pontuação média
-    return '#F44336'; // Vermelho para baixa pontuação
-  };
-
+  
   return (
     <div className="behavior-bar-container">
-      {/* Atualiza o título para incluir o nome do usuário */}
       <h2>{userName}</h2>
-
-      <div className="score-display">
-        <span className="score-text">{currentPoints} / {maxPoints} pontos</span>
-      </div>
-
-      <div className="bar-container">
-        <div
-          className="bar-fill"
-          style={{
-            width: `${percentage}%`,
-            backgroundColor: getBarColor(),
-          }}
-        ></div>
-      </div>
-
-      <div className="status-message">
-        {percentage >= 90 && <p>Muito bom! Continue assim! 👍</p>}
-        {percentage < 90 && percentage >= 40 && <p>Tem espaço para melhorar! 🙂</p>}
-        {percentage < 70 && <p>Vamos melhorar esse comportamento! 🙁</p>}
+      
+      <div className="thermometer-container">
+        <div className="thermometer-bar">
+          {/* Segmentos de cor completa */}
+          <div className="segment segment-bad">
+            <span className="segment-label">Ruim</span>
+          </div>
+          <div className="segment segment-regular">
+            <span className="segment-label">Regular</span>
+          </div>
+          <div className="segment segment-good">
+            <span className="segment-label">Bom</span>
+          </div>
+          <div className="segment segment-excellent">
+            <span className="segment-label">Excelente</span>
+          </div>
+          
+          {/* Camada de opacidade */}
+          <div className="opacity-layer" style={{ width: `${100 - percentage}%`, right: '0' }}></div>
+        </div>
       </div>
     </div>
   );

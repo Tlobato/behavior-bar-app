@@ -6,17 +6,22 @@ import RewardCard from '../../components/RewardCard/RewardCard';
 import Modal from '../../components/Modal/Modal';
 import NewRegistrationComponent from '../../components/NewRegistrationComponent/NewRegistrationComponent';
 import RewardCreateModal from '../../components/RewardCreateModal/RewardCreateModal';
+import RewardEditModal from '../../components/RewardEditModal/RewardEditModal';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { authService } from '../../services/authService';
 import { rewardService } from '../../services/rewardService';
 import { Reward } from '../../types';
 import { useNavigate } from 'react-router-dom';
 import { FaGift } from 'react-icons/fa'; // Importe um ícone de presente para indicar recompensas
+import { EditRewardData } from '../../components/RewardEditModal/RewardEditModal';
 
 const RewardsPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedReward, setSelectedReward] = useState<string | null>(null);
+  const [selectedRewardId, setSelectedRewardId] = useState<number | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [rewardToEdit, setRewardToEdit] = useState<Reward | null>(null);
   const [modalType, setModalType] = useState<'redeem' | 'edit' | 'delete'>('redeem');
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -57,39 +62,39 @@ const RewardsPage: React.FC = () => {
     setIsCreateModalOpen(true);
   };
 
-// Função para criar uma nova recompensa usando o serviço
-const handleCreateReward = async (rewardData: {
-  title: string;
-  description: string;
-  points: number;
-  imageFile?: File | null;  // Alterado de imageUrl para imageFile
-  active?: boolean;
-}) => {
-  try {
-    setIsLoading(true);
-    
-    // Verificação de segurança para o arquivo
-    if (!rewardData.imageFile) {
-      setError('Uma imagem é necessária para criar uma recompensa');
-      setIsLoading(false);
-      return;
-    }
-    
-    const createdReward = await rewardService.createReward(rewardData);
+  // Função para criar uma nova recompensa usando o serviço
+  const handleCreateReward = async (rewardData: {
+    title: string;
+    description: string;
+    points: number;
+    imageFile?: File | null;  // Alterado de imageUrl para imageFile
+    active?: boolean;
+  }) => {
+    try {
+      setIsLoading(true);
+      
+      // Verificação de segurança para o arquivo
+      if (!rewardData.imageFile) {
+        setError('Uma imagem é necessária para criar uma recompensa');
+        setIsLoading(false);
+        return;
+      }
+      
+      const createdReward = await rewardService.createReward(rewardData);
 
-    if (createdReward) {
-      // Atualiza a lista de recompensas
-      const updatedRewards = await rewardService.getAllRewards();
-      setRewards(updatedRewards);
-      setIsCreateModalOpen(false);
+      if (createdReward) {
+        // Atualiza a lista de recompensas
+        const updatedRewards = await rewardService.getAllRewards();
+        setRewards(updatedRewards);
+        setIsCreateModalOpen(false);
+      }
+    } catch (err) {
+      console.error('Erro ao criar recompensa:', err);
+      setError('Não foi possível criar a recompensa. Por favor, tente novamente.');
+    } finally {
+      setIsLoading(false);
     }
-  } catch (err) {
-    console.error('Erro ao criar recompensa:', err);
-    setError('Não foi possível criar a recompensa. Por favor, tente novamente.');
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   // Função para abrir modal de resgate de recompensa
   const handleRewardClick = (rewardTitle: string) => {
@@ -99,17 +104,83 @@ const handleCreateReward = async (rewardData: {
   };
 
   // Função para abrir modal de edição de recompensa
-  const handleEditReward = (rewardTitle: string) => {
-    setSelectedReward(rewardTitle);
-    setModalType('edit');
-    setIsModalOpen(true);
+  const handleEditReward = (rewardId: number) => {
+    // Encontrar a recompensa a ser editada
+    const rewardToEdit = rewards.find(reward => reward.id === rewardId);
+    if (rewardToEdit) {
+      setRewardToEdit(rewardToEdit);
+      setIsEditModalOpen(true);
+    } else {
+      setError('Recompensa não encontrada para edição.');
+    }
+  };
+
+  // Função para salvar a edição da recompensa
+  const handleSaveEditedReward = async (editedRewardData: EditRewardData) => {
+    try {
+      setIsLoading(true);
+      
+      // Chamar o serviço para atualizar a recompensa
+      const updatedReward = await rewardService.updateReward(
+        editedRewardData.id,
+        {
+          title: editedRewardData.title,
+          description: editedRewardData.description,
+          points: editedRewardData.points,
+          imageFile: editedRewardData.imageFile,
+          active: editedRewardData.active
+        }
+      );
+
+      if (updatedReward) {
+        // Atualizar a lista local de recompensas
+        const updatedRewards = await rewardService.getAllRewards();
+        setRewards(updatedRewards);
+        setIsEditModalOpen(false);
+        setRewardToEdit(null);
+      } else {
+        setError('Não foi possível atualizar a recompensa. Por favor, tente novamente.');
+      }
+    } catch (err) {
+      console.error('Erro ao atualizar recompensa:', err);
+      setError('Erro ao atualizar recompensa. Por favor, tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Função para abrir modal de exclusão de recompensa
-  const handleDeleteReward = (rewardTitle: string) => {
+  const handleDeleteReward = (rewardTitle: string, rewardId: number) => {
     setSelectedReward(rewardTitle);
+    setSelectedRewardId(rewardId);
     setModalType('delete');
     setIsModalOpen(true);
+  };
+
+  // Função para confirmar a exclusão da recompensa
+  const confirmDeleteReward = async () => {
+    if (selectedRewardId === null) {
+      setError('ID da recompensa não encontrado.');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const success = await rewardService.deleteReward(selectedRewardId);
+      
+      if (success) {
+        // Remover a recompensa da lista local
+        setRewards(rewards.filter(reward => reward.id !== selectedRewardId));
+        setIsModalOpen(false);
+      } else {
+        setError('Não foi possível excluir a recompensa. Por favor, tente novamente.');
+      }
+    } catch (err) {
+      console.error('Erro ao excluir recompensa:', err);
+      setError('Erro ao excluir recompensa. Por favor, tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Função para obter a mensagem e título do modal com base no tipo
@@ -128,7 +199,7 @@ const handleCreateReward = async (rewardData: {
       case 'delete':
         return {
           title: "Excluir Recompensa",
-          message: `A funcionalidade para excluir a recompensa "${selectedReward}" ainda será implementada.`
+          message: `Tem certeza que deseja excluir a recompensa "${selectedReward}"? Esta ação não poderá ser desfeita.`
         };
       default:
         return {
@@ -199,8 +270,8 @@ const handleCreateReward = async (rewardData: {
                     points={reward.points}
                     isAvailable={reward.active !== false}
                     onClick={() => handleRewardClick(reward.title)}
-                    onEdit={() => handleEditReward(reward.title)}
-                    onDelete={() => handleDeleteReward(reward.title)}
+                    onEdit={() => handleEditReward(reward.id || 0)}
+                    onDelete={() => handleDeleteReward(reward.title, reward.id || 0)}
                   />
                 ))}
               </div>
@@ -215,7 +286,7 @@ const handleCreateReward = async (rewardData: {
         onClose={() => setIsModalOpen(false)}
         title={modalContent.title}
         message={modalContent.message}
-        onConfirm={() => setIsModalOpen(false)}
+        onConfirm={modalType === 'delete' ? confirmDeleteReward : () => setIsModalOpen(false)}
       />
 
       {/* Modal para criar recompensa */}
@@ -223,6 +294,14 @@ const handleCreateReward = async (rewardData: {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onCreate={handleCreateReward}
+      />
+
+      {/* Modal para editar recompensa */}
+      <RewardEditModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={handleSaveEditedReward}
+        reward={rewardToEdit}
       />
     </div>
   );

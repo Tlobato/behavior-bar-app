@@ -8,10 +8,11 @@ import { authService } from '../../services/authService';
 import { useUser } from '../../context/UserContext';
 import Header from '../../components/Header/Header';
 import UserCreateModal from '../../components/UserCreateModal/UserCreateModal';
+import UserEditModal from '../../components/UserEditModal/UserEditModal'; // Importação do novo modal
 import Modal from '../../components/Modal/Modal';
 import NewRegistrationComponent from '../../components/NewRegistrationComponent/NewRegistrationComponent';
-import Sidebar from '../../components/Sidebar/Sidebar'; // Importação do Sidebar
-import { usePageTitle } from '../../hooks/usePageTitle'; // Importação do hook para o título da página
+import Sidebar from '../../components/Sidebar/Sidebar';
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -20,13 +21,14 @@ const UserManagement: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [userToDelete, setUserToDelete] = useState<number | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false); // Estado para controlar o modal de edição
+  const [userToEdit, setUserToEdit] = useState<User | null>(null); // Estado para armazenar o usuário a ser editado
   
   const navigate = useNavigate();
   const { setUser } = useUser();
   const currentUser = authService.getCurrentUser();
-  const pageName = usePageTitle(); // Uso do hook para obter o nome da página
+  const pageName = usePageTitle();
 
-  // Função de logout
   const handleLogout = () => {
     authService.logout();
     navigate('/login');
@@ -37,7 +39,6 @@ const UserManagement: React.FC = () => {
     const fetchUsers = async () => {
       try {
         const fetchedUsers = await userService.getUsers();
-        // Filtra apenas os usuários com role "USER"
         const filteredUsers = fetchedUsers.filter(user => user.role === 'USER');
         setUsers(filteredUsers);
       } catch (err) {
@@ -50,6 +51,29 @@ const UserManagement: React.FC = () => {
 
     fetchUsers();
   }, []);
+
+  // Abrir o modal de edição
+  const openEditModal = (user: User) => {
+    setUserToEdit(user);
+    setIsEditModalOpen(true);
+  };
+
+  // Atualizar usuário
+  const handleUpdate = async (userId: number, userData: { name: string; email: string; role: 'USER' | 'ADMIN' }) => {
+    try {
+      const success = await userService.updateUser(userId, userData);
+      if (success) {
+        // Atualiza a lista de usuários com os dados atualizados
+        setUsers(users.map(user => 
+          user.id === userId ? { ...user, ...userData } : user
+        ));
+      } else {
+        alert('Erro ao atualizar usuário.');
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar usuário:', error);
+    }
+  };
 
   // Excluir usuário
   const handleDelete = async () => {
@@ -103,13 +127,13 @@ const UserManagement: React.FC = () => {
         projectName="Behavior Bar"
         userName={currentUser?.name || 'Usuário'}
         onLogout={handleLogout}
-        pageName={pageName} // Passa o nome da página para o Header
+        pageName={pageName}
       />
       
-      <div className="page-content"> {/* Container que agrupa Sidebar e conteúdo principal */}
-        <Sidebar /> {/* Adiciona o Sidebar */}
+      <div className="page-content">
+        <Sidebar />
         
-        <main className="main-content"> {/* Conteúdo principal */}
+        <main className="main-content">
           <div className="user-management-container">
             <NewRegistrationComponent
               title="Novo Usuário"
@@ -148,7 +172,7 @@ const UserManagement: React.FC = () => {
                           <div
                             className="action-icon"
                             title="Editar"
-                            onClick={() => alert('Função de edição ainda não implementada.')}
+                            onClick={() => openEditModal(user)}
                           >
                             <FaEdit />
                           </div>
@@ -174,6 +198,13 @@ const UserManagement: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onCreate={handleCreateUser}
+      />
+
+      <UserEditModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onUpdate={handleUpdate}
+        user={userToEdit}
       />
 
       <Modal

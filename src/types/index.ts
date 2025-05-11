@@ -42,3 +42,10 @@ export interface RewardCardProps {
   onEdit?: () => void;      // Para administradores (editar)
   onDelete?: () => void;    // Para administradores (excluir)
 }
+
+export interface UserEditModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onUpdate: (userId: number, userData: { name: string; email: string; role: 'USER' | 'ADMIN' }) => void;
+  user: User | null;
+}

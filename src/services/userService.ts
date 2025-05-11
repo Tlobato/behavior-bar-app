@@ -44,16 +44,30 @@ export const userService = {
     }
   },
 
-  // Atualizar informações de um usuário existente
-  async updateUser(id: number, user: Partial<User>): Promise<User | null> {
-    try {
-      const response = await axios.put(`${API_URL}/${id}`, user); // Faz a chamada PUT para atualizar o usuário
-      return response.data; // Retorna o usuário atualizado
-    } catch (error) {
-      console.error('Erro ao atualizar usuário:', error);
-      return null; // Retorna null em caso de erro
-    }
-  },
+// Atualizar informações de um usuário existente
+async updateUser(id: number, user: { name: string; email: string; role: 'USER' | 'ADMIN' }): Promise<boolean> {
+  try {
+    const token = localStorage.getItem('token'); // Recupera o token JWT armazenado
+    
+    // Mapeia os campos para corresponder aos nomes esperados no backend
+    const payload = {
+      nome: user.name, // Mapeia "name" para "nome"
+      email: user.email,
+      role: user.role,
+    };
+
+    await axios.put(`${API_URL}/${id}`, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Inclui o token JWT no cabeçalho
+      },
+    });
+    
+    return true; // Retorna true se a atualização for bem-sucedida
+  } catch (error) {
+    console.error('Erro ao atualizar usuário:', error);
+    return false; // Retorna false em caso de erro
+  }
+},
 
   // Excluir um usuário
   async deleteUser(id: number): Promise<boolean> {

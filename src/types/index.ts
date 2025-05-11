@@ -49,3 +49,35 @@ export interface UserEditModalProps {
   onUpdate: (userId: number, userData: { name: string; email: string; role: 'USER' | 'ADMIN' }) => void;
   user: User | null;
 }
+
+// Interface para representar uma recompensa
+export interface Reward {
+  id?: number;
+  title: string;
+  description: string;
+  points: number;
+  imageUrl?: string | null;
+  active?: boolean;
+}
+
+export interface RewardCreateModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onCreate: (rewardData: {
+    title: string;
+    description: string;
+    points: number;
+    imageFile?: File | null; // Modificado para File em vez de imageUrl
+    active?: boolean;
+  }) => void;
+}
+
+// Definir interface para o tipo de resposta do backend
+export interface BackendReward {
+  id: number;
+  title: string;
+  description: string;
+  pointsRequired: number;
+  imageUrl: string | null;
+  active: boolean;
+}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './RewardsPage.css';
 import Header from '../../components/Header/Header';
 import Sidebar from '../../components/Sidebar/Sidebar';
@@ -8,19 +8,44 @@ import NewRegistrationComponent from '../../components/NewRegistrationComponent/
 import RewardCreateModal from '../../components/RewardCreateModal/RewardCreateModal';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { authService } from '../../services/authService';
+import { rewardService } from '../../services/rewardService';
+import { Reward } from '../../types';
 import { useNavigate } from 'react-router-dom';
+import { FaGift } from 'react-icons/fa'; // Importe um ícone de presente para indicar recompensas
 
 const RewardsPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedReward, setSelectedReward] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'redeem' | 'edit' | 'delete'>('redeem');
+  const [rewards, setRewards] = useState<Reward[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const pageName = usePageTitle();
   const navigate = useNavigate();
-  
+
   // Obtendo o usuário atual do authService
   const currentUser = authService.getCurrentUser();
   const isAdmin = authService.isAdmin();
+
+  // Buscar recompensas do backend ao carregar a página
+  useEffect(() => {
+    const fetchRewards = async () => {
+      setIsLoading(true);
+      try {
+        const rewardsData = await rewardService.getAllRewards();
+        setRewards(rewardsData);
+      } catch (err) {
+        console.error('Erro ao buscar recompensas:', err);
+        setError('Não foi possível carregar as recompensas. Por favor, tente novamente mais tarde.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRewards();
+  }, []);
 
   // Função de logout
   const handleLogout = () => {
@@ -32,71 +57,39 @@ const RewardsPage: React.FC = () => {
     setIsCreateModalOpen(true);
   };
 
-  // Nova função para lidar com a criação de recompensas
-  const handleCreateReward = (rewardData: { 
-    title: string; 
-    description: string; 
-    points: number; 
-    imageUrl?: string | null;
-    active?: boolean;
-  }) => {
-    console.log('Recompensa a ser criada:', rewardData);
-    // Aqui você faria a chamada à API para criar a recompensa
-    // Por exemplo: rewardService.createReward(rewardData)
-    //   .then(response => { /* atualiza lista de recompensas */ })
-    //   .catch(error => { /* trata erro */ });
+// Função para criar uma nova recompensa usando o serviço
+const handleCreateReward = async (rewardData: {
+  title: string;
+  description: string;
+  points: number;
+  imageFile?: File | null;  // Alterado de imageUrl para imageFile
+  active?: boolean;
+}) => {
+  try {
+    setIsLoading(true);
     
-    // Por enquanto, apenas fechamos o modal
-    setIsCreateModalOpen(false);
-  };
+    // Verificação de segurança para o arquivo
+    if (!rewardData.imageFile) {
+      setError('Uma imagem é necessária para criar uma recompensa');
+      setIsLoading(false);
+      return;
+    }
+    
+    const createdReward = await rewardService.createReward(rewardData);
 
-  const rewards = [
-    {
-      title: 'Cartão digital Roblox',
-      imageUrl: null,
-      points: 6000,
-    },
-    {
-      title: 'Cartão-presente digital Xbox',
-      imageUrl: null,
-      points: 1035,
-    },
-    {
-      title: 'Cartão-presente Microsoft',
-      imageUrl: null,
-      points: 1035,
-    },
-    {
-      title: 'Associação ao Xbox Game Pass Core',
-      imageUrl: null,
-      points: 2500,
-    },
-    {
-      title: 'PC Game Pass',
-      imageUrl: null,
-      points: 3500,
-    },
-    {
-      title: 'Microsoft Solitaire Collection Premium Edition',
-      imageUrl: null,
-      points: 500,
-    },
-    {
-      title: 'Microsoft Solitaire Collection Premium Edition',
-      imageUrl: null,
-      points: 500,
-    },
-    {
-      title: 'Microsoft Solitaire Collection Premium Edition',
-      imageUrl: null,
-      points: 500,
-    },
-    {
-      title: 'Microsoft Solitaire Collection Premium Edition',
-      imageUrl: null,
-      points: 500,
-    },
-  ];
+    if (createdReward) {
+      // Atualiza a lista de recompensas
+      const updatedRewards = await rewardService.getAllRewards();
+      setRewards(updatedRewards);
+      setIsCreateModalOpen(false);
+    }
+  } catch (err) {
+    console.error('Erro ao criar recompensa:', err);
+    setError('Não foi possível criar a recompensa. Por favor, tente novamente.');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   // Função para abrir modal de resgate de recompensa
   const handleRewardClick = (rewardTitle: string) => {
@@ -148,13 +141,24 @@ const RewardsPage: React.FC = () => {
   // Obtém o conteúdo do modal
   const modalContent = getModalContent();
 
+  // Componente para exibir quando não há recompensas
+  const EmptyRewardsState = () => (
+    <div className="empty-rewards-container">
+      <div className="empty-rewards-icon-container">
+        <FaGift size={64} />
+      </div>
+      <h3>Nenhuma recompensa cadastrada</h3>
+      <p>Crie sua primeira recompensa clicando no botão "Criar" acima!</p>
+    </div>
+  );
+
   return (
     <div className="RewardsPage">
-      <Header 
-        projectName="Behavior Bar" 
+      <Header
+        projectName="Behavior Bar"
         userName={currentUser?.name || 'Usuário'}
         onLogout={handleLogout}
-        pageName={pageName} 
+        pageName={pageName}
       />
       <div className="page-content">
         <Sidebar />
@@ -171,20 +175,36 @@ const RewardsPage: React.FC = () => {
               </div>
             )}
 
-            <div className="rewards-grid">
-              {rewards.map((reward, index) => (
-                <RewardCard
-                  key={index}
-                  title={reward.title}
-                  imageUrl={reward.imageUrl}
-                  points={reward.points}
-                  isAvailable={true}
-                  onClick={() => handleRewardClick(reward.title)}
-                  onEdit={() => handleEditReward(reward.title)}
-                  onDelete={() => handleDeleteReward(reward.title)}
-                />
-              ))}
-            </div>
+            {isLoading && (
+              <div className="loading-container">
+                <p>Carregando recompensas...</p>
+              </div>
+            )}
+
+            {error && (
+              <div className="error-container">
+                <p className="error-message">{error}</p>
+              </div>
+            )}
+
+            {!isLoading && !error && rewards.length === 0 && <EmptyRewardsState />}
+
+            {!isLoading && !error && rewards.length > 0 && (
+              <div className="rewards-grid">
+                {rewards.map((reward) => (
+                  <RewardCard
+                    key={reward.id || `reward-${Math.random()}`}
+                    title={reward.title}
+                    imageUrl={reward.imageUrl || null}
+                    points={reward.points}
+                    isAvailable={reward.active !== false}
+                    onClick={() => handleRewardClick(reward.title)}
+                    onEdit={() => handleEditReward(reward.title)}
+                    onDelete={() => handleDeleteReward(reward.title)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </main>
       </div>
@@ -198,7 +218,7 @@ const RewardsPage: React.FC = () => {
         onConfirm={() => setIsModalOpen(false)}
       />
 
-      {/* Novo Modal para criar recompensas */}
+      {/* Modal para criar recompensa */}
       <RewardCreateModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}

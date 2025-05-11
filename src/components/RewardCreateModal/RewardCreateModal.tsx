@@ -8,7 +8,7 @@ interface RewardCreateModalProps {
     title: string; 
     description: string; 
     points: number; 
-    imageUrl?: string | null;
+    imageFile?: File | null; // Alterado de imageUrl para imageFile
     active?: boolean;
   }) => void;
 }
@@ -18,16 +18,15 @@ const RewardCreateModal: React.FC<RewardCreateModalProps> = ({ isOpen, onClose, 
     title: '',
     description: '',
     points: 0,
-    imageUrl: '',
     active: true
   });
-
+  
+  const [imageFile, setImageFile] = useState<File | null>(null);  // Novo estado para o arquivo
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     
-    // Para campos numéricos, converte para número
     if (type === 'number') {
       setRewardData((prev) => ({
         ...prev,
@@ -44,17 +43,12 @@ const RewardCreateModal: React.FC<RewardCreateModalProps> = ({ isOpen, onClose, 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setImageFile(file);  // Salva o arquivo em si
+      
       // Preview da imagem
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
-        
-        // Aqui você pode fazer o upload da imagem para um servidor e obter a URL
-        // Por enquanto, apenas guardamos o nome do arquivo como placeholder
-        setRewardData(prev => ({
-          ...prev,
-          imageUrl: file.name // Idealmente, este seria substituído pela URL após o upload
-        }));
       };
       reader.readAsDataURL(file);
     }
@@ -66,10 +60,17 @@ const RewardCreateModal: React.FC<RewardCreateModalProps> = ({ isOpen, onClose, 
       alert("Por favor, preencha todos os campos corretamente.");
       return;
     }
+    
+    if (!imageFile) {
+      alert("Por favor, selecione uma imagem para a recompensa.");
+      return;
+    }
 
-    onCreate(rewardData);
+    onCreate({
+      ...rewardData,
+      imageFile  // Passa o arquivo para o método de criação
+    });
     resetForm();
-    onClose();
   };
 
   const resetForm = () => {
@@ -77,9 +78,9 @@ const RewardCreateModal: React.FC<RewardCreateModalProps> = ({ isOpen, onClose, 
       title: '',
       description: '',
       points: 0,
-      imageUrl: '',
       active: true
     });
+    setImageFile(null);
     setImagePreview(null);
   };
 

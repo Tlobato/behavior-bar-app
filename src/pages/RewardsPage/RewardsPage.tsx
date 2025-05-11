@@ -13,11 +13,13 @@ const RewardsPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedReward, setSelectedReward] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<'redeem' | 'edit' | 'delete'>('redeem');
   const pageName = usePageTitle();
   const navigate = useNavigate(); // Para redirecionamento após logout
   
   // Obtendo o usuário atual do authService
   const currentUser = authService.getCurrentUser();
+  const isAdmin = authService.isAdmin();
 
   // Função de logout
   const handleLogout = () => {
@@ -77,10 +79,55 @@ const RewardsPage: React.FC = () => {
     },
   ];
 
+  // Função para abrir modal de resgate de recompensa
   const handleRewardClick = (rewardTitle: string) => {
     setSelectedReward(rewardTitle);
+    setModalType('redeem');
     setIsModalOpen(true);
   };
+
+  // Função para abrir modal de edição de recompensa
+  const handleEditReward = (rewardTitle: string) => {
+    setSelectedReward(rewardTitle);
+    setModalType('edit');
+    setIsModalOpen(true);
+  };
+
+  // Função para abrir modal de exclusão de recompensa
+  const handleDeleteReward = (rewardTitle: string) => {
+    setSelectedReward(rewardTitle);
+    setModalType('delete');
+    setIsModalOpen(true);
+  };
+
+  // Função para obter a mensagem e título do modal com base no tipo
+  const getModalContent = () => {
+    switch (modalType) {
+      case 'redeem':
+        return {
+          title: "Funcionalidade indisponível",
+          message: `A funcionalidade de resgatar o prêmio "${selectedReward}" ainda será implementada.`
+        };
+      case 'edit':
+        return {
+          title: "Editar Recompensa",
+          message: `A funcionalidade para editar a recompensa "${selectedReward}" ainda será implementada.`
+        };
+      case 'delete':
+        return {
+          title: "Excluir Recompensa",
+          message: `A funcionalidade para excluir a recompensa "${selectedReward}" ainda será implementada.`
+        };
+      default:
+        return {
+          title: "Funcionalidade indisponível",
+          message: "Operação não reconhecida."
+        };
+    }
+  };
+
+  // Obtém o conteúdo do modal
+  const modalContent = getModalContent();
 
   return (
     <div className="RewardsPage">
@@ -94,14 +141,16 @@ const RewardsPage: React.FC = () => {
         <Sidebar />
         <main className="main-content">
           <div className="rewards-container">
-            <div className="reward-registration-wrapper">
-              <NewRegistrationComponent
-                title="Nova Recompensa"
-                buttonText="Criar"
-                onButtonClick={handleOpenCreateRewardModal}
-                width='960px'
-              />
-            </div>
+            {isAdmin && (
+              <div className="reward-registration-wrapper">
+                <NewRegistrationComponent
+                  title="Nova Recompensa"
+                  buttonText="Criar"
+                  onButtonClick={handleOpenCreateRewardModal}
+                  width='960px'
+                />
+              </div>
+            )}
 
             <div className="rewards-grid">
               {rewards.map((reward, index) => (
@@ -112,6 +161,8 @@ const RewardsPage: React.FC = () => {
                   points={reward.points}
                   isAvailable={true}
                   onClick={() => handleRewardClick(reward.title)}
+                  onEdit={() => handleEditReward(reward.title)}
+                  onDelete={() => handleDeleteReward(reward.title)}
                 />
               ))}
             </div>
@@ -119,12 +170,12 @@ const RewardsPage: React.FC = () => {
         </main>
       </div>
 
-      {/* Modal para funcionalidade de resgate de prêmio */}
+      {/* Modal para ações relacionadas às recompensas */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Funcionalidade indisponível"
-        message={`A funcionalidade de resgatar o prêmio "${selectedReward}" ainda será implementada.`}
+        title={modalContent.title}
+        message={modalContent.message}
         onConfirm={() => setIsModalOpen(false)}
       />
 

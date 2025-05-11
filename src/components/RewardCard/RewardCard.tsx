@@ -1,9 +1,20 @@
 import React from 'react';
 import './RewardCard.css';
 import { RewardCardProps } from '../../types';
-import { FaImage } from 'react-icons/fa'; // Importando o ícone de imagem
+import { FaImage, FaEdit, FaTrash } from 'react-icons/fa';
+import { authService } from '../../services/authService';
 
-const RewardCard: React.FC<RewardCardProps> = ({ title, imageUrl, points, isAvailable = false, onClick }) => {
+const RewardCard: React.FC<RewardCardProps> = ({ 
+  title, 
+  imageUrl, 
+  points, 
+  isAvailable = false, 
+  onClick, 
+  onEdit, 
+  onDelete 
+}) => {
+  const isAdmin = authService.isAdmin();
+
   return (
     <div className="reward-card">
       <div className="image-container">
@@ -22,13 +33,31 @@ const RewardCard: React.FC<RewardCardProps> = ({ title, imageUrl, points, isAvai
       
       <div className="action-container">
         <p className="reward-points">{points} pontos</p>
-        <button
-          className="reward-button"
-          onClick={onClick}
-          disabled={!isAvailable}
-        >
-          Resgatar Prêmio
-        </button>
+        
+        {isAdmin ? (
+          <div className="admin-buttons">
+            <button 
+              className="edit-button" 
+              onClick={onEdit}
+            >
+              <FaEdit /> Editar
+            </button>
+            <button 
+              className="delete-button" 
+              onClick={onDelete}
+            >
+              <FaTrash /> Excluir
+            </button>
+          </div>
+        ) : (
+          <button
+            className="reward-button"
+            onClick={onClick}
+            disabled={!isAvailable}
+          >
+            Resgatar Prêmio
+          </button>
+        )}
       </div>
     </div>
   );

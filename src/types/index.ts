@@ -34,9 +34,11 @@ export interface User {
 }
 
 export interface RewardCardProps {
-  title: string; // Título do prêmio
-  imageUrl: string | null; // URL da imagem
-  points: number; // Pontos necessários para resgatar
-  isAvailable?: boolean; // Indica se o botão está funcional ou é um placeholder
-  onClick?: () => void; // Função chamada ao clicar no botão
+  title: string;
+  imageUrl: string | null;
+  points: number;
+  isAvailable?: boolean;
+  onClick?: () => void;     // Para usuários normais (resgatar prêmio)
+  onEdit?: () => void;      // Para administradores (editar)
+  onDelete?: () => void;    // Para administradores (excluir)
 }

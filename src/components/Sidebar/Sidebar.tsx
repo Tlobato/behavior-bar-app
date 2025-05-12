@@ -32,7 +32,7 @@ const Sidebar: React.FC = () => {
       )}
 
       {/* Ícone de Board - aparece na página de recompensas, mas não na própria página de board */}
-      {!isOnBoardPage && (
+      {!isAdmin && !isOnBoardPage && (
         <div 
           className="sidebar-icon" 
           onClick={() => navigate(

@@ -3,7 +3,7 @@ import axios from 'axios'; // Usaremos Axios para realizar as requisições HTTP
 
 // Estado inicial do comportamento
 const INITIAL_STATE: BehaviorState = {
-  currentPoints: 100,
+  currentPoints: 50, // Alterado de 100 para 50
   maxPoints: 100,
   infractions: [],
   lastReset: new Date()

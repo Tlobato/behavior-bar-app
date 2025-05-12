@@ -15,6 +15,9 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import { usePageTitle } from '../../hooks/usePageTitle';
 
+// Constante para valor inicial da pontuação
+const DEFAULT_POINTS = 50; // Novo: definir pontuação padrão como constante
+
 const BoardPage: React.FC = () => {
   const { user, setUser } = useUser();
   const currentUser = authService.getCurrentUser();
@@ -25,7 +28,7 @@ const BoardPage: React.FC = () => {
   const isAdmin = currentUser?.role === 'ADMIN';
 
   const [behaviorState, setBehaviorState] = useState<BehaviorState>({
-    currentPoints: 100,
+    currentPoints: DEFAULT_POINTS, // Alterado: de 100 para 50
     maxPoints: 100,
     infractions: [],
     lastReset: new Date(),
@@ -58,7 +61,16 @@ const BoardPage: React.FC = () => {
         // Carregar estado de comportamento
         const infractions = await behaviorService.getBehaviorRecordsByUserId(user.id);
         const activeInfractions = infractions.filter((inf) => inf.ativo);
-        const currentPoints = activeInfractions.reduce((acc, inf) => acc + inf.points, 100);
+        
+        // Se não houver infrações ativas, comece com a pontuação padrão
+        let currentPoints;
+        if (activeInfractions.length === 0) {
+          currentPoints = DEFAULT_POINTS;
+        } else {
+          // Se houver infrações, calcule a pontuação com base nelas, começando do valor padrão
+          currentPoints = activeInfractions.reduce((acc, inf) => acc + inf.points, DEFAULT_POINTS);
+        }
+        
         setBehaviorState({
           currentPoints: Math.max(0, currentPoints),
           maxPoints: 100,
@@ -78,12 +90,13 @@ const BoardPage: React.FC = () => {
     };
 
     loadData();
+
   }, [user, setUser, isDataLoaded]);
 
   // Efeito separado para atualizações de dados quando ações ocorrem
   const reloadUserData = async () => {
     if (!user) return;
-    
+
     try {
       const updatedUser = await userService.getUserById(user.id);
       if (updatedUser) {
@@ -153,7 +166,7 @@ const BoardPage: React.FC = () => {
       const activeInfractions = infractions.filter((inf) => inf.ativo);
 
       setBehaviorState({
-        currentPoints: 100,
+        currentPoints: DEFAULT_POINTS, // Alterado: de 100 para 50
         maxPoints: 100,
         infractions: activeInfractions,
         lastReset: new Date(),
@@ -183,9 +196,9 @@ const BoardPage: React.FC = () => {
         <main className="main-content">
           <div className="board-container">
             <div className="behavior-section">
-              <BehaviorBar 
-                behaviorState={behaviorState} 
-                userName={user?.name || 'Usuário'} 
+              <BehaviorBar
+                behaviorState={behaviorState}
+                userName={user?.name || 'Usuário'}
                 rewardPoints={isAdmin ? user?.rewardPoints : undefined}
               />
 

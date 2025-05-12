@@ -183,7 +183,11 @@ const BoardPage: React.FC = () => {
         <main className="main-content">
           <div className="board-container">
             <div className="behavior-section">
-              <BehaviorBar behaviorState={behaviorState} userName={user?.name || 'Usuário'} />
+              <BehaviorBar 
+                behaviorState={behaviorState} 
+                userName={user?.name || 'Usuário'} 
+                rewardPoints={isAdmin ? user?.rewardPoints : undefined}
+              />
 
               {/* Seção de reset visível apenas para administradores */}
               {isAdmin && (

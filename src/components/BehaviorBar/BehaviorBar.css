@@ -8,6 +8,38 @@
   margin: 0 auto;
 }
 
+/* Informações do usuário */
+.user-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.user-info h2 {
+  margin: 0;
+}
+
+.reward-points {
+  display: flex;
+  align-items: center;
+  background-color: #e6f0ff; /* Fundo azul claro */
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #1a73e8; /* Texto azul */
+  border: 1px solid #b8d3ff; /* Borda azul claro */
+}
+
+.gift-icon {
+  color: #3b82f6; /* Ícone em tom de azul */
+  margin-right: 5px;
+  display: flex;
+  align-items: center;
+}
+
 /* Contêiner do termômetro */
 .thermometer-container {
   width: 100%;
@@ -89,5 +121,15 @@
   
   .thermometer-bar {
     height: 50px;
+  }
+  
+  .user-info {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .reward-points {
+    font-size: 0.8rem;
+    padding: 4px 10px;
   }
 }

@@ -12,17 +12,16 @@ import { formatDate } from '../../utils/dateUtils';
 import { useUser } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar/Sidebar';
-import { usePageTitle } from '../../hooks/usePageTitle'; // Importação do hook
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 const BoardPage: React.FC = () => {
   const { user } = useUser();
   const currentUser = authService.getCurrentUser();
   const navigate = useNavigate();
-  const pageName = usePageTitle(); // Uso do hook para obter o nome da página
+  const pageName = usePageTitle();
   
-  // Adicione logs para depuração se necessário
-  // console.log('URL atual:', window.location.pathname);
-  // console.log('pageName obtido:', pageName);
+  // Verificar se o usuário atual é um administrador
+  const isAdmin = currentUser?.role === 'ADMIN';
 
   const [behaviorState, setBehaviorState] = useState<BehaviorState>({
     currentPoints: 100,
@@ -35,8 +34,8 @@ const BoardPage: React.FC = () => {
 
   // Função de logout
   const handleLogout = () => {
-    authService.logout(); // Limpa o localStorage
-    navigate('/login'); // Redireciona para a tela de login
+    authService.logout();
+    navigate('/login');
   };
 
   useEffect(() => {
@@ -47,7 +46,7 @@ const BoardPage: React.FC = () => {
 
     const loadBehaviorState = async () => {
       try {
-        const infractions = await behaviorService.getBehaviorRecordsByUserId(user.id); // Usa o ID do usuário clicado
+        const infractions = await behaviorService.getBehaviorRecordsByUserId(user.id);
         const activeInfractions = infractions.filter((inf) => inf.ativo);
         const currentPoints = activeInfractions.reduce((acc, inf) => acc + inf.points, 100);
         setBehaviorState({
@@ -87,16 +86,15 @@ const BoardPage: React.FC = () => {
       }
 
       const payload = {
-        behaviorTypeId, // ID do comportamento pré-definido
-        customDescription: behaviorTypeId === null ? description : undefined, // Usa undefined em vez de null
-        points, // Pontuação associada
-        saveAsPredefined, // Flag para salvar como pré-definido
-        userId: user.id, // Inclui o ID do usuário clicado
+        behaviorTypeId,
+        customDescription: behaviorTypeId === null ? description : undefined,
+        points,
+        saveAsPredefined,
+        userId: user.id,
       };
 
       console.log('Payload enviado:', payload);
 
-      // Salva o comportamento no backend
       await behaviorService.registerBehavior(
         payload.customDescription,
         payload.points,
@@ -105,15 +103,13 @@ const BoardPage: React.FC = () => {
         payload.userId
       );
 
-      // Busca o histórico atualizado do backend
-      const infractions = await behaviorService.getBehaviorRecordsByUserId(user.id); // Busca o histórico atualizado
-      const activeInfractions = infractions.filter((inf) => inf.ativo); // Filtra os registros ativos
+      const infractions = await behaviorService.getBehaviorRecordsByUserId(user.id);
+      const activeInfractions = infractions.filter((inf) => inf.ativo);
 
-      // Atualiza o estado com os dados filtrados
       setBehaviorState((prevState) => ({
         ...prevState,
         currentPoints: Math.max(0, prevState.currentPoints + points),
-        infractions: activeInfractions, // Substitui o histórico pelo atualizado
+        infractions: activeInfractions,
       }));
     } catch (error) {
       console.error('Erro ao registrar o comportamento:', error);
@@ -122,16 +118,15 @@ const BoardPage: React.FC = () => {
 
   const confirmReset = async () => {
     try {
-      if (!user || !user.id) { // Verifica se `user` e `user.id` estão definidos
+      if (!user || !user.id) {
         console.error('Usuário não encontrado no contexto.');
         return;
       }
 
-      await behaviorService.resetBehaviorRecords(user.id); // Passa o userId como argumento
+      await behaviorService.resetBehaviorRecords(user.id);
 
-      // Sincroniza o estado local com os dados filtrados do backend
-      const infractions = await behaviorService.getBehaviorRecordsByUserId(user.id); // Busca o histórico atualizado
-      const activeInfractions = infractions.filter((inf) => inf.ativo); // Filtra os registros ativos
+      const infractions = await behaviorService.getBehaviorRecordsByUserId(user.id);
+      const activeInfractions = infractions.filter((inf) => inf.ativo);
 
       setBehaviorState({
         currentPoints: 100,
@@ -152,7 +147,7 @@ const BoardPage: React.FC = () => {
         projectName="Behavior Bar" 
         userName={currentUser?.name || 'Usuário'} 
         onLogout={handleLogout}
-        pageName={pageName} // Adição da prop pageName
+        pageName={pageName}
       />
       <div className="page-content">
         <Sidebar />
@@ -160,20 +155,30 @@ const BoardPage: React.FC = () => {
           <div className="board-container">
             <div className="behavior-section">
               <BehaviorBar behaviorState={behaviorState} userName={user?.name || 'Usuário'} />
-              <div className="reset-section">
-                <button onClick={() => setIsModalOpen(true)} className="reset-button">
-                  Resetar Pontuação
-                </button>
-                <p className="reset-info">
-                  Última vez resetado: {formatDate(behaviorState.lastReset)}
-                </p>
+              
+              {/* Seção de reset visível apenas para administradores */}
+              {isAdmin && (
+                <div className="reset-section">
+                  <button onClick={() => setIsModalOpen(true)} className="reset-button">
+                    Resetar Pontuação
+                  </button>
+                  <p className="reset-info">
+                    Última vez resetado: {formatDate(behaviorState.lastReset)}
+                  </p>
+                </div>
+              )}
+            </div>
+            
+            {/* Formulário de registro de comportamento visível apenas para administradores */}
+            {isAdmin && (
+              <div className="form-section">
+                <InfractionForm categories={categories} onAddInfraction={handleAddInfraction} />
               </div>
-            </div>
-            <div className="form-section">
-              <InfractionForm categories={categories} onAddInfraction={handleAddInfraction} />
-            </div>
+            )}
+            
+            {/* Histórico de comportamento visível para todos */}
             <div className="history-section">
-              <BehaviorHistory infractions={behaviorState.infractions} formatDate={formatDate} isAdmin={authService.isAdmin()} />
+              <BehaviorHistory infractions={behaviorState.infractions} formatDate={formatDate} isAdmin={isAdmin} />
             </div>
           </div>
         </main>

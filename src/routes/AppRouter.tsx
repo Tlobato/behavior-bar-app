@@ -5,7 +5,7 @@ import { authService } from '../services/authService';
 import BoardPage from '../pages/BoardPage/BoardPage';
 import UserManagement from '../pages/UserManagementPage/UserManagementPage';
 import Login from '../pages/LoginPage/LoginPage';
-import RewardsPage from '../pages/RewardsPage/RewardsPage'; // Importa a RewardsPage
+import RewardsPage from '../pages/RewardsPage/RewardsPage';
 
 // Componente para proteger rotas privadas
 const PrivateRoute: React.FC<{ children: JSX.Element; requiredRole?: 'ADMIN' | 'USER' }> = ({ children, requiredRole }) => {
@@ -33,7 +33,17 @@ const AppRouter: React.FC = () => {
     <Router>
       <Routes>
         {/* Rota de Login */}
-        <Route path="/login" element={<Login onLoginSuccess={() => window.location.href = '/users'} />} />
+        <Route path="/login" element={
+          <Login onLoginSuccess={() => {
+            const user = authService.getCurrentUser();
+            if (user?.role === 'ADMIN') {
+              window.location.href = '/users';
+            } else {
+              // Redirecionar usuários USER para o board
+              window.location.href = `/user/${user?.id}/board`;
+            }
+          }} />
+        } />
 
         {/* Rota de Gerenciamento de Usuários (Apenas Admins) */}
         <Route

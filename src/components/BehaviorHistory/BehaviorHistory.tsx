@@ -10,7 +10,7 @@ interface BehaviorHistoryProps {
 
 const BehaviorHistory: React.FC<BehaviorHistoryProps> = ({ infractions, formatDate, isAdmin }) => {
   return (
-    <div className={`history-section ${!isAdmin ? 'centered-history' : ''}`}>
+    <div className="history-section">
       <h3>Histórico de Comportamentos</h3>
       {infractions.length === 0 ? (
         <p>Sem comportamentos registrados. Ótimo trabalho!</p>

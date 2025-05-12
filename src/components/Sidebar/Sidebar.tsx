@@ -1,24 +1,27 @@
 import React from 'react';
 import './Sidebar.css';
-import { FaUsers, FaStar, FaGift } from 'react-icons/fa'; // Adicionei FaGift para recompensas
-import { useNavigate, useLocation } from 'react-router-dom'; // Adicionei useLocation
+import { FaUsers, FaStar, FaGift, FaChartBar } from 'react-icons/fa'; // Adicionei FaChartBar para Board
+import { useNavigate, useLocation } from 'react-router-dom';
+import { authService } from '../../services/authService';
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation(); // Para obter a localização atual
+  const location = useLocation();
   const pathname = location.pathname;
 
-  // Verifica se estamos na página BoardPage (pode ter URLs como /user/123/board)
+  // Obter o usuário atual e verificar se é admin
+  const currentUser = authService.getCurrentUser();
+  const isAdmin = currentUser?.role === 'ADMIN';
+
+  // Verificar páginas atuais
   const isOnBoardPage = pathname.includes('/board');
-  // Verifica se estamos na página de recompensas
   const isOnRewardsPage = pathname.includes('/rewards');
-  // Verifica se estamos na página de usuários
   const isOnUsersPage = pathname === '/users';
 
   return (
     <div className="sidebar">
-      {/* Ícone de usuários - aparece em todas as páginas, exceto na própria página de usuários */}
-      {!isOnUsersPage && (
+      {/* Ícone de usuários - apenas para admins e não na própria página de usuários */}
+      {isAdmin && !isOnUsersPage && (
         <div 
           className="sidebar-icon" 
           onClick={() => navigate('/users')} 
@@ -28,7 +31,20 @@ const Sidebar: React.FC = () => {
         </div>
       )}
 
-      {/* Ícone de recompensas - aparece na BoardPage e na página de usuários, mas não na própria página de recompensas */}
+      {/* Ícone de Board - aparece na página de recompensas, mas não na própria página de board */}
+      {!isOnBoardPage && (
+        <div 
+          className="sidebar-icon" 
+          onClick={() => navigate(
+            currentUser ? `/user/${currentUser.id}/board` : '/'
+          )} 
+          title="Board de Pontuação"
+        >
+          <FaChartBar />
+        </div>
+      )}
+
+      {/* Ícone de recompensas - aparece no board e na página de usuários, mas não na própria página de recompensas */}
       {(isOnBoardPage || isOnUsersPage) && !isOnRewardsPage && (
         <div 
           className="sidebar-icon" 

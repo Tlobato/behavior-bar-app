@@ -4,6 +4,7 @@ import InfractionForm from '../../components/InfractionForm/InfractionForm';
 import Modal from '../../components/Modal/Modal';
 import { behaviorService } from '../../services/behaviorService';
 import { authService } from '../../services/authService';
+import { userService } from '../../services/userService';
 import { BehaviorState, InfractionCategory } from '../../types';
 import BehaviorBar from '../../components/BehaviorBar/BehaviorBar';
 import BehaviorHistory from '../../components/BehaviorHistory/BehaviorHistory';
@@ -15,11 +16,11 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import { usePageTitle } from '../../hooks/usePageTitle';
 
 const BoardPage: React.FC = () => {
-  const { user } = useUser();
+  const { user, setUser } = useUser();
   const currentUser = authService.getCurrentUser();
   const navigate = useNavigate();
   const pageName = usePageTitle();
-  
+
   // Verificar se o usuário atual é um administrador
   const isAdmin = currentUser?.role === 'ADMIN';
 
@@ -31,6 +32,8 @@ const BoardPage: React.FC = () => {
   });
   const [categories, setCategories] = useState<InfractionCategory[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  // Adicionar estado para controlar o carregamento inicial
+  const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
 
   // Função de logout
   const handleLogout = () => {
@@ -39,13 +42,20 @@ const BoardPage: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!user) {
-      console.error('Usuário não encontrado no contexto.');
+    // Se os dados já foram carregados ou não há usuário, não execute novamente
+    if (isDataLoaded || !user) {
       return;
     }
 
-    const loadBehaviorState = async () => {
+    const loadData = async () => {
       try {
+        // Carregar dados do usuário
+        const updatedUser = await userService.getUserById(user.id);
+        if (updatedUser) {
+          setUser(updatedUser);
+        }
+
+        // Carregar estado de comportamento
         const infractions = await behaviorService.getBehaviorRecordsByUserId(user.id);
         const activeInfractions = infractions.filter((inf) => inf.ativo);
         const currentPoints = activeInfractions.reduce((acc, inf) => acc + inf.points, 100);
@@ -55,23 +65,34 @@ const BoardPage: React.FC = () => {
           infractions: activeInfractions,
           lastReset: new Date(),
         });
-      } catch (error) {
-        console.error('Erro ao carregar o estado do comportamento:', error);
-      }
-    };
 
-    const loadCategories = async () => {
-      try {
+        // Carregar categorias
         const fetchedCategories = await behaviorService.getInfractionCategories();
         setCategories(fetchedCategories);
+
+        // Marcar os dados como carregados
+        setIsDataLoaded(true);
       } catch (error) {
-        console.error('Erro ao carregar categorias:', error);
+        console.error('Erro ao carregar dados:', error);
       }
     };
 
-    loadBehaviorState();
-    loadCategories();
-  }, [user]);
+    loadData();
+  }, [user, setUser, isDataLoaded]);
+
+  // Efeito separado para atualizações de dados quando ações ocorrem
+  const reloadUserData = async () => {
+    if (!user) return;
+    
+    try {
+      const updatedUser = await userService.getUserById(user.id);
+      if (updatedUser) {
+        setUser(updatedUser);
+      }
+    } catch (error) {
+      console.error('Erro ao recarregar dados do usuário:', error);
+    }
+  };
 
   const handleAddInfraction = async (
     description: string,
@@ -111,6 +132,9 @@ const BoardPage: React.FC = () => {
         currentPoints: Math.max(0, prevState.currentPoints + points),
         infractions: activeInfractions,
       }));
+      
+      // Recarregar dados do usuário após adicionar infração
+      reloadUserData();
     } catch (error) {
       console.error('Erro ao registrar o comportamento:', error);
     }
@@ -134,6 +158,9 @@ const BoardPage: React.FC = () => {
         infractions: activeInfractions,
         lastReset: new Date(),
       });
+      
+      // Recarregar dados do usuário após resetar
+      reloadUserData();
 
       setIsModalOpen(false);
     } catch (error) {
@@ -143,11 +170,13 @@ const BoardPage: React.FC = () => {
 
   return (
     <div className="BoardPage">
-      <Header 
-        projectName="Behavior Bar" 
-        userName={currentUser?.name || 'Usuário'} 
+      <Header
+        projectName="Behavior Bar"
+        userName={currentUser?.name || 'Usuário'}
         onLogout={handleLogout}
         pageName={pageName}
+        rewardPoints={!isAdmin && user ? user.rewardPoints : undefined}
+        userRole={currentUser?.role}
       />
       <div className="page-content">
         <Sidebar />
@@ -155,7 +184,7 @@ const BoardPage: React.FC = () => {
           <div className="board-container">
             <div className="behavior-section">
               <BehaviorBar behaviorState={behaviorState} userName={user?.name || 'Usuário'} />
-              
+
               {/* Seção de reset visível apenas para administradores */}
               {isAdmin && (
                 <div className="reset-section">
@@ -168,14 +197,14 @@ const BoardPage: React.FC = () => {
                 </div>
               )}
             </div>
-            
+
             {/* Formulário de registro de comportamento visível apenas para administradores */}
             {isAdmin && (
               <div className="form-section">
                 <InfractionForm categories={categories} onAddInfraction={handleAddInfraction} />
               </div>
             )}
-            
+
             {/* Histórico de comportamento visível para todos */}
             <div className="history-section">
               <BehaviorHistory infractions={behaviorState.infractions} formatDate={formatDate} isAdmin={isAdmin} />

@@ -10,10 +10,12 @@ import RewardEditModal from '../../components/RewardEditModal/RewardEditModal';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { authService } from '../../services/authService';
 import { rewardService } from '../../services/rewardService';
+import { userService } from '../../services/userService';
 import { Reward } from '../../types';
 import { useNavigate } from 'react-router-dom';
-import { FaGift } from 'react-icons/fa'; // Importe um ícone de presente para indicar recompensas
+import { FaGift } from 'react-icons/fa';
 import { EditRewardData } from '../../components/RewardEditModal/RewardEditModal';
+import { useUser } from '../../context/UserContext';
 
 const RewardsPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,7 +28,9 @@ const RewardsPage: React.FC = () => {
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
 
+  const { user, setUser } = useUser();
   const pageName = usePageTitle();
   const navigate = useNavigate();
 
@@ -34,23 +38,38 @@ const RewardsPage: React.FC = () => {
   const currentUser = authService.getCurrentUser();
   const isAdmin = authService.isAdmin();
 
-  // Buscar recompensas do backend ao carregar a página
+  // Buscar recompensas e dados do usuário ao carregar a página
   useEffect(() => {
-    const fetchRewards = async () => {
+    // Se os dados já foram carregados ou não há usuário, não execute novamente
+    if (isDataLoaded || !user) {
+      return;
+    }
+
+    const loadData = async () => {
       setIsLoading(true);
       try {
+        // Carregar dados do usuário
+        const updatedUser = await userService.getUserById(user.id);
+        if (updatedUser) {
+          setUser(updatedUser);
+        }
+
+        // Carregar recompensas
         const rewardsData = await rewardService.getAllRewards();
         setRewards(rewardsData);
+        
+        // Marcar os dados como carregados
+        setIsDataLoaded(true);
       } catch (err) {
-        console.error('Erro ao buscar recompensas:', err);
-        setError('Não foi possível carregar as recompensas. Por favor, tente novamente mais tarde.');
+        console.error('Erro ao carregar dados:', err);
+        setError('Não foi possível carregar os dados. Por favor, tente novamente mais tarde.');
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchRewards();
-  }, []);
+    loadData();
+  }, [user, setUser, isDataLoaded]);
 
   // Função de logout
   const handleLogout = () => {
@@ -67,7 +86,7 @@ const RewardsPage: React.FC = () => {
     title: string;
     description: string;
     points: number;
-    imageFile?: File | null;  // Alterado de imageUrl para imageFile
+    imageFile?: File | null;
     active?: boolean;
   }) => {
     try {
@@ -230,6 +249,8 @@ const RewardsPage: React.FC = () => {
         userName={currentUser?.name || 'Usuário'}
         onLogout={handleLogout}
         pageName={pageName}
+        rewardPoints={!isAdmin && user ? user.rewardPoints : undefined}
+        userRole={currentUser?.role}
       />
       <div className="page-content">
         <Sidebar />
@@ -265,7 +286,7 @@ const RewardsPage: React.FC = () => {
                   <RewardCard
                     key={reward.id || `reward-${Math.random()}`}
                     title={reward.title}
-                    description={reward.description} // Adicionando a descrição
+                    description={reward.description}
                     imageUrl={reward.imageUrl || null}
                     points={reward.points}
                     isAvailable={reward.active !== false}

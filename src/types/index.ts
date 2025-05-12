@@ -31,6 +31,7 @@ export interface User {
   role: 'ADMIN' | 'USER';
   email: string;
   password?: string;
+  rewardPoints?: number;
 }
 
 export interface RewardCardProps {
@@ -81,4 +82,13 @@ export interface BackendReward {
   pointsRequired: number;
   imageUrl: string | null;
   active: boolean;
+}
+
+export interface HeaderProps {
+  projectName: string;
+  userName: string;
+  onLogout: () => void;
+  pageName?: string;
+  rewardPoints?: number; // Nova prop para pontos de recompensa
+  userRole?: string; // Adicionamos o tipo de usuário
 }

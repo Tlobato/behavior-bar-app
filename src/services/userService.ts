@@ -14,12 +14,38 @@ export const userService = {
         name: user.nome, // Mapeia "nome" para "name"
         email: user.email, // Mapeia "email" para "email"
         role: user.role, // Mantém o papel como está
+        rewardPoints: user.rewardPoints // Adiciona o mapeamento dos pontos de recompensa
       }));
     } catch (error) {
       console.error('Erro ao buscar usuários:', error);
       return []; // Retorna um array vazio em caso de erro
     }
   },
+
+  // Obter um único usuário pelo ID
+  async getUserById(id: number): Promise<User | null> {
+    try {
+      const token = localStorage.getItem('token');
+      
+      const response = await axios.get(`${API_URL}/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      return {
+        id: response.data.id,
+        name: response.data.nome,
+        email: response.data.email,
+        role: response.data.role,
+        rewardPoints: response.data.rewardPoints
+      };
+    } catch (error) {
+      console.error('Erro ao buscar usuário por ID:', error);
+      return null;
+    }
+  },
+
   async createUser(user: Omit<User, 'id'>): Promise<{ id: number; nome: string; email: string; role: 'USER' | 'ADMIN' } | null> {
     try {
       const token = localStorage.getItem('token'); // Recupera o token JWT armazenado
@@ -44,30 +70,30 @@ export const userService = {
     }
   },
 
-// Atualizar informações de um usuário existente
-async updateUser(id: number, user: { name: string; email: string; role: 'USER' | 'ADMIN' }): Promise<boolean> {
-  try {
-    const token = localStorage.getItem('token'); // Recupera o token JWT armazenado
-    
-    // Mapeia os campos para corresponder aos nomes esperados no backend
-    const payload = {
-      nome: user.name, // Mapeia "name" para "nome"
-      email: user.email,
-      role: user.role,
-    };
+  // Atualizar informações de um usuário existente
+  async updateUser(id: number, user: { name: string; email: string; role: 'USER' | 'ADMIN' }): Promise<boolean> {
+    try {
+      const token = localStorage.getItem('token'); // Recupera o token JWT armazenado
+      
+      // Mapeia os campos para corresponder aos nomes esperados no backend
+      const payload = {
+        nome: user.name, // Mapeia "name" para "nome"
+        email: user.email,
+        role: user.role,
+      };
 
-    await axios.put(`${API_URL}/${id}`, payload, {
-      headers: {
-        Authorization: `Bearer ${token}`, // Inclui o token JWT no cabeçalho
-      },
-    });
-    
-    return true; // Retorna true se a atualização for bem-sucedida
-  } catch (error) {
-    console.error('Erro ao atualizar usuário:', error);
-    return false; // Retorna false em caso de erro
-  }
-},
+      await axios.put(`${API_URL}/${id}`, payload, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Inclui o token JWT no cabeçalho
+        },
+      });
+      
+      return true; // Retorna true se a atualização for bem-sucedida
+    } catch (error) {
+      console.error('Erro ao atualizar usuário:', error);
+      return false; // Retorna false em caso de erro
+    }
+  },
 
   // Excluir um usuário
   async deleteUser(id: number): Promise<boolean> {

@@ -87,3 +87,30 @@
   background-color: rgba(0, 0, 0, 0.05);
   color: #4CAF50;
 }
+
+/* Adicionar ao Header.css */
+
+/* Estilo para o container que agrupa os pontos e o ícone */
+.reward-points-container {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Estilo para a exibição dos pontos */
+.reward-points {
+  font-size: 16px;
+  font-weight: bold;
+  color: #4CAF50; /* Verde para destacar */
+}
+
+/* Estilo para o ícone desabilitado (quando estiver na página de recompensas) */
+.disabled-icon {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.disabled-icon:hover {
+  background-color: transparent;
+  color: #555;
+}

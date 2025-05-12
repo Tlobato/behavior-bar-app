@@ -72,14 +72,14 @@ const RewardsPage: React.FC = () => {
   }) => {
     try {
       setIsLoading(true);
-      
+
       // Verificação de segurança para o arquivo
       if (!rewardData.imageFile) {
         setError('Uma imagem é necessária para criar uma recompensa');
         setIsLoading(false);
         return;
       }
-      
+
       const createdReward = await rewardService.createReward(rewardData);
 
       if (createdReward) {
@@ -119,7 +119,7 @@ const RewardsPage: React.FC = () => {
   const handleSaveEditedReward = async (editedRewardData: EditRewardData) => {
     try {
       setIsLoading(true);
-      
+
       // Chamar o serviço para atualizar a recompensa
       const updatedReward = await rewardService.updateReward(
         editedRewardData.id,
@@ -167,7 +167,7 @@ const RewardsPage: React.FC = () => {
     try {
       setIsLoading(true);
       const success = await rewardService.deleteReward(selectedRewardId);
-      
+
       if (success) {
         // Remover a recompensa da lista local
         setRewards(rewards.filter(reward => reward.id !== selectedRewardId));
@@ -241,7 +241,6 @@ const RewardsPage: React.FC = () => {
                   title="Nova Recompensa"
                   buttonText="Criar"
                   onButtonClick={handleOpenCreateRewardModal}
-                  width='960px'
                 />
               </div>
             )}
@@ -266,6 +265,7 @@ const RewardsPage: React.FC = () => {
                   <RewardCard
                     key={reward.id || `reward-${Math.random()}`}
                     title={reward.title}
+                    description={reward.description} // Adicionando a descrição
                     imageUrl={reward.imageUrl || null}
                     points={reward.points}
                     isAvailable={reward.active !== false}

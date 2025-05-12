@@ -35,12 +35,13 @@ export interface User {
 
 export interface RewardCardProps {
   title: string;
+  description?: string; // Adicionando descrição
   imageUrl: string | null;
   points: number;
   isAvailable?: boolean;
-  onClick?: () => void;     // Para usuários normais (resgatar prêmio)
-  onEdit?: () => void;      // Para administradores (editar)
-  onDelete?: () => void;    // Para administradores (excluir)
+  onClick?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export interface UserEditModalProps {

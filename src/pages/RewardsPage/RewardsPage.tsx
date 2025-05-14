@@ -231,14 +231,14 @@ const RewardsPage: React.FC = () => {
   // Obtém o conteúdo do modal
   const modalContent = getModalContent();
 
-  // Componente para exibir quando não há recompensas
   const EmptyRewardsState = () => (
     <div className="empty-rewards-container">
       <div className="empty-rewards-icon-container">
         <FaGift size={64} />
       </div>
       <h3>Nenhuma recompensa cadastrada</h3>
-      <p>Crie sua primeira recompensa clicando no botão "Criar" acima!</p>
+      {/* Exibe o segundo texto apenas para ADMIN */}
+      {isAdmin && <p>Crie sua primeira recompensa clicando no botão "Criar" acima!</p>}
     </div>
   );
 

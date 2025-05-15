@@ -3,7 +3,7 @@ import './MissionPage.css';
 import { Mission } from '../../types';
 import { missionService } from '../../services/missionService';
 import { useNavigate } from 'react-router-dom';
-import { FaTrash, FaEdit, FaTasks } from 'react-icons/fa'; // Ícones
+import { FaTrash, FaEdit, FaTasks } from 'react-icons/fa';
 import { authService } from '../../services/authService';
 import Header from '../../components/Header/Header';
 import MissionCreateModal from '../../components/MissionCreateModal/MissionCreateModal';
@@ -12,6 +12,7 @@ import Modal from '../../components/Modal/Modal';
 import NewRegistrationComponent from '../../components/NewRegistrationComponent/NewRegistrationComponent';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import { usePageTitle } from '../../hooks/usePageTitle';
+import { formatDateTime } from '../../utils/dateUtils';
 
 const MissionPage: React.FC = () => {
     const [missions, setMissions] = useState<Mission[]>([]);
@@ -26,6 +27,20 @@ const MissionPage: React.FC = () => {
     const navigate = useNavigate();
     const currentUser = authService.getCurrentUser();
     const pageName = usePageTitle();
+
+    // Função para traduzir o status da missão
+    const translateStatus = (status: string): string => {
+        switch (status) {
+            case 'IN_PROGRESS':
+                return 'Em progresso';
+            case 'COMPLETED':
+                return 'Finalizada';
+            case 'FAIL':
+                return 'Não concluída';
+            default:
+                return status;
+        }
+    };
 
     const handleLogout = () => {
         authService.logout();
@@ -161,8 +176,8 @@ const MissionPage: React.FC = () => {
                                         {missions.map(mission => (
                                             <tr key={mission.id}>
                                                 <td>{mission.name}</td>
-                                                <td>{mission.status}</td>
-                                                <td>{mission.deadline}</td>
+                                                <td>{translateStatus(mission.status)}</td>
+                                                <td>{formatDateTime(mission.deadline)}</td>
                                                 <td className="action-icons">
                                                     <div
                                                         className="action-icon"

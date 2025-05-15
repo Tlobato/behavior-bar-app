@@ -98,7 +98,7 @@ export interface Mission {
   name: string; // Nome da missão
   description?: string; // Descrição da missão (opcional)
   rewardPoints: number; // Pontos atribuídos à missão
-  status: 'IN_PROGRESS' | 'COMPLETED'; // Status da missão
+  status: 'IN_PROGRESS' | 'COMPLETED' | 'FAIL'; // Status da missão
   createdAt: string; // Data de criação da missão (ISO string)
   deadline?: string; // Prazo para completar a missão (ISO string, opcional)
   userId: number; // ID do usuário associado à missão

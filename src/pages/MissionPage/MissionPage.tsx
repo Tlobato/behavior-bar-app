@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import './MissionPage.css';
-import { Mission } from '../../types';
+import { Mission, User } from '../../types';
 import { missionService } from '../../services/missionService';
+import { userService } from '../../services/userService'; // Importando o serviço de usuários
 import { useNavigate } from 'react-router-dom';
 import { FaTrash, FaEdit, FaTasks } from 'react-icons/fa';
 import { authService } from '../../services/authService';
@@ -16,6 +17,7 @@ import { formatDateTime } from '../../utils/dateUtils';
 
 const MissionPage: React.FC = () => {
     const [missions, setMissions] = useState<Mission[]>([]);
+    const [users, setUsers] = useState<{[key: number]: User}>({}); // Para armazenar os usuários
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -47,21 +49,37 @@ const MissionPage: React.FC = () => {
         navigate('/login');
     };
 
+    // Função para obter o nome do usuário pelo ID
+    const getUserName = (userId: number | undefined): string => {
+        if (!userId) return 'Não atribuído';
+        return users[userId]?.name || 'Usuário não encontrado';
+    };
+
     // Carregar lista de missões ao montar o componente
     useEffect(() => {
-        const fetchMissions = async () => {
+        const fetchData = async () => {
+            setIsLoading(true);
             try {
+                // Buscar usuários
+                const fetchedUsers = await userService.getUsers();
+                const usersMap: {[key: number]: User} = {};
+                fetchedUsers.forEach(user => {
+                    usersMap[user.id] = user;
+                });
+                setUsers(usersMap);
+                
+                // Buscar missões
                 const fetchedMissions = await missionService.getMissions();
                 setMissions(fetchedMissions);
             } catch (err) {
-                console.error('Erro ao buscar missões:', err);
-                setError('Não foi possível carregar as missões.');
+                console.error('Erro ao buscar dados:', err);
+                setError('Não foi possível carregar os dados.');
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchMissions();
+        fetchData();
     }, []);
 
     // Abrir o modal de edição
@@ -169,6 +187,7 @@ const MissionPage: React.FC = () => {
                                             <th>Missão</th>
                                             <th>Status</th>
                                             <th>Prazo</th>
+                                            <th>Usuário</th>
                                             <th>Ações</th>
                                         </tr>
                                     </thead>
@@ -178,6 +197,7 @@ const MissionPage: React.FC = () => {
                                                 <td>{mission.name}</td>
                                                 <td>{translateStatus(mission.status)}</td>
                                                 <td>{formatDateTime(mission.deadline)}</td>
+                                                <td>{getUserName(mission.userId)}</td>
                                                 <td className="action-icons">
                                                     <div
                                                         className="action-icon"

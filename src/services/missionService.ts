@@ -1,13 +1,20 @@
 import axios from 'axios';
 import { Mission } from '../types';
 
-const API_URL = 'http://localhost:8080/api/missions'; // URL base para os endpoints de missões
+const API_URL = 'http://localhost:8080/missions'; // URL base para os endpoints de missões
 
 export const missionService = {
   // Listar todas as missões
   async getMissions(): Promise<Mission[]> {
     try {
-      const response = await axios.get(API_URL); // Faz a chamada GET para obter as missões
+      const token = localStorage.getItem('token'); // Recupera o token JWT armazenado
+
+      const response = await axios.get(API_URL, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Inclui o token JWT no cabeçalho
+        },
+      });
+
       return response.data.map((mission: any) => ({
         id: mission.id,
         name: mission.name,
@@ -18,7 +25,7 @@ export const missionService = {
         deadline: mission.deadline,
         userId: mission.userId,
         adminId: mission.adminId,
-        tasks: mission.tasks, // Mantém a lista de tarefas como está
+        tasks: mission.tasks || [], // Inicializa como um array vazio se não houver tarefas
       }));
     } catch (error) {
       console.error('Erro ao buscar missões:', error);

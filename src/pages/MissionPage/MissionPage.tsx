@@ -68,6 +68,7 @@ const MissionPage: React.FC = () => {
             setMissions(missions.map(mission =>
               mission.id === missionId ? { ...mission, ...missionData } : mission
             ));
+            setIsEditModalOpen(false);
           } else {
             alert('Erro ao atualizar missão.');
           }
@@ -113,6 +114,7 @@ const MissionPage: React.FC = () => {
 
             if (createdMission) {
                 setMissions([...missions, createdMission]);
+                setIsModalOpen(false);
             } else {
                 alert('Erro ao criar missão.');
             }

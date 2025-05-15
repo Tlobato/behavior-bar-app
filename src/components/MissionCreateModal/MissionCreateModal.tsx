@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './MissionCreateModal.css';
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaCalendarAlt } from 'react-icons/fa';
 import { userService } from '../../services/userService';
 import { MissionCreateModalProps, User } from '../../types';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const MissionCreateModal: React.FC<MissionCreateModalProps> = ({ isOpen, onClose, onCreate }) => {
   const [missionData, setMissionData] = useState({
@@ -12,6 +14,7 @@ const MissionCreateModal: React.FC<MissionCreateModalProps> = ({ isOpen, onClose
     deadline: '',
     userId: 0,
   });
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,6 +28,7 @@ const MissionCreateModal: React.FC<MissionCreateModalProps> = ({ isOpen, onClose
   useEffect(() => {
     if (isOpen) {
       fetchUsers();
+      setSelectedDate(null);
     }
   }, [isOpen]);
 
@@ -50,7 +54,6 @@ const MissionCreateModal: React.FC<MissionCreateModalProps> = ({ isOpen, onClose
       const spaceBelow = windowHeight - rect.bottom;
       const spaceAbove = rect.top;
       
-      // Se houver mais espaço acima do que abaixo, ou se o espaço abaixo for insuficiente
       if (spaceAbove > spaceBelow || spaceBelow < 200) {
         setDropdownDirection('up');
       } else {
@@ -59,7 +62,6 @@ const MissionCreateModal: React.FC<MissionCreateModalProps> = ({ isOpen, onClose
     }
   };
 
-  // Abrir dropdown
   const handleOpenDropdown = () => {
     calculateDropdownDirection();
     setIsDropdownOpen(true);
@@ -69,7 +71,6 @@ const MissionCreateModal: React.FC<MissionCreateModalProps> = ({ isOpen, onClose
     setIsLoading(true);
     try {
       const fetchedUsers = await userService.getUsers();
-      // Filtrar apenas usuários com role USER
       const regularUsers = fetchedUsers.filter(user => user.role === 'USER');
       setUsers(regularUsers);
     } catch (error) {
@@ -95,6 +96,22 @@ const MissionCreateModal: React.FC<MissionCreateModalProps> = ({ isOpen, onClose
     }
   };
 
+  const handleDateChange = (date: Date | null) => {
+    setSelectedDate(date);
+    if (date) {
+      const formattedDate = date.toISOString().slice(0, 16);
+      setMissionData(prev => ({
+        ...prev,
+        deadline: formattedDate
+      }));
+    } else {
+      setMissionData(prev => ({
+        ...prev,
+        deadline: ''
+      }));
+    }
+  };
+
   const handleUserSelect = (user: User) => {
     setMissionData((prev) => ({
       ...prev,
@@ -107,7 +124,6 @@ const MissionCreateModal: React.FC<MissionCreateModalProps> = ({ isOpen, onClose
   const handleCreate = () => {
     const { name, description, rewardPoints, deadline, userId } = missionData;
 
-    // Validação básica
     if (!name || !description || !rewardPoints || !deadline || !userId) {
       alert('Por favor, preencha todos os campos corretamente.');
       return;
@@ -125,10 +141,21 @@ const MissionCreateModal: React.FC<MissionCreateModalProps> = ({ isOpen, onClose
       deadline: '',
       userId: 0,
     });
+    setSelectedDate(null);
     setSelectedUserName('Selecione um usuário');
   };
 
   if (!isOpen) return null;
+  
+  // Componente personalizado para o DatePicker com forwardRef
+  const DatePickerCustomInput = React.forwardRef<HTMLDivElement, { value?: string; onClick?: () => void }>(
+    ({ value, onClick }, ref) => (
+      <div className="date-picker-custom-input" onClick={onClick} ref={ref}>
+        <span>{value || "Selecione data e hora"}</span>
+        <FaCalendarAlt />
+      </div>
+    )
+  );
 
   return (
     <div className="modal">
@@ -166,12 +193,24 @@ const MissionCreateModal: React.FC<MissionCreateModalProps> = ({ isOpen, onClose
           />
 
           <label>Prazo (Deadline):</label>
-          <input
-            type="datetime-local"
-            name="deadline"
-            value={missionData.deadline}
-            onChange={handleInputChange}
-          />
+          <div className="date-picker-container">
+            <DatePicker
+              selected={selectedDate}
+              onChange={handleDateChange}
+              showTimeSelect
+              timeFormat="HH:mm"
+              timeIntervals={15}
+              timeCaption="Hora"
+              dateFormat="dd/MM/yyyy HH:mm"
+              customInput={<DatePickerCustomInput />}
+              popperPlacement="bottom"
+              wrapperClassName="date-picker-wrapper"
+              popperClassName="date-picker-popper"
+              todayButton="Hoje"
+              isClearable
+              placeholderText="Selecione data e hora"
+            />
+          </div>
 
           <label>Usuário Responsável:</label>
           <div className="custom-select-container" ref={dropdownRef}>

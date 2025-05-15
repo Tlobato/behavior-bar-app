@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './MissionEditModal.css';
-import { FaUser } from 'react-icons/fa';
+import { FaUser, FaCalendarAlt } from 'react-icons/fa';
 import { userService } from '../../services/userService';
 import { MissionEditModalProps } from '../../types';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const MissionEditModal: React.FC<MissionEditModalProps> = ({ isOpen, onClose, onUpdate, mission }) => {
   const [missionData, setMissionData] = useState({
@@ -12,6 +14,7 @@ const MissionEditModal: React.FC<MissionEditModalProps> = ({ isOpen, onClose, on
     deadline: '',
     userId: 0,
   });
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedUserName, setSelectedUserName] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   
@@ -45,6 +48,13 @@ const MissionEditModal: React.FC<MissionEditModalProps> = ({ isOpen, onClose, on
         userId: mission.userId,
       });
       
+      // Converter a string do deadline para objeto Date
+      if (mission.deadline) {
+        setSelectedDate(new Date(mission.deadline));
+      } else {
+        setSelectedDate(null);
+      }
+      
       // Buscar nome do usuário selecionado
       fetchUserDetails(mission.userId);
     }
@@ -66,6 +76,22 @@ const MissionEditModal: React.FC<MissionEditModalProps> = ({ isOpen, onClose, on
     }
   };
 
+  const handleDateChange = (date: Date | null) => {
+    setSelectedDate(date);
+    if (date) {
+      const formattedDate = date.toISOString().slice(0, 16);
+      setMissionData(prev => ({
+        ...prev,
+        deadline: formattedDate
+      }));
+    } else {
+      setMissionData(prev => ({
+        ...prev,
+        deadline: ''
+      }));
+    }
+  };
+
   const handleUpdate = () => {
     const { name, description, rewardPoints, deadline, userId } = missionData;
 
@@ -81,6 +107,16 @@ const MissionEditModal: React.FC<MissionEditModalProps> = ({ isOpen, onClose, on
   };
 
   if (!isOpen) return null;
+  
+  // Componente personalizado para o DatePicker com forwardRef
+  const DatePickerCustomInput = React.forwardRef<HTMLDivElement, { value?: string; onClick?: () => void }>(
+    ({ value, onClick }, ref) => (
+      <div className="date-picker-custom-input" onClick={onClick} ref={ref}>
+        <span>{value || "Selecione data e hora"}</span>
+        <FaCalendarAlt />
+      </div>
+    )
+  );
 
   return (
     <div className="modal">
@@ -118,12 +154,24 @@ const MissionEditModal: React.FC<MissionEditModalProps> = ({ isOpen, onClose, on
           />
 
           <label>Prazo (Deadline):</label>
-          <input
-            type="datetime-local"
-            name="deadline"
-            value={missionData.deadline}
-            onChange={handleInputChange}
-          />
+          <div className="date-picker-container">
+            <DatePicker
+              selected={selectedDate}
+              onChange={handleDateChange}
+              showTimeSelect
+              timeFormat="HH:mm"
+              timeIntervals={15}
+              timeCaption="Hora"
+              dateFormat="dd/MM/yyyy HH:mm"
+              customInput={<DatePickerCustomInput />}
+              popperPlacement="bottom"
+              wrapperClassName="date-picker-wrapper"
+              popperClassName="date-picker-popper"
+              todayButton="Hoje"
+              isClearable
+              placeholderText="Selecione data e hora"
+            />
+          </div>
 
           <label>Usuário Responsável:</label>
           <div className="user-display-container">

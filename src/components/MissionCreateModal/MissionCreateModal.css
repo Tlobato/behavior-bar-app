@@ -145,6 +145,11 @@
   transform: rotate(180deg);
 }
 
+/* Estilo para os SVGs dentro do dropdown-arrow */
+.dropdown-arrow svg {
+  color: #666;
+}
+
 .custom-select-options {
   position: absolute;
   left: 0;
@@ -210,4 +215,133 @@
 
 .custom-select-options::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+/* Estilos para o DatePicker */
+.date-picker-wrapper {
+  width: 100%;
+}
+
+.date-picker-container {
+  width: 100%;
+  position: relative;
+}
+
+.date-picker-custom-input {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: white;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.date-picker-custom-input:hover {
+  border-color: #4CAF50;
+}
+
+/* Estilo para o ícone de calendário dentro do input customizado */
+.date-picker-custom-input svg {
+  color: #4CAF50;
+  font-size: 1.2rem;
+}
+
+.date-picker-popper {
+  z-index: 9999;
+}
+
+.datetime-help-text {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 5px;
+}
+
+/* Estilos para o DatePicker */
+.react-datepicker {
+  font-family: inherit;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.react-datepicker__header {
+  background-color: #f8f8f8;
+  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+}
+
+.react-datepicker__day--selected {
+  background-color: #4CAF50;
+}
+
+.react-datepicker__day:hover {
+  background-color: #e9f5e9;
+}
+
+.react-datepicker__time-container,
+.react-datepicker__time {
+  background-color: white;
+}
+
+.react-datepicker__time-container
+.react-datepicker__time
+.react-datepicker__time-box
+ul.react-datepicker__time-list
+li.react-datepicker__time-list-item--selected {
+  background-color: #4CAF50;
+}
+
+.react-datepicker__today-button {
+  background-color: #4CAF50;
+  border-top: 1px solid #eee;
+  color: white;
+  padding: 8px 0;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* CSS Completo para resolver o problema */
+.date-picker-custom-input {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: white;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.date-picker-custom-input span {
+  flex-grow: 1;
+}
+
+.date-picker-custom-input svg {
+  color: #4CAF50;
+  font-size: 1.2rem;
+  margin-left: 10px; /* Espaço entre o texto e o ícone */
+  flex-shrink: 0; /* Impedir que o ícone seja comprimido */
+}
+
+.react-datepicker__close-icon {
+  position: absolute !important;
+  right: 30px !important; /* Posicionado entre o texto e o ícone */
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  height: auto !important;
+}
+
+.react-datepicker__close-icon::after {
+  background-color: #ccc !important;
+  font-size: 14px !important;
+  width: 16px !important;
+  height: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }

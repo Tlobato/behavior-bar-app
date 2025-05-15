@@ -4,8 +4,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { authService } from '../services/authService';
 import BoardPage from '../pages/BoardPage/BoardPage';
 import UserManagement from '../pages/UserManagementPage/UserManagementPage';
-import Login from '../pages/LoginPage/LoginPage';
 import RewardsPage from '../pages/RewardsPage/RewardsPage';
+import Login from '../pages/LoginPage/LoginPage';
+import MissionPage from '../pages/MissionPage/MissionPage'; // Importação da MissionPage
 
 // Componente para proteger rotas privadas
 const PrivateRoute: React.FC<{ children: JSX.Element; requiredRole?: 'ADMIN' | 'USER' }> = ({ children, requiredRole }) => {
@@ -33,17 +34,22 @@ const AppRouter: React.FC = () => {
     <Router>
       <Routes>
         {/* Rota de Login */}
-        <Route path="/login" element={
-          <Login onLoginSuccess={() => {
-            const user = authService.getCurrentUser();
-            if (user?.role === 'ADMIN') {
-              window.location.href = '/users';
-            } else {
-              // Redirecionar usuários USER para o board
-              window.location.href = `/user/${user?.id}/board`;
-            }
-          }} />
-        } />
+        <Route
+          path="/login"
+          element={
+            <Login
+              onLoginSuccess={() => {
+                const user = authService.getCurrentUser();
+                if (user?.role === 'ADMIN') {
+                  window.location.href = '/users';
+                } else {
+                  // Redirecionar usuários USER para o board
+                  window.location.href = `/user/${user?.id}/board`;
+                }
+              }}
+            />
+          }
+        />
 
         {/* Rota de Gerenciamento de Usuários (Apenas Admins) */}
         <Route
@@ -71,6 +77,16 @@ const AppRouter: React.FC = () => {
           element={
             <PrivateRoute requiredRole="USER">
               <RewardsPage />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Rota de Missões (Apenas Admins) */}
+        <Route
+          path="/missions"
+          element={
+            <PrivateRoute requiredRole="ADMIN">
+              <MissionPage />
             </PrivateRoute>
           }
         />

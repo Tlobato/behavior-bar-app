@@ -92,3 +92,26 @@ export interface HeaderProps {
   rewardPoints?: number; // Nova prop para pontos de recompensa
   userRole?: string; // Adicionamos o tipo de usuário
 }
+
+export interface Mission {
+  id: number; // ID da missão
+  name: string; // Nome da missão
+  description?: string; // Descrição da missão (opcional)
+  rewardPoints: number; // Pontos atribuídos à missão
+  status: 'IN_PROGRESS' | 'COMPLETED'; // Status da missão
+  createdAt: string; // Data de criação da missão (ISO string)
+  deadline?: string; // Prazo para completar a missão (ISO string, opcional)
+  userId: number; // ID do usuário associado à missão
+  adminId?: number; // ID do administrador que criou a missão (opcional)
+  tasks: MissionTask[]; // Lista de tarefas associadas à missão
+}
+
+export interface MissionTask {
+  id: number; // ID da tarefa
+  name: string; // Nome da tarefa
+  status: 'AVAILABLE' | 'PENDING' | 'DENIED' | 'APPROVED'; // Status da tarefa
+  observation?: string; // Observação do ADMIN (opcional)
+  createdAt: string; // Data de criação da tarefa (ISO string)
+  missionId: number; // ID da missão associada
+  userId: number; // ID do usuário associado à tarefa
+}

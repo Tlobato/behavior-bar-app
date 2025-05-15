@@ -1,17 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './MissionCreateModal.css';
-
-interface MissionCreateModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onCreate: (missionData: {
-    name: string;
-    description: string;
-    rewardPoints: number;
-    deadline: string;
-    userId: number;
-  }) => void;
-}
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { userService } from '../../services/userService';
+import { MissionCreateModalProps, User } from '../../types';
 
 const MissionCreateModal: React.FC<MissionCreateModalProps> = ({ isOpen, onClose, onCreate }) => {
   const [missionData, setMissionData] = useState({
@@ -21,6 +12,72 @@ const MissionCreateModal: React.FC<MissionCreateModalProps> = ({ isOpen, onClose
     deadline: '',
     userId: 0,
   });
+  const [users, setUsers] = useState<User[]>([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedUserName, setSelectedUserName] = useState('Selecione um usuário');
+  const [dropdownDirection, setDropdownDirection] = useState<'down' | 'up'>('down');
+  
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const selectHeaderRef = useRef<HTMLDivElement>(null);
+
+  // Carregar lista de usuários quando o modal abrir
+  useEffect(() => {
+    if (isOpen) {
+      fetchUsers();
+    }
+  }, [isOpen]);
+
+  // Fechar dropdown ao clicar fora dele
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Determinar a direção do dropdown com base no espaço disponível
+  const calculateDropdownDirection = () => {
+    if (selectHeaderRef.current) {
+      const rect = selectHeaderRef.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      const spaceBelow = windowHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      
+      // Se houver mais espaço acima do que abaixo, ou se o espaço abaixo for insuficiente
+      if (spaceAbove > spaceBelow || spaceBelow < 200) {
+        setDropdownDirection('up');
+      } else {
+        setDropdownDirection('down');
+      }
+    }
+  };
+
+  // Abrir dropdown
+  const handleOpenDropdown = () => {
+    calculateDropdownDirection();
+    setIsDropdownOpen(true);
+  };
+
+  const fetchUsers = async () => {
+    setIsLoading(true);
+    try {
+      const fetchedUsers = await userService.getUsers();
+      // Filtrar apenas usuários com role USER
+      const regularUsers = fetchedUsers.filter(user => user.role === 'USER');
+      setUsers(regularUsers);
+    } catch (error) {
+      console.error('Erro ao buscar usuários:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -36,6 +93,15 @@ const MissionCreateModal: React.FC<MissionCreateModalProps> = ({ isOpen, onClose
         [name]: value,
       }));
     }
+  };
+
+  const handleUserSelect = (user: User) => {
+    setMissionData((prev) => ({
+      ...prev,
+      userId: user.id,
+    }));
+    setSelectedUserName(user.name);
+    setIsDropdownOpen(false);
   };
 
   const handleCreate = () => {
@@ -59,6 +125,7 @@ const MissionCreateModal: React.FC<MissionCreateModalProps> = ({ isOpen, onClose
       deadline: '',
       userId: 0,
     });
+    setSelectedUserName('Selecione um usuário');
   };
 
   if (!isOpen) return null;
@@ -106,15 +173,39 @@ const MissionCreateModal: React.FC<MissionCreateModalProps> = ({ isOpen, onClose
             onChange={handleInputChange}
           />
 
-          <label>ID do Usuário:</label>
-          <input
-            type="number"
-            name="userId"
-            value={missionData.userId}
-            onChange={handleInputChange}
-            min="1"
-            placeholder="Ex: 2"
-          />
+          <label>Usuário Responsável:</label>
+          <div className="custom-select-container" ref={dropdownRef}>
+            <div 
+              className="custom-select-header" 
+              ref={selectHeaderRef}
+              onClick={() => isDropdownOpen ? setIsDropdownOpen(false) : handleOpenDropdown()}
+            >
+              <span>{selectedUserName}</span>
+              <div className={`dropdown-arrow ${isDropdownOpen ? 'open' : ''}`}>
+                {dropdownDirection === 'down' ? <FaChevronDown /> : <FaChevronUp />}
+              </div>
+            </div>
+            
+            {isDropdownOpen && (
+              <div className={`custom-select-options ${dropdownDirection === 'up' ? 'dropdown-up' : 'dropdown-down'}`}>
+                {isLoading ? (
+                  <div className="select-loading">Carregando usuários...</div>
+                ) : users.length > 0 ? (
+                  users.map((user) => (
+                    <div 
+                      key={user.id} 
+                      className="select-option" 
+                      onClick={() => handleUserSelect(user)}
+                    >
+                      {user.name}
+                    </div>
+                  ))
+                ) : (
+                  <div className="select-no-data">Nenhum usuário disponível</div>
+                )}
+              </div>
+            )}
+          </div>
 
           <div className="modal-actions">
             <button type="button" onClick={handleCreate} className="create-mission-button">

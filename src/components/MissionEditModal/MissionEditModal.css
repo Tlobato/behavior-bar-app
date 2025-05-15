@@ -1,113 +1,183 @@
 /* Estilos do Modal de Edição de Missão */
 .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-  .mission-modal-content {
-    background-color: white;
-    padding: 30px;
-    border-radius: 12px;
-    width: 500px;
-    max-width: 90%;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
-  }
-  
-  .mission-modal-content h2 {
-    font-size: 1.5rem;
-    font-weight: 500;
-    margin-bottom: 10px;
-    color: #333;
-    text-align: center;
-  }
-  
-  .modal-divider {
-    width: 100%;
-    height: 2px;
-    background-color: #ccc;
-    margin: 20px 0;
-  }
-  
-  .mission-modal-content form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .mission-modal-content form label {
-    font-weight: 500;
-    color: #444;
-    text-align: left;
-  }
-  
-  .mission-modal-content form input[type="text"],
-  .mission-modal-content form input[type="number"],
-  .mission-modal-content form input[type="datetime-local"],
-  .mission-modal-content form textarea {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 1rem;
-    color: #333;
-    transition: border-color 0.2s ease-in-out;
-  }
-  
-  .mission-modal-content form input[type="text"]:focus,
-  .mission-modal-content form input[type="number"]:focus,
-  .mission-modal-content form input[type="datetime-local"]:focus,
-  .mission-modal-content form textarea:focus {
-    border-color: #4CAF50;
-    outline: none;
-  }
-  
-  .mission-modal-content form textarea {
-    resize: vertical;
-    min-height: 100px;
-  }
-  
-  .modal-actions {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
-  }
-  
-  .update-mission-button,
-  .cancel-button {
-    border: none;
-    border-radius: 8px;
-    padding: 12px;
-    width: 150px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.3s ease-in-out;
-  }
-  
-  .update-mission-button {
-    background-color: #4CAF50;
-    color: white;
-  }
-  
-  .update-mission-button:hover {
-    background-color: #45a049;
-  }
-  
-  .cancel-button {
-    background-color: #f44336;
-    color: white;
-  }
-  
-  .cancel-button:hover {
-    background-color: #d32f2f;
-  }
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.mission-modal-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 500px;
+  max-width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.mission-modal-content h2 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-bottom: 10px;
+  color: #333;
+  text-align: center;
+}
+
+.modal-divider {
+  width: 100%;
+  height: 2px;
+  background-color: #ccc;
+  margin: 20px 0;
+}
+
+.mission-modal-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mission-modal-content form label {
+  font-weight: 500;
+  color: #444;
+  text-align: left;
+}
+
+.mission-modal-content form input[type="text"],
+.mission-modal-content form input[type="number"],
+.mission-modal-content form input[type="datetime-local"],
+.mission-modal-content form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #333;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.mission-modal-content form input[type="text"]:focus,
+.mission-modal-content form input[type="number"]:focus,
+.mission-modal-content form input[type="datetime-local"]:focus,
+.mission-modal-content form textarea:focus {
+  border-color: #4CAF50;
+  outline: none;
+}
+
+.mission-modal-content form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.update-mission-button,
+.cancel-button {
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  width: 150px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.update-mission-button {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.update-mission-button:hover {
+  background-color: #45a049;
+}
+
+.cancel-button {
+  background-color: #f44336;
+  color: white;
+}
+
+.cancel-button:hover {
+  background-color: #d32f2f;
+}
+
+/* Estilos para o componente de exibição de usuário não-editável */
+.user-display-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  position: relative;
+}
+
+.user-icon-wrapper {
+  color: #666;
+  margin-right: 10px;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+}
+
+.user-name {
+  color: #333;
+  font-weight: 500;
+  flex-grow: 1;
+}
+
+.non-editable-badge {
+  background-color: #eee;
+  color: #666;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  margin-left: auto;
+}
+
+.user-loading {
+  width: 100%;
+  text-align: center;
+  color: #666;
+  padding: 10px 0;
+  font-style: italic;
+}
+
+.user-info-note {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 5px;
+  font-style: italic;
+}
+
+/* Estilização da scrollbar */
+.mission-modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.mission-modal-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 8px;
+}
+
+.mission-modal-content::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 8px;
+}
+
+.mission-modal-content::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

@@ -1,25 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './MissionEditModal.css';
-
-interface MissionEditModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onUpdate: (missionId: number, missionData: {
-    name: string;
-    description: string;
-    rewardPoints: number;
-    deadline: string;
-    userId: number;
-  }) => void;
-  mission: {
-    id: number;
-    name: string;
-    description?: string; // Atualizado para permitir valores opcionais
-    rewardPoints: number;
-    deadline?: string; // Atualizado para permitir valores opcionais
-    userId: number;
-  } | null;
-}
+import { FaUser } from 'react-icons/fa';
+import { userService } from '../../services/userService';
+import { MissionEditModalProps } from '../../types';
 
 const MissionEditModal: React.FC<MissionEditModalProps> = ({ isOpen, onClose, onUpdate, mission }) => {
   const [missionData, setMissionData] = useState({
@@ -29,18 +12,43 @@ const MissionEditModal: React.FC<MissionEditModalProps> = ({ isOpen, onClose, on
     deadline: '',
     userId: 0,
   });
+  const [selectedUserName, setSelectedUserName] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Função para buscar detalhes do usuário da missão
+  const fetchUserDetails = useCallback(async (userId: number) => {
+    setIsLoading(true);
+    try {
+      // Busca apenas o usuário específico da missão
+      const user = await userService.getUserById(userId);
+      if (user) {
+        setSelectedUserName(user.name);
+      } else {
+        setSelectedUserName('Usuário não encontrado');
+      }
+    } catch (error) {
+      console.error('Erro ao buscar detalhes do usuário:', error);
+      setSelectedUserName('Erro ao carregar usuário');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
+  // Inicializar dados quando o modal é aberto
   useEffect(() => {
-    if (mission) {
+    if (isOpen && mission) {
       setMissionData({
         name: mission.name,
-        description: mission.description || '', // Inicializa como string vazia se for undefined
+        description: mission.description || '',
         rewardPoints: mission.rewardPoints,
-        deadline: mission.deadline || '', // Inicializa como string vazia se for undefined
+        deadline: mission.deadline || '',
         userId: mission.userId,
       });
+      
+      // Buscar nome do usuário selecionado
+      fetchUserDetails(mission.userId);
     }
-  }, [mission]);
+  }, [isOpen, mission, fetchUserDetails]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -117,15 +125,23 @@ const MissionEditModal: React.FC<MissionEditModalProps> = ({ isOpen, onClose, on
             onChange={handleInputChange}
           />
 
-          <label>ID do Usuário:</label>
-          <input
-            type="number"
-            name="userId"
-            value={missionData.userId}
-            onChange={handleInputChange}
-            min="1"
-            placeholder="Ex: 2"
-          />
+          <label>Usuário Responsável:</label>
+          <div className="user-display-container">
+            {isLoading ? (
+              <div className="user-loading">Carregando detalhes do usuário...</div>
+            ) : (
+              <>
+                <div className="user-icon-wrapper">
+                  <FaUser />
+                </div>
+                <span className="user-name">{selectedUserName}</span>
+                <div className="non-editable-badge">Não editável</div>
+              </>
+            )}
+          </div>
+          <div className="user-info-note">
+            A atribuição de usuário não pode ser alterada após a criação da missão.
+          </div>
 
           <div className="modal-actions">
             <button type="button" onClick={handleUpdate} className="update-mission-button">

@@ -115,3 +115,35 @@ export interface MissionTask {
   missionId: number; // ID da missão associada
   userId: number; // ID do usuário associado à tarefa
 }
+
+export interface MissionEditModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onUpdate: (missionId: number, missionData: {
+    name: string;
+    description: string;
+    rewardPoints: number;
+    deadline: string;
+    userId: number;
+  }) => void;
+  mission: {
+    id: number;
+    name: string;
+    description?: string;
+    rewardPoints: number;
+    deadline?: string;
+    userId: number;
+  } | null;
+}
+
+export interface MissionCreateModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onCreate: (missionData: {
+    name: string;
+    description: string;
+    rewardPoints: number;
+    deadline: string;
+    userId: number;
+  }) => void;
+}

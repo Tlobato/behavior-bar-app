@@ -1,6 +1,6 @@
 import React from 'react';
 import './Sidebar.css';
-import { FaUsers, FaStar, FaGift, FaChartBar } from 'react-icons/fa'; // Adicionei FaChartBar para Board
+import { FaUsers, FaStar, FaGift, FaChartBar, FaTasks } from 'react-icons/fa'; // Adicionado FaTasks para Missões
 import { useNavigate, useLocation } from 'react-router-dom';
 import { authService } from '../../services/authService';
 
@@ -17,6 +17,7 @@ const Sidebar: React.FC = () => {
   const isOnBoardPage = pathname.includes('/board');
   const isOnRewardsPage = pathname.includes('/rewards');
   const isOnUsersPage = pathname === '/users';
+  const isOnMissionsPage = pathname === '/missions'; // Adicionado para verificar se está na página de missões
 
   return (
     <div className="sidebar">
@@ -28,6 +29,17 @@ const Sidebar: React.FC = () => {
           title="Gerenciar Usuários"
         >
           <FaUsers />
+        </div>
+      )}
+
+      {/* Ícone de Missões - apenas para admins e não na própria página de missões */}
+      {isAdmin && !isOnMissionsPage && (
+        <div 
+          className="sidebar-icon" 
+          onClick={() => navigate('/missions')} 
+          title="Gerenciar Missões"
+        >
+          <FaTasks />
         </div>
       )}
 
@@ -44,8 +56,8 @@ const Sidebar: React.FC = () => {
         </div>
       )}
 
-      {/* Ícone de recompensas - aparece no board e na página de usuários, mas não na própria página de recompensas */}
-      {(isOnBoardPage || isOnUsersPage) && !isOnRewardsPage && (
+      {/* Ícone de recompensas - aparece no board, na página de usuários, e na página de missões, mas não na própria página de recompensas */}
+      {(isOnBoardPage || isOnUsersPage || isOnMissionsPage) && !isOnRewardsPage && (
         <div 
           className="sidebar-icon" 
           onClick={() => navigate('/rewards')} 

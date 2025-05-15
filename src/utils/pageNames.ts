@@ -8,7 +8,8 @@ type RouteMapping = {
 const pageNames: RouteMapping = {
   '/users': 'Gerenciamento de Usuários',
   '/rewards': 'Recompensas',
-  '/board': 'Board'
+  '/board': 'Board',
+  '/missions': 'Missões'  // Adicionado mapeamento para a página de missões
 };
 
 /**
@@ -25,6 +26,11 @@ export const getPageNameFromPath = (path: string): string | undefined => {
   // Verificação específica para a rota do Board com parâmetro dinâmico
   if (path.match(/\/user\/\d+\/board/)) {
     return 'Board';
+  }
+  
+  // Verificação para a rota de tarefas de missões específicas
+  if (path.match(/\/missions\/\d+\/tasks/)) {
+    return 'Tarefas da Missão';
   }
   
   // Verificação de caminhos parciais

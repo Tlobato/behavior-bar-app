@@ -1,3 +1,4 @@
+/* UserMissionsList.css */
 /* src/components/UserMissionsList/UserMissionsList.css */
 
 /* Seção de missões */
@@ -20,6 +21,30 @@
   padding-right: 5px; /* Espaço para a barra de rolagem */
 }
 
+/* Cabeçalho da tabela de missões */
+.missions-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 80px 80px;
+  padding: 10px;
+  font-weight: bold;
+  border-bottom: 2px solid #ddd;
+  margin-bottom: 10px;
+  background-color: white;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.mission-title-header,
+.mission-status-header {
+  text-align: left;
+}
+
+.mission-deadline-header,
+.mission-tasks-header {
+  text-align: center; /* Centraliza os títulos das colunas de ícones */
+}
+
 /* Lista de missões */
 .missions-list {
   list-style-type: none;
@@ -32,25 +57,39 @@
   padding: 10px;
   margin-bottom: 10px;
   background-color: white;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr 1fr 80px 80px;
   align-items: center;
 }
 
-.mission-info {
-  flex: 1;
-}
-
-.mission-name {
+.mission-title {
   font-weight: bold;
-  margin-bottom: 5px;
 }
 
-.mission-details {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
+.mission-status {
   color: #666;
+}
+
+.mission-deadline {
+  display: flex;
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: center; /* Centraliza verticalmente */
+}
+
+.mission-tasks {
+  display: flex;
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: center; /* Centraliza verticalmente */
+}
+
+.deadline-icon {
+  color: #444;
+  cursor: help;
+  font-size: 18px; /* Padroniza o tamanho do ícone */
+}
+
+.deadline-icon:hover {
+  color: #007bff;
 }
 
 .mission-icon {

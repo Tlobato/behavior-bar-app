@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Mission } from '../../types';
 import { missionService } from '../../services/missionService';
 import { useNavigate } from 'react-router-dom';
-import { FaTasks, FaClipboardList } from 'react-icons/fa';
+import { FaTasks, FaClipboardList, FaClock } from 'react-icons/fa';
 import { formatDateTime } from '../../utils/dateUtils';
 import './UserMissionsList.css';
 
@@ -75,23 +75,30 @@ const UserMissionsList: React.FC<UserMissionsListProps> = ({ userId }) => {
         </div>
       ) : (
         <div className="missions-list-container">
+          <div className="missions-header">
+            <span className="mission-title-header">Missão</span>
+            <span className="mission-status-header">Status</span>
+            <span className="mission-deadline-header">Prazo</span>
+            <span className="mission-tasks-header">Tarefas</span>
+          </div>
           <ul className="missions-list">
             {missions.map(mission => (
               <li key={mission.id}>
-                <div className="mission-info">
-                  <strong className="mission-name">{mission.name}</strong>
-                  <div className="mission-details">
-                    <span>{translateStatus(mission.status)}</span>
-                    <span style={{ float: 'right' }}>
-                      {formatDateTime(mission.deadline)}
-                    </span>
-                  </div>
-                </div>
-                <FaTasks 
-                  className="mission-icon" 
-                  onClick={() => handleViewTasks(mission)} 
-                  title="Ver Tarefas"
-                />
+                <span className="mission-title">{mission.name}</span>
+                <span className="mission-status">{translateStatus(mission.status)}</span>
+                <span className="mission-deadline">
+                  <FaClock 
+                    className="deadline-icon" 
+                    title={formatDateTime(mission.deadline)}
+                  />
+                </span>
+                <span className="mission-tasks">
+                  <FaTasks 
+                    className="mission-icon" 
+                    onClick={() => handleViewTasks(mission)} 
+                    title="Ver Tarefas"
+                  />
+                </span>
               </li>
             ))}
           </ul>

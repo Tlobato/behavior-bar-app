@@ -109,7 +109,8 @@ export interface Mission {
 export interface MissionTask {
   id: number; // ID da tarefa
   name: string; // Nome da tarefa
-  status: 'AVAILABLE' | 'PENDING' | 'DENIED' | 'APPROVED'; // Status da tarefa
+  description?: string; // Campo opcional de descrição
+  status: MissionTaskStatus; // Status da tarefa
   observation?: string; // Observação do ADMIN (opcional)
   createdAt: string; // Data de criação da tarefa (ISO string)
   missionId: number; // ID da missão associada
@@ -146,4 +147,27 @@ export interface MissionCreateModalProps {
     deadline: string;
     userId: number;
   }) => void;
+}
+
+// Enum para status das tarefas de missão, correspondendo ao backend
+export enum MissionTaskStatus {
+  AVAILABLE = 'AVAILABLE',
+  PENDING = 'PENDING',
+  DENIED = 'DENIED',
+  APPROVED = 'APPROVED'
+}
+
+// Interface para criação de uma nova tarefa (request)
+export interface MissionTaskRequest {
+  name: string;
+  status: MissionTaskStatus;
+  observation?: string;
+  missionId: number;
+  userId: number;
+}
+
+export interface MissionTaskUpdateRequest {
+  name?: string;
+  status?: MissionTaskStatus;
+  observation?: string;
 }

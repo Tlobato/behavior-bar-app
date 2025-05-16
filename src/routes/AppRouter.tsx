@@ -6,15 +6,16 @@ import BoardPage from '../pages/BoardPage/BoardPage';
 import UserManagement from '../pages/UserManagementPage/UserManagementPage';
 import RewardsPage from '../pages/RewardsPage/RewardsPage';
 import Login from '../pages/LoginPage/LoginPage';
-import MissionPage from '../pages/MissionPage/MissionPage'; // Importação da MissionPage
+import MissionPage from '../pages/MissionPage/MissionPage';
+import TaskPage from '../pages/TaskPage/TaskPage'; // Importação da TaskPage
 
 // Componente para proteger rotas privadas
 const PrivateRoute: React.FC<{ children: JSX.Element; requiredRole?: 'ADMIN' | 'USER' }> = ({ children, requiredRole }) => {
   const isAuthenticated = authService.isAuthenticated();
   const currentUser = authService.getCurrentUser();
 
-  console.log('isAuthenticated:', isAuthenticated); // Log do estado de autenticação
-  console.log('currentUser:', currentUser); // Log do usuário atual
+  console.log('isAuthenticated:', isAuthenticated); 
+  console.log('currentUser:', currentUser);
 
   // Se o usuário não está autenticado, redireciona para login
   if (!isAuthenticated) {
@@ -87,6 +88,16 @@ const AppRouter: React.FC = () => {
           element={
             <PrivateRoute requiredRole="ADMIN">
               <MissionPage />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Rota de Tarefas da Missão (Apenas Admins) */}
+        <Route
+          path="/missions/:missionId/tasks"
+          element={
+            <PrivateRoute requiredRole="ADMIN">
+              <TaskPage />
             </PrivateRoute>
           }
         />

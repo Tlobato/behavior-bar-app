@@ -29,6 +29,9 @@ const TaskPage: React.FC = () => {
   const navigate = useNavigate();
   const currentUser = authService.getCurrentUser();
   const pageName = usePageTitle();
+  
+  // Verificar se o usuário atual é um administrador
+  const isAdmin = currentUser?.role === 'ADMIN';
 
   // Função para traduzir o status da tarefa
   const translateStatus = (status: MissionTaskStatus): string => {
@@ -36,7 +39,7 @@ const TaskPage: React.FC = () => {
       case MissionTaskStatus.AVAILABLE:
         return 'Disponível';
       case MissionTaskStatus.PENDING:
-        return 'Pendente';
+        return 'Aguardando Avaliação';
       case MissionTaskStatus.APPROVED:
         return 'Aprovada';
       case MissionTaskStatus.DENIED:
@@ -237,34 +240,45 @@ const TaskPage: React.FC = () => {
                         <td>{translateStatus(task.status)}</td>
                         <td>{mission?.deadline ? formatDateTime(mission.deadline) : 'Sem prazo'}</td>
                         <td className="action-icons">
-                          <div
-                            className="action-icon accept-icon"
-                            title="Aceitar"
-                            onClick={() => handleAcceptTask(task.id)}
-                          >
-                            <FaCheck />
-                          </div>
-                          <div
-                            className="action-icon reject-icon"
-                            title="Rejeitar"
-                            onClick={() => handleRejectTask(task.id)}
-                          >
-                            <FaTimes />
-                          </div>
-                          <div
-                            className="action-icon"
-                            title="Editar"
-                            onClick={() => handleEditTask(task.id)}
-                          >
-                            <FaEdit />
-                          </div>
-                          <div
-                            className="action-icon delete-icon"
-                            title="Excluir"
-                            onClick={() => openDeleteModal(task.id)}
-                          >
-                            <FaTrash />
-                          </div>
+                          {/* Exibir botões de aceitar/rejeitar apenas para admins e quando o status for PENDING */}
+                          {isAdmin && task.status === MissionTaskStatus.PENDING && (
+                            <>
+                              <div
+                                className="action-icon accept-icon"
+                                title="Aceitar"
+                                onClick={() => handleAcceptTask(task.id)}
+                              >
+                                <FaCheck />
+                              </div>
+                              <div
+                                className="action-icon reject-icon"
+                                title="Rejeitar"
+                                onClick={() => handleRejectTask(task.id)}
+                              >
+                                <FaTimes />
+                              </div>
+                            </>
+                          )}
+                          
+                          {/* Exibir botões de editar/excluir apenas para admins */}
+                          {isAdmin && (
+                            <>
+                              <div
+                                className="action-icon"
+                                title="Editar"
+                                onClick={() => handleEditTask(task.id)}
+                              >
+                                <FaEdit />
+                              </div>
+                              <div
+                                className="action-icon delete-icon"
+                                title="Excluir"
+                                onClick={() => openDeleteModal(task.id)}
+                              >
+                                <FaTrash />
+                              </div>
+                            </>
+                          )}
                         </td>
                       </tr>
                     ))}

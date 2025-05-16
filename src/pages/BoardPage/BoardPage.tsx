@@ -13,6 +13,7 @@ import { formatDate } from '../../utils/dateUtils';
 import { useNavigate, useParams } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import { usePageTitle } from '../../hooks/usePageTitle';
+import UserMissionsList from '../../components/UserMissionsList/UserMissionsList';
 
 // Constante para valor inicial da pontuação
 const DEFAULT_POINTS = 50;
@@ -186,13 +187,12 @@ const BoardPage: React.FC = () => {
 
   return (
     <div className="BoardPage">
-      {/* O nome do usuário logado é exibido no Header */}
       <Header
         projectName="Behavior Bar"
-        userName={currentUser?.name || ''} // Nome do usuário logado
+        userName={currentUser?.name || ''}
         onLogout={handleLogout}
         pageName={pageName}
-        rewardPoints={isAdmin ? undefined : boardUser?.rewardPoints} // Apenas para USER
+        rewardPoints={isAdmin ? undefined : boardUser?.rewardPoints}
         userRole={currentUser?.role}
       />
       <div className="page-content">
@@ -201,7 +201,7 @@ const BoardPage: React.FC = () => {
           <div className="board-container">
             <div className="behavior-section">
               {isLoadingBoardUser ? (
-                <p>Carregando...</p> // Placeholder enquanto os dados são carregados
+                <p>Carregando...</p>
               ) : (
                 <BehaviorBar
                   behaviorState={behaviorState}
@@ -231,6 +231,13 @@ const BoardPage: React.FC = () => {
             <div className="history-section">
               <BehaviorHistory infractions={behaviorState.infractions} formatDate={formatDate} isAdmin={isAdmin} />
             </div>
+            
+            {/* Adicionamos a lista de missões como uma seção similar ao histórico */}
+            {!isAdmin && boardUser && (
+              <div className="missions-section">
+                <UserMissionsList userId={boardUser.id} />
+              </div>
+            )}
           </div>
         </main>
       </div>

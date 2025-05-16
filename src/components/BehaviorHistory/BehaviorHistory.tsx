@@ -1,5 +1,6 @@
 import React from 'react';
 import { Infraction } from '../../types';
+import { FaThumbsUp } from 'react-icons/fa';
 import './BehaviorHistory.css';
 
 interface BehaviorHistoryProps {
@@ -13,7 +14,12 @@ const BehaviorHistory: React.FC<BehaviorHistoryProps> = ({ infractions, formatDa
     <div className="history-section">
       <h3>Histórico de Comportamentos</h3>
       {infractions.length === 0 ? (
-        <p>Sem comportamentos registrados. Ótimo trabalho!</p>
+        <div className="behavior-empty">
+          <div className="behavior-empty-icon">
+            <FaThumbsUp />
+          </div>
+          <p>Sem comportamentos registrados</p>
+        </div>
       ) : (
         <div className="infraction-list-container">
           <ul className="infraction-list">

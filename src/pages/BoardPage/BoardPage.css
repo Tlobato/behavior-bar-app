@@ -58,9 +58,15 @@
   gap: 10px; /* Espaçamento interno entre os elementos */
 }
 
-.history-section {
+.history-section, .missions-section {
   background-color: #f9f9f9;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Ajuste para que missions-section aplique o mesmo estilo do history-section */
+.missions-section {
+  padding: 0; /* Removemos o padding para permitir que o componente interno defina seu próprio layout */
+  overflow: hidden; /* Garante que os cantos arredondados funcionem corretamente */
 }

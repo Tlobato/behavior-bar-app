@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Mission } from '../types';
+import { Mission, MissionStatus } from '../types';
 
 const API_URL = 'http://localhost:8080/missions'; // URL base para os endpoints de missões
 
@@ -138,6 +138,23 @@ export const missionService = {
     } catch (error) {
       console.error('Erro ao excluir missão:', error);
       return false; // Retorna false em caso de erro
+    }
+  },
+
+  async updateMissionStatus(id: number, status: MissionStatus): Promise<boolean> {
+    try {
+      const token = localStorage.getItem('token');
+      
+      const response = await axios.patch(`${API_URL}/${id}/status`, { status }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      return response.status === 200;
+    } catch (error) {
+      console.error('Erro ao atualizar status da missão:', error);
+      return false;
     }
   },
 };

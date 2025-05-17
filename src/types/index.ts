@@ -106,6 +106,12 @@ export interface Mission {
   tasks: MissionTask[]; // Lista de tarefas associadas à missão
 }
 
+export enum MissionStatus {
+  IN_PROGRESS = 'IN_PROGRESS',
+  COMPLETED = 'COMPLETED',
+  FAIL = 'FAIL',
+}
+
 export interface MissionTask {
   id: number; // ID da tarefa
   name: string; // Nome da tarefa

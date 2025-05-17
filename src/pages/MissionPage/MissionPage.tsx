@@ -17,6 +17,7 @@ import { formatDateTime } from '../../utils/dateUtils';
 // Novas importações
 import Hotspot from '../../components/Hotspot/Hotspot'; // Ajuste o caminho conforme sua estrutura
 import { checkFirstMissionCreated, markFirstMissionCreated } from '../../utils/onboardingUtils';
+import { translateMissionStatus } from '../../utils/statusUtils';
 
 const MissionPage: React.FC = () => {
     const [missions, setMissions] = useState<Mission[]>([]);
@@ -34,20 +35,6 @@ const MissionPage: React.FC = () => {
     const navigate = useNavigate();
     const currentUser = authService.getCurrentUser();
     const pageName = usePageTitle();
-
-    // Função para traduzir o status da missão
-    const translateStatus = (status: string): string => {
-        switch (status) {
-            case 'IN_PROGRESS':
-                return 'Em progresso';
-            case 'COMPLETED':
-                return 'Finalizada';
-            case 'FAIL':
-                return 'Não concluída';
-            default:
-                return status;
-        }
-    };
 
     const handleLogout = () => {
         authService.logout();
@@ -237,7 +224,7 @@ const MissionPage: React.FC = () => {
                                         {missions.map((mission, index) => (
                                             <tr key={mission.id}>
                                                 <td>{mission.name}</td>
-                                                <td>{translateStatus(mission.status)}</td>
+                                                <td>{translateMissionStatus(mission.status)}</td>
                                                 <td>{formatDateTime(mission.deadline)}</td>
                                                 <td>{getUserName(mission.userId)}</td>
                                                 <td className="action-icons">

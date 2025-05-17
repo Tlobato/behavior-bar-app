@@ -15,3 +15,18 @@ import { MissionTaskStatus } from "../types";
         return status;
     }
   };
+
+
+      // Função para traduzir o status da missão
+      export const translateMissionStatus = (status: string): string => {
+          switch (status) {
+              case 'IN_PROGRESS':
+                  return 'Em progresso';
+              case 'COMPLETED':
+                  return 'Finalizada';
+              case 'FAIL':
+                  return 'Não concluída';
+              default:
+                  return status;
+          }
+      };

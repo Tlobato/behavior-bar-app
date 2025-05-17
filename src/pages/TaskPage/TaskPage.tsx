@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './TaskPage.css';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaTrash, FaEdit, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaTrash, FaEdit, FaCheck, FaTimes, FaCheckCircle } from 'react-icons/fa';
 import { authService } from '../../services/authService';
 import { missionService } from '../../services/missionService';
 import { userService } from '../../services/userService';
@@ -192,6 +192,23 @@ const TaskPage: React.FC = () => {
     }
   };
 
+  // Nova função para quando o usuário marcar uma tarefa como concluída
+  const handleCompleteTask = async (taskId: number) => {
+    const success = await taskService.updateTask(taskId, {
+      status: MissionTaskStatus.PENDING
+    });
+    
+    if (success) {
+      // Atualizar a lista de tarefas com o novo status
+      setTasks(prevTasks => 
+        prevTasks.map(task => task.id === taskId 
+          ? { ...task, status: MissionTaskStatus.PENDING } 
+          : task
+        )
+      );
+    }
+  };
+
   return (
     <div className="task-page">
       <Header
@@ -213,11 +230,14 @@ const TaskPage: React.FC = () => {
               </div>
             )}
 
-            <NewRegistrationComponent
-              title="Nova Tarefa"
-              buttonText="Criar"
-              onButtonClick={() => setIsCreateModalOpen(true)}
-            />
+            {/* Só renderiza o componente de Nova Tarefa se o usuário for admin */}
+            {isAdmin && (
+              <NewRegistrationComponent
+                title="Nova Tarefa"
+                buttonText="Criar"
+                onButtonClick={() => setIsCreateModalOpen(true)}
+              />
+            )}
 
             {isLoading && <p className="loading-message">Carregando tarefas...</p>}
             {error && <p className="error-message">{error}</p>}
@@ -240,6 +260,17 @@ const TaskPage: React.FC = () => {
                         <td>{translateStatus(task.status)}</td>
                         <td>{mission?.deadline ? formatDateTime(mission.deadline) : 'Sem prazo'}</td>
                         <td className="action-icons">
+                          {/* Botão de marcar como concluído para tarefas disponíveis (para usuários) */}
+                          {!isAdmin && task.status === MissionTaskStatus.AVAILABLE && (
+                            <div
+                              className="action-icon complete-task-icon"
+                              title="Marcar como concluído"
+                              onClick={() => handleCompleteTask(task.id)}
+                            >
+                              <FaCheckCircle />
+                            </div>
+                          )}
+                        
                           {/* Exibir botões de aceitar/rejeitar apenas para admins e quando o status for PENDING */}
                           {isAdmin && task.status === MissionTaskStatus.PENDING && (
                             <>

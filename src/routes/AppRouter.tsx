@@ -96,7 +96,7 @@ const AppRouter: React.FC = () => {
         <Route
           path="/missions/:missionId/tasks"
           element={
-            <PrivateRoute requiredRole="ADMIN">
+            <PrivateRoute>
               <TaskPage />
             </PrivateRoute>
           }

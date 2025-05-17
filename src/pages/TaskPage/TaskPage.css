@@ -122,4 +122,17 @@
     color: #f44336;
   }
 
+  .complete-task-icon {
+    color: #999;  /* Cor cinza para o estado inicial */
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
   
+  .complete-task-icon:hover {
+    color: #4CAF50;  /* Verde ao passar o mouse */
+    transform: scale(1.1);
+  }
+  
+  .complete-task-icon.completed {
+    color: #4CAF50;  /* Verde quando estiver completa */
+  }

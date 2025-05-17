@@ -1,0 +1,94 @@
+/* Estilos para o componente TaskList */
+
+.table-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .task-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .task-table th,
+  .task-table td {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .task-table th {
+    background-color: #f9f9f9;
+    font-weight: 600;
+  }
+  
+  .task-table tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .action-icons {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .action-icon {
+    font-size: 1.2rem;
+    color: #444;
+    cursor: pointer;
+    transition: color 0.3s ease-in-out;
+  }
+  
+  .action-icon:hover {
+    color: #007bff;
+  }
+  
+  .delete-icon {
+    color: #f44336;
+  }
+  
+  .delete-icon:hover {
+    color: #d32f2f;
+  }
+  
+  .accept-icon {
+    color: #4CAF50;
+  }
+  
+  .accept-icon:hover {
+    color: #45a049;
+  }
+  
+  .reject-icon {
+    color: #ff9800;
+  }
+  
+  .reject-icon:hover {
+    color: #f57c00;
+  }
+  
+  .loading-message,
+  .error-message {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .error-message {
+    color: #f44336;
+  }
+  
+  .complete-task-icon {
+    color: #999;  /* Cor cinza para o estado inicial */
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .complete-task-icon:hover {
+    color: #4CAF50;  /* Verde ao passar o mouse */
+    transform: scale(1.1);
+  }
+  
+  .complete-task-icon.completed {
+    color: #4CAF50;  /* Verde quando estiver completa */
+  }

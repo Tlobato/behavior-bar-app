@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './TaskPage.css';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaTrash, FaEdit, FaCheck, FaTimes, FaCheckCircle } from 'react-icons/fa';
 import { authService } from '../../services/authService';
 import { missionService } from '../../services/missionService';
 import { userService } from '../../services/userService';
@@ -11,8 +10,8 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import NewRegistrationComponent from '../../components/NewRegistrationComponent/NewRegistrationComponent';
 import Modal from '../../components/Modal/Modal';
 import TaskCreateModal from '../../components/TaskCreateModal/TaskCreateModal';
+import TaskList from '../../components/TaskList/TaskList'; // Import the new component
 import { usePageTitle } from '../../hooks/usePageTitle';
-import { formatDateTime } from '../../utils/dateUtils';
 import { Mission, MissionTask, MissionTaskRequest, MissionTaskStatus, User } from '../../types';
 
 const TaskPage: React.FC = () => {
@@ -32,22 +31,6 @@ const TaskPage: React.FC = () => {
   
   // Verificar se o usuário atual é um administrador
   const isAdmin = currentUser?.role === 'ADMIN';
-
-  // Função para traduzir o status da tarefa
-  const translateStatus = (status: MissionTaskStatus): string => {
-    switch (status) {
-      case MissionTaskStatus.AVAILABLE:
-        return 'Disponível';
-      case MissionTaskStatus.PENDING:
-        return 'Aguardando Avaliação';
-      case MissionTaskStatus.APPROVED:
-        return 'Aprovada';
-      case MissionTaskStatus.DENIED:
-        return 'Negada';
-      default:
-        return status;
-    }
-  };
 
   const handleLogout = () => {
     authService.logout();
@@ -239,84 +222,19 @@ const TaskPage: React.FC = () => {
               />
             )}
 
-            {isLoading && <p className="loading-message">Carregando tarefas...</p>}
-            {error && <p className="error-message">{error}</p>}
-
-            {!isLoading && !error && (
-              <div className="table-container">
-                <table className="task-table">
-                  <thead>
-                    <tr>
-                      <th>Tarefa</th>
-                      <th>Status</th>
-                      <th>Prazo</th>
-                      <th>Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {tasks.map(task => (
-                      <tr key={task.id}>
-                        <td>{task.name}</td>
-                        <td>{translateStatus(task.status)}</td>
-                        <td>{mission?.deadline ? formatDateTime(mission.deadline) : 'Sem prazo'}</td>
-                        <td className="action-icons">
-                          {/* Botão de marcar como concluído para tarefas disponíveis (para usuários) */}
-                          {!isAdmin && task.status === MissionTaskStatus.AVAILABLE && (
-                            <div
-                              className="action-icon complete-task-icon"
-                              title="Marcar como concluído"
-                              onClick={() => handleCompleteTask(task.id)}
-                            >
-                              <FaCheckCircle />
-                            </div>
-                          )}
-                        
-                          {/* Exibir botões de aceitar/rejeitar apenas para admins e quando o status for PENDING */}
-                          {isAdmin && task.status === MissionTaskStatus.PENDING && (
-                            <>
-                              <div
-                                className="action-icon accept-icon"
-                                title="Aceitar"
-                                onClick={() => handleAcceptTask(task.id)}
-                              >
-                                <FaCheck />
-                              </div>
-                              <div
-                                className="action-icon reject-icon"
-                                title="Rejeitar"
-                                onClick={() => handleRejectTask(task.id)}
-                              >
-                                <FaTimes />
-                              </div>
-                            </>
-                          )}
-                          
-                          {/* Exibir botões de editar/excluir apenas para admins */}
-                          {isAdmin && (
-                            <>
-                              <div
-                                className="action-icon"
-                                title="Editar"
-                                onClick={() => handleEditTask(task.id)}
-                              >
-                                <FaEdit />
-                              </div>
-                              <div
-                                className="action-icon delete-icon"
-                                title="Excluir"
-                                onClick={() => openDeleteModal(task.id)}
-                              >
-                                <FaTrash />
-                              </div>
-                            </>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+            {/* Using the new TaskList component */}
+            <TaskList
+              tasks={tasks}
+              mission={mission}
+              isAdmin={isAdmin}
+              isLoading={isLoading}
+              error={error}
+              onCompleteTask={handleCompleteTask}
+              onAcceptTask={handleAcceptTask}
+              onRejectTask={handleRejectTask}
+              onEditTask={handleEditTask}
+              onDeleteTask={openDeleteModal}
+            />
           </div>
         </main>
       </div>

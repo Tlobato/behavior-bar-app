@@ -92,3 +92,13 @@
   .complete-task-icon.completed {
     color: #4CAF50;  /* Verde quando estiver completa */
   }
+
+  .pending-icon {
+    color: #ff9800;  /* Cor amarela/laranja para indicar atenção */
+    cursor: default;
+  }
+  
+  .approved-icon {
+    color: #4CAF50;  /* Cor verde para indicar aprovação */
+    cursor: default;
+  }

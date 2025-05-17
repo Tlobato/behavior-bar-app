@@ -1,0 +1,86 @@
+/* Estilos específicos para o JustificationModal */
+.justification-modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    width: 500px;
+    max-width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  .justification-modal-content h2 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+    color: #333;
+    text-align: center;
+  }
+  
+  /* Estilos para os botões */
+  .confirm-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    width: 150px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  .confirm-button:hover {
+    background-color: #45a049;
+  }
+  
+  /* Se você não tem estilos globais para modal-divider e cancel-button, adicione-os aqui */
+  .modal-divider {
+    height: 1px;
+    background-color: #e0e0e0;
+    width: 100%;
+    margin: 15px 0;
+  }
+  
+  .cancel-button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    width: 150px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  .cancel-button:hover {
+    background-color: #d32f2f;
+  }
+  
+  /* Estilos para o textarea */
+  textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+    font-family: inherit;
+    margin-bottom: 20px;
+  }
+  
+  /* Estilos para o label */
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  
+  /* Estilos para as ações do modal */
+  .modal-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+  }

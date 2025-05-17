@@ -10,7 +10,7 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import NewRegistrationComponent from '../../components/NewRegistrationComponent/NewRegistrationComponent';
 import Modal from '../../components/Modal/Modal';
 import TaskCreateModal from '../../components/TaskCreateModal/TaskCreateModal';
-import TaskList from '../../components/TaskList/TaskList'; // Import the new component
+import TaskList from '../../components/TaskList/TaskList';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { Mission, MissionTask, MissionTaskRequest, MissionTaskStatus, User } from '../../types';
 
@@ -24,11 +24,18 @@ const TaskPage: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
-  
+
+  // Estado para o modal de ação de tarefa
+  const [isActionModalOpen, setIsActionModalOpen] = useState<boolean>(false);
+  const [currentTaskId, setCurrentTaskId] = useState<number | null>(null);
+  const [actionModalTitle, setActionModalTitle] = useState<string>('');
+  const [actionModalMessage, setActionModalMessage] = useState<string>('');
+  const [currentAction, setCurrentAction] = useState<'complete' | 'approve' | 'reject'>('complete');
+
   const navigate = useNavigate();
   const currentUser = authService.getCurrentUser();
   const pageName = usePageTitle();
-  
+
   // Verificar se o usuário atual é um administrador
   const isAdmin = currentUser?.role === 'ADMIN';
 
@@ -61,7 +68,7 @@ const TaskPage: React.FC = () => {
           setUser(fetchedUser);
         }
 
-        // Buscar tarefas relacionadas à missão usando o serviço que criamos
+        // Buscar tarefas relacionadas à missão
         const missionTasks = await taskService.getTasksByMissionId(missionIdNumber);
         setTasks(missionTasks);
 
@@ -79,23 +86,21 @@ const TaskPage: React.FC = () => {
   const handleCreateTask = async (newTaskData: Partial<MissionTask>) => {
     if (mission && currentUser) {
       try {
-        // Cria um objeto que corresponde ao tipo MissionTaskRequest
         const taskRequest: MissionTaskRequest = {
-          name: newTaskData.name || '',  // Converte undefined para string vazia
+          name: newTaskData.name || '',
           status: newTaskData.status || MissionTaskStatus.AVAILABLE,
           missionId: mission.id,
           userId: currentUser.id,
           observation: newTaskData.observation
         };
-        
-        // Validação adicional antes de enviar
+
         if (!taskRequest.name) {
           console.error("Nome da tarefa é obrigatório");
           return;
         }
-        
+
         const newTask = await taskService.createTask(taskRequest);
-        
+
         if (newTask) {
           setTasks(prevTasks => [...prevTasks, newTask]);
         }
@@ -107,7 +112,6 @@ const TaskPage: React.FC = () => {
   };
 
   const handleEditTask = async (taskId: number) => {
-    // Esta função abriria um modal para edição e depois chamaria updateTask
     console.log(`Editar tarefa ${taskId}`);
     const taskToUpdate = tasks.find(task => task.id === taskId);
     if (taskToUpdate) {
@@ -116,10 +120,9 @@ const TaskPage: React.FC = () => {
         status: taskToUpdate.status
       });
       if (success) {
-        // Atualizar a lista de tarefas
-        setTasks(prevTasks => 
-          prevTasks.map(task => task.id === taskId 
-            ? { ...task, name: "Nome atualizado" } 
+        setTasks(prevTasks =>
+          prevTasks.map(task => task.id === taskId
+            ? { ...task, name: "Nome atualizado" }
             : task
           )
         );
@@ -136,60 +139,73 @@ const TaskPage: React.FC = () => {
     if (taskToDelete !== null) {
       const success = await taskService.deleteTask(taskToDelete);
       if (success) {
-        // Atualizar o estado removendo a tarefa excluída
         setTasks(tasks.filter(task => task.id !== taskToDelete));
         setIsDeleteModalOpen(false);
       }
     }
   };
 
-  const handleAcceptTask = async (taskId: number) => {
-    const success = await taskService.updateTask(taskId, {
-      status: MissionTaskStatus.APPROVED
-    });
-    
-    if (success) {
-      // Atualizar a lista de tarefas com o novo status
-      setTasks(prevTasks => 
-        prevTasks.map(task => task.id === taskId 
-          ? { ...task, status: MissionTaskStatus.APPROVED } 
-          : task
-        )
-      );
-    }
+  // Função para marcar uma tarefa como concluída (para usuário)
+  const handleTaskCheckClick = (taskId: number) => {
+    setCurrentTaskId(taskId);
+    setCurrentAction('complete');
+    setActionModalTitle("Concluir Tarefa");
+    setActionModalMessage("Tem certeza que deseja marcar esta tarefa como concluída?");
+    setIsActionModalOpen(true);
   };
 
-  const handleRejectTask = async (taskId: number) => {
-    const success = await taskService.updateTask(taskId, {
-      status: MissionTaskStatus.DENIED
-    });
-    
-    if (success) {
-      // Atualizar a lista de tarefas com o novo status
-      setTasks(prevTasks => 
-        prevTasks.map(task => task.id === taskId 
-          ? { ...task, status: MissionTaskStatus.DENIED } 
-          : task
-        )
-      );
-    }
+  // Função para aprovar tarefa (para admin)
+  const handleAcceptTask = (taskId: number) => {
+    setCurrentTaskId(taskId);
+    setCurrentAction('approve');
+    setActionModalTitle("Aprovar Tarefa");
+    setActionModalMessage("Tem certeza que deseja aprovar esta tarefa?");
+    setIsActionModalOpen(true);
   };
 
-  // Nova função para quando o usuário marcar uma tarefa como concluída
-  const handleCompleteTask = async (taskId: number) => {
-    const success = await taskService.updateTask(taskId, {
-      status: MissionTaskStatus.PENDING
-    });
+  // Função para rejeitar tarefa (para admin)
+  const handleRejectTask = (taskId: number) => {
+    setCurrentTaskId(taskId);
+    setCurrentAction('reject');
+    setActionModalTitle("Rejeitar Tarefa");
+    setActionModalMessage("Tem certeza que deseja rejeitar esta tarefa?");
+    setIsActionModalOpen(true);
+  };
+
+  // Função para processar a confirmação da ação
+  const handleActionConfirm = async () => {
+    if (currentTaskId === null) return;
     
-    if (success) {
-      // Atualizar a lista de tarefas com o novo status
-      setTasks(prevTasks => 
-        prevTasks.map(task => task.id === taskId 
-          ? { ...task, status: MissionTaskStatus.PENDING } 
-          : task
-        )
+    let newStatus: MissionTaskStatus;
+    
+    // Definir o status dependendo da ação
+    switch (currentAction) {
+      case 'complete':
+        newStatus = MissionTaskStatus.PENDING;
+        break;
+      case 'approve':
+        newStatus = MissionTaskStatus.APPROVED;
+        break;
+      case 'reject':
+        newStatus = MissionTaskStatus.DENIED;
+        break;
+      default:
+        return; // Sai da função se a ação não for reconhecida
+    }
+    
+    // Usar o novo método updateTaskStatus para atualizar apenas o status
+    const updatedTask = await taskService.updateTaskStatus(currentTaskId, newStatus);
+    
+    if (updatedTask) {
+      // Atualizar a lista de tarefas com o objeto tarefa atualizado
+      setTasks(prevTasks =>
+        prevTasks.map(task => task.id === currentTaskId ? updatedTask : task)
       );
     }
+    
+    // Resetar estados
+    setIsActionModalOpen(false);
+    setCurrentTaskId(null);
   };
 
   return (
@@ -222,14 +238,13 @@ const TaskPage: React.FC = () => {
               />
             )}
 
-            {/* Using the new TaskList component */}
             <TaskList
               tasks={tasks}
               mission={mission}
               isAdmin={isAdmin}
               isLoading={isLoading}
               error={error}
-              onCompleteTask={handleCompleteTask}
+              onCompleteTask={handleTaskCheckClick}
               onAcceptTask={handleAcceptTask}
               onRejectTask={handleRejectTask}
               onEditTask={handleEditTask}
@@ -240,7 +255,7 @@ const TaskPage: React.FC = () => {
       </div>
 
       {/* Modal de criação de tarefas */}
-      <TaskCreateModal 
+      <TaskCreateModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onCreate={handleCreateTask}
@@ -254,6 +269,18 @@ const TaskPage: React.FC = () => {
         onConfirm={handleDelete}
         title="Excluir Tarefa"
         message="Tem certeza que deseja excluir esta tarefa? Esta ação não pode ser desfeita."
+      />
+
+      {/* Modal para ações de tarefa (completar, aprovar, rejeitar) */}
+      <Modal
+        isOpen={isActionModalOpen}
+        onClose={() => {
+          setIsActionModalOpen(false);
+          setCurrentTaskId(null);
+        }}
+        onConfirm={handleActionConfirm}
+        title={actionModalTitle}
+        message={actionModalMessage}
       />
     </div>
   );

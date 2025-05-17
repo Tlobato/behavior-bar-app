@@ -171,3 +171,16 @@ export interface MissionTaskUpdateRequest {
   status?: MissionTaskStatus;
   observation?: string;
 }
+
+export interface TaskListProps {
+  tasks: MissionTask[];
+  mission: Mission | null;
+  isAdmin: boolean;
+  isLoading: boolean;
+  error: string;
+  onCompleteTask: (taskId: number) => void;
+  onAcceptTask: (taskId: number) => void;
+  onRejectTask: (taskId: number) => void;
+  onEditTask: (taskId: number) => void;
+  onDeleteTask: (taskId: number) => void;
+}

@@ -102,6 +102,38 @@ export const taskService = {
       return false;
     }
   },
+  
+  // Nova função para atualizar apenas o status da tarefa
+  async updateTaskStatus(
+    id: number,
+    status: MissionTaskStatus
+  ): Promise<MissionTask | null> {
+    try {
+      const token = localStorage.getItem('token');
+
+      const response = await axios.patch(`${API_URL}/${id}/status`, { status }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        return {
+          id: response.data.id,
+          name: response.data.name,
+          status: response.data.status as MissionTaskStatus,
+          observation: response.data.observation,
+          createdAt: response.data.createdAt,
+          missionId: response.data.missionId,
+          userId: response.data.userId,
+        };
+      }
+      return null;
+    } catch (error) {
+      console.error('Erro ao atualizar status da tarefa:', error);
+      return null;
+    }
+  },
 
   // Excluir uma tarefa
   async deleteTask(id: number): Promise<boolean> {

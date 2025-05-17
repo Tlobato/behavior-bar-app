@@ -3,12 +3,12 @@ import './UserManagementPage.css';
 import { User } from '../../types';
 import { userService } from '../../services/userService';
 import { useNavigate } from 'react-router-dom';
-import { FaTrash, FaEdit, FaChartBar } from 'react-icons/fa';
+import { FaTrash, FaEdit, FaChartBar, FaUserFriends } from 'react-icons/fa';
 import { authService } from '../../services/authService';
 import { useUser } from '../../context/UserContext';
 import Header from '../../components/Header/Header';
 import UserCreateModal from '../../components/UserCreateModal/UserCreateModal';
-import UserEditModal from '../../components/UserEditModal/UserEditModal'; // Importação do novo modal
+import UserEditModal from '../../components/UserEditModal/UserEditModal';
 import Modal from '../../components/Modal/Modal';
 import NewRegistrationComponent from '../../components/NewRegistrationComponent/NewRegistrationComponent';
 import Sidebar from '../../components/Sidebar/Sidebar';
@@ -21,8 +21,8 @@ const UserManagement: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [userToDelete, setUserToDelete] = useState<number | null>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false); // Estado para controlar o modal de edição
-  const [userToEdit, setUserToEdit] = useState<User | null>(null); // Estado para armazenar o usuário a ser editado
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [userToEdit, setUserToEdit] = useState<User | null>(null);
   
   const navigate = useNavigate();
   const { setUser } = useUser();
@@ -63,7 +63,6 @@ const UserManagement: React.FC = () => {
     try {
       const success = await userService.updateUser(userId, userData);
       if (success) {
-        // Atualiza a lista de usuários com os dados atualizados
         setUsers(users.map(user => 
           user.id === userId ? { ...user, ...userData } : user
         ));
@@ -121,6 +120,19 @@ const UserManagement: React.FC = () => {
     }
   };
 
+  // Renderiza o estado vazio (sem usuários)
+  const renderEmptyState = () => {
+    return (
+      <div className="empty-state">
+        <div className="empty-icon">
+          <FaUserFriends size={50} color="#cccccc" />
+        </div>
+        <h2>Nenhum usuário cadastrado</h2>
+          <p>Crie seu primeiro usuário clicando no botão "Criar" acima!</p>
+      </div>
+    );
+  };
+
   return (
     <div className="user-management-page">
       <Header
@@ -144,7 +156,9 @@ const UserManagement: React.FC = () => {
             {isLoading && <p>Carregando usuários...</p>}
             {error && <p className="error-message">{error}</p>}
 
-            {!isLoading && !error && (
+            {!isLoading && !error && users.length === 0 && renderEmptyState()}
+
+            {!isLoading && !error && users.length > 0 && (
               <div className="table-container">
                 <table className="user-table">
                   <thead>

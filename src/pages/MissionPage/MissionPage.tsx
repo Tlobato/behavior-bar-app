@@ -4,7 +4,7 @@ import { Mission, User } from '../../types';
 import { missionService } from '../../services/missionService';
 import { userService } from '../../services/userService';
 import { useNavigate } from 'react-router-dom';
-import { FaTrash, FaEdit, FaTasks } from 'react-icons/fa';
+import { FaTrash, FaEdit, FaTasks, FaClipboardList } from 'react-icons/fa';
 import { authService } from '../../services/authService';
 import Header from '../../components/Header/Header';
 import MissionCreateModal from '../../components/MissionCreateModal/MissionCreateModal';
@@ -183,6 +183,19 @@ const MissionPage: React.FC = () => {
         }
     };
 
+    // Renderiza o estado vazio (sem missões)
+    const renderEmptyState = () => {
+        return (
+            <div className="empty-state">
+                <div className="empty-icon">
+                    <FaClipboardList size={50} color="#cccccc" />
+                </div>
+                <h2>Nenhuma missão cadastrada</h2>
+                <p>Crie sua primeira missão clicando no botão "Criar" acima!</p>
+            </div>
+        );
+    };
+
     return (
         <div className="mission-page">
             <Header
@@ -206,7 +219,9 @@ const MissionPage: React.FC = () => {
                         {isLoading && <p>Carregando missões...</p>}
                         {error && <p className="error-message">{error}</p>}
 
-                        {!isLoading && !error && (
+                        {!isLoading && !error && missions.length === 0 && renderEmptyState()}
+
+                        {!isLoading && !error && missions.length > 0 && (
                             <div className="table-container">
                                 <table className="mission-table">
                                     <thead>

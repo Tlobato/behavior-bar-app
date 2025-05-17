@@ -43,3 +43,48 @@
   color: #666;
   font-size: 1.1rem;
 }
+
+/* Estilos para o estado vazio */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  margin-top: 20px;
+}
+
+.empty-icon {
+  margin-bottom: 20px;
+  opacity: 0.6;
+}
+
+.empty-state h2 {
+  font-size: 1.5rem;
+  color: #666;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.empty-state p {
+  color: #888;
+  font-size: 1rem;
+  max-width: 500px;
+}
+
+.loading-message, .error-message {
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  text-align: center;
+}
+
+.error-message {
+  color: #f44336;
+}

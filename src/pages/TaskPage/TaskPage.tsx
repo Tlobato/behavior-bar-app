@@ -13,6 +13,7 @@ import TaskCreateModal from '../../components/TaskCreateModal/TaskCreateModal';
 import TaskList from '../../components/TaskList/TaskList';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { Mission, MissionTask, MissionTaskRequest, MissionTaskStatus, User } from '../../types';
+import { FaTasks } from 'react-icons/fa'; // Adicionando o ícone para o estado vazio
 
 const TaskPage: React.FC = () => {
   const { missionId } = useParams<{ missionId: string }>();
@@ -208,6 +209,23 @@ const TaskPage: React.FC = () => {
     setCurrentTaskId(null);
   };
 
+  // Renderiza o estado vazio (sem tarefas)
+  const renderEmptyState = () => {
+    return (
+      <div className="empty-state">
+        <div className="empty-icon">
+          <FaTasks size={50} color="#cccccc" />
+        </div>
+        <h2>Nenhuma tarefa cadastrada</h2>
+        {isAdmin ? (
+          <p>Crie sua primeira tarefa clicando no botão "Criar" acima!</p>
+        ) : (
+          <p>Não há tarefas disponíveis para esta missão no momento.</p>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="task-page">
       <Header
@@ -238,18 +256,30 @@ const TaskPage: React.FC = () => {
               />
             )}
 
-            <TaskList
-              tasks={tasks}
-              mission={mission}
-              isAdmin={isAdmin}
-              isLoading={isLoading}
-              error={error}
-              onCompleteTask={handleTaskCheckClick}
-              onAcceptTask={handleAcceptTask}
-              onRejectTask={handleRejectTask}
-              onEditTask={handleEditTask}
-              onDeleteTask={openDeleteModal}
-            />
+            {/* Mostrar estado vazio se não houver tarefas e não estiver carregando */}
+            {!isLoading && !error && tasks.length === 0 && renderEmptyState()}
+
+            {/* Mostrar lista de tarefas apenas se houver tarefas */}
+            {!isLoading && !error && tasks.length > 0 && (
+              <TaskList
+                tasks={tasks}
+                mission={mission}
+                isAdmin={isAdmin}
+                isLoading={isLoading}
+                error={error}
+                onCompleteTask={handleTaskCheckClick}
+                onAcceptTask={handleAcceptTask}
+                onRejectTask={handleRejectTask}
+                onEditTask={handleEditTask}
+                onDeleteTask={openDeleteModal}
+              />
+            )}
+
+            {/* Mostrar mensagem de carregamento */}
+            {isLoading && <p className="loading-message">Carregando tarefas...</p>}
+            
+            {/* Mostrar mensagem de erro */}
+            {error && <p className="error-message">{error}</p>}
           </div>
         </main>
       </div>

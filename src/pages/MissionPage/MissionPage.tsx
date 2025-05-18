@@ -1,4 +1,3 @@
-// pages/MissionPage/MissionPage.tsx
 import React from 'react';
 import './MissionPage.css';
 import Header from '../../components/Header/Header';

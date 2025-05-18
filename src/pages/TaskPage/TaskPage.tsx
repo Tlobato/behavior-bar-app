@@ -1,273 +1,49 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import './TaskPage.css';
-import { useParams, useNavigate } from 'react-router-dom';
-import { authService } from '../../services/authService';
-import { missionService } from '../../services/missionService';
-import { userService } from '../../services/userService';
-import { taskService } from '../../services/taskService';
 import Header from '../../components/Header/Header';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import NewRegistrationComponent from '../../components/NewRegistrationComponent/NewRegistrationComponent';
 import Modal from '../../components/Modal/Modal';
 import TaskCreateModal from '../../components/TaskCreateModal/TaskCreateModal';
 import TaskList from '../../components/TaskList/TaskList';
-import { usePageTitle } from '../../hooks/usePageTitle';
-import { Mission, MissionStatus, MissionTask, MissionTaskRequest, MissionTaskStatus, User } from '../../types';
-import { FaTasks, FaCheckCircle } from 'react-icons/fa'; // Adicionado FaCheckCircle para estados completos
+import MissionHeader from '../../components/MissionHeader/MissionHeader';
+import { MissionStatus } from '../../types';
+import { FaTasks, FaCheckCircle } from 'react-icons/fa';
+import { useTaskData } from '../../hooks/useTaskData';
 
 const TaskPage: React.FC = () => {
-  const { missionId } = useParams<{ missionId: string }>();
-  const [tasks, setTasks] = useState<MissionTask[]>([]);
-  const [mission, setMission] = useState<Mission | null>(null);
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>('');
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
-  const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
-  const [missionProgress, setMissionProgress] = useState<number>(0);
-  const [isMissionCompleted, setIsMissionCompleted] = useState<boolean>(false);
+  const {
+    tasks,
+    mission,
+    user,
+    isLoading,
+    error,
+    isCreateModalOpen,
+    isDeleteModalOpen,
+    missionProgress,
+    isMissionCompleted,
+    isActionModalOpen,
+    actionModalTitle,
+    actionModalMessage,
+    currentUser,
+    isAdmin,
+    pageName,
 
-  // Estado para o modal de ação de tarefa
-  const [isActionModalOpen, setIsActionModalOpen] = useState<boolean>(false);
-  const [currentTaskId, setCurrentTaskId] = useState<number | null>(null);
-  const [actionModalTitle, setActionModalTitle] = useState<string>('');
-  const [actionModalMessage, setActionModalMessage] = useState<string>('');
-  const [currentAction, setCurrentAction] = useState<'complete' | 'approve' | 'reject'>('complete');
+    setIsCreateModalOpen,
+    setIsDeleteModalOpen,
+    setIsActionModalOpen,
 
-  const navigate = useNavigate();
-  const currentUser = authService.getCurrentUser();
-  const pageName = usePageTitle();
+    handleLogout,
+    handleCreateTask,
+    handleEditTask,
+    openDeleteModal,
+    handleDelete,
+    handleTaskCheckClick,
+    handleAcceptTask,
+    handleRejectTask,
+    handleActionConfirm
+  } = useTaskData();
 
-  // Verificar se o usuário atual é um administrador
-  const isAdmin = currentUser?.role === 'ADMIN';
-
-  const handleLogout = () => {
-    authService.logout();
-    navigate('/login');
-  };
-
-  // Função para calcular o progresso da missão
-  const calculateMissionProgress = (tasksList: MissionTask[], currentMission: Mission | null) => {
-    if (!tasksList.length || !currentMission) {
-      setMissionProgress(0);
-      setIsMissionCompleted(false);
-      return;
-    }
-
-    // Conta tarefas aprovadas
-    const approvedTasks = tasksList.filter(task => task.status === MissionTaskStatus.APPROVED).length;
-    const totalTasks = tasksList.length;
-
-    // Calcula a porcentagem
-    const progressPercent = Math.round((approvedTasks / totalTasks) * 100);
-    setMissionProgress(progressPercent);
-
-    // Verifica se a missão está completa (todas as tarefas aprovadas e dentro do prazo)
-    const allTasksApproved = approvedTasks === totalTasks;
-    const isWithinDeadline = currentMission.deadline ? new Date() <= new Date(currentMission.deadline) : true;
-    setIsMissionCompleted(allTasksApproved && isWithinDeadline);
-  };
-
-  // Carregar missão, usuário e tarefas
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        if (!missionId) {
-          throw new Error('ID da missão não fornecido');
-        }
-
-        const missionIdNumber = parseInt(missionId);
-
-        // Buscar detalhes da missão
-        const fetchedMission = await missionService.getMissionById(missionIdNumber);
-        if (!fetchedMission) {
-          throw new Error('Missão não encontrada');
-        }
-        setMission(fetchedMission);
-
-        // Buscar detalhes do usuário responsável pela missão
-        if (fetchedMission.userId) {
-          const fetchedUser = await userService.getUserById(fetchedMission.userId);
-          setUser(fetchedUser);
-        }
-
-        // Buscar tarefas relacionadas à missão
-        const missionTasks = await taskService.getTasksByMissionId(missionIdNumber);
-        setTasks(missionTasks);
-
-        // Calcular progresso da missão
-        calculateMissionProgress(missionTasks, fetchedMission);
-
-      } catch (err) {
-        console.error('Erro ao buscar dados:', err);
-        setError('Não foi possível carregar os dados.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [missionId]);
-
-  const handleCreateTask = async (newTaskData: Partial<MissionTask>) => {
-    if (mission && currentUser) {
-      try {
-        const taskRequest: MissionTaskRequest = {
-          name: newTaskData.name || '',
-          status: newTaskData.status || MissionTaskStatus.AVAILABLE,
-          missionId: mission.id,
-          userId: currentUser.id,
-          observation: newTaskData.observation
-        };
-
-        if (!taskRequest.name) {
-          console.error("Nome da tarefa é obrigatório");
-          return;
-        }
-
-        const newTask = await taskService.createTask(taskRequest);
-
-        if (newTask) {
-          const updatedTasks = [...tasks, newTask];
-          setTasks(updatedTasks);
-          calculateMissionProgress(updatedTasks, mission);
-        }
-      } catch (error) {
-        console.error("Erro ao criar tarefa:", error);
-      }
-    }
-    setIsCreateModalOpen(false);
-  };
-
-  const handleEditTask = async (taskId: number) => {
-    console.log(`Editar tarefa ${taskId}`);
-    const taskToUpdate = tasks.find(task => task.id === taskId);
-    if (taskToUpdate) {
-      const success = await taskService.updateTask(taskId, {
-        name: "Nome atualizado", // Valor que viria do formulário
-        status: taskToUpdate.status
-      });
-      if (success) {
-        const updatedTasks = tasks.map(task =>
-          task.id === taskId ? { ...task, name: "Nome atualizado" } : task
-        );
-        setTasks(updatedTasks);
-        calculateMissionProgress(updatedTasks, mission);
-      }
-    }
-  };
-
-  const openDeleteModal = (taskId: number) => {
-    setTaskToDelete(taskId);
-    setIsDeleteModalOpen(true);
-  };
-
-  const handleDelete = async () => {
-    if (taskToDelete !== null) {
-      const success = await taskService.deleteTask(taskToDelete);
-      if (success) {
-        const updatedTasks = tasks.filter(task => task.id !== taskToDelete);
-        setTasks(updatedTasks);
-        calculateMissionProgress(updatedTasks, mission);
-        setIsDeleteModalOpen(false);
-      }
-    }
-  };
-
-  // Função para marcar uma tarefa como concluída (para usuário)
-  const handleTaskCheckClick = (taskId: number) => {
-    setCurrentTaskId(taskId);
-    setCurrentAction('complete');
-    setActionModalTitle("Concluir Tarefa");
-    setActionModalMessage("Tem certeza que deseja marcar esta tarefa como concluída?");
-    setIsActionModalOpen(true);
-  };
-
-  // Função para aprovar tarefa (para admin)
-  const handleAcceptTask = (taskId: number) => {
-    setCurrentTaskId(taskId);
-    setCurrentAction('approve');
-    setActionModalTitle("Aprovar Tarefa");
-    setActionModalMessage("Tem certeza que deseja aprovar esta tarefa?");
-    setIsActionModalOpen(true);
-  };
-
-  // Função para rejeitar tarefa (para admin)
-  const handleRejectTask = (taskId: number) => {
-    setCurrentTaskId(taskId);
-    setCurrentAction('reject');
-    setActionModalTitle("Rejeitar Tarefa");
-    setActionModalMessage("Tem certeza que deseja rejeitar esta tarefa?");
-    setIsActionModalOpen(true);
-  };
-
-  // Função para processar a confirmação da ação
-  const handleActionConfirm = async () => {
-    if (currentTaskId === null) return;
-
-    let newStatus: MissionTaskStatus;
-
-    // Definir o status dependendo da ação
-    switch (currentAction) {
-      case 'complete':
-        newStatus = MissionTaskStatus.PENDING;
-        break;
-      case 'approve':
-        newStatus = MissionTaskStatus.APPROVED;
-        break;
-      case 'reject':
-        newStatus = MissionTaskStatus.DENIED;
-        break;
-      default:
-        return; // Sai da função se a ação não for reconhecida
-    }
-
-    // Usar o método updateTaskStatus para atualizar apenas o status
-    const updatedTask = await taskService.updateTaskStatus(currentTaskId, newStatus);
-
-    if (updatedTask) {
-      // Atualizar a lista de tarefas com o objeto tarefa atualizado
-      const updatedTasks = tasks.map(task =>
-        task.id === currentTaskId ? updatedTask : task
-      );
-      setTasks(updatedTasks);
-
-      // Recalcular o progresso da missão
-      calculateMissionProgress(updatedTasks, mission);
-
-      // NOVO CÓDIGO: Verificar se todas as tarefas estão aprovadas para atualizar o status da missão
-      if (currentAction === 'approve' && mission) {
-        // Verificar se essa foi a última tarefa para aprovar
-        const allTasksApproved = updatedTasks.every(task => task.status === MissionTaskStatus.APPROVED);
-
-        if (allTasksApproved) {
-          // Verificar se está dentro do prazo
-          const isWithinDeadline = mission.deadline ? new Date() <= new Date(mission.deadline) : true;
-
-          // Se todas as tarefas estão aprovadas e dentro do prazo, atualizar o status da missão para COMPLETED
-          if (isWithinDeadline) {
-            await missionService.updateMissionStatus(mission.id, MissionStatus.COMPLETED);
-
-            // Atualizar o estado local da missão também
-            if (mission) {
-              setMission({
-                ...mission,
-                status: MissionStatus.COMPLETED
-              });
-            }
-          }
-        }
-      }
-    }
-
-    // Resetar estados
-    setIsActionModalOpen(false);
-    setCurrentTaskId(null);
-  };
-
-  // Renderiza o estado vazio (sem tarefas)
   const renderEmptyState = () => {
     return (
       <div className="empty-state">
@@ -280,38 +56,6 @@ const TaskPage: React.FC = () => {
         ) : (
           <p>Não há tarefas disponíveis para esta missão no momento.</p>
         )}
-      </div>
-    );
-  };
-
-  // Renderiza a barra de progresso da missão
-  const renderMissionProgressBar = () => {
-    if (tasks.length === 0) return null;
-
-    return (
-      <div className="mission-progress-container">
-        <div className="mission-progress-stats">
-          <span>{missionProgress}% concluído</span>
-          {isMissionCompleted && (
-            <span className="mission-completed">
-              <FaCheckCircle color="#4CAF50" /> Missão cumprida!
-            </span>
-          )}
-        </div>
-        <div className="mission-progress-bar">
-          <div
-            className={`mission-progress-fill ${isMissionCompleted ? 'completed' : ''}`}
-            style={{ width: `${missionProgress}%` }}
-          ></div>
-        </div>
-        <div className="mission-progress-details">
-          <span>{tasks.filter(task => task.status === MissionTaskStatus.APPROVED).length} de {tasks.length} tarefas concluídas</span>
-          {mission?.deadline && (
-            <span>
-              Prazo: {new Date(mission.deadline).toLocaleDateString()}
-            </span>
-          )}
-        </div>
       </div>
     );
   };
@@ -331,25 +75,22 @@ const TaskPage: React.FC = () => {
         <main className="main-content">
           <div className="task-container">
             {mission && user && (
-              <div className="mission-info-container">
-                <h2>Missão: {mission.name}</h2>
-                <p>Responsável: {user.name}</p>
-
-                {/* Barra de progresso da missão */}
-                {renderMissionProgressBar()}
-              </div>
+              <MissionHeader
+                mission={mission}
+                user={user}
+                tasks={tasks}
+                missionProgress={missionProgress}
+                isMissionCompleted={isMissionCompleted}
+              />
             )}
 
-            {/* Só renderiza o componente de Nova Tarefa se o usuário for admin */}
             {isAdmin && (
               mission?.status === MissionStatus.COMPLETED ? (
-                // Informação quando a missão está concluída
                 <div className="mission-completed-info">
                   <FaCheckCircle color="#4CAF50" size={18} />
                   <span>Missão concluída. Não é possível adicionar novas tarefas.</span>
                 </div>
               ) : (
-                // Botão normal de criação quando a missão não está concluída
                 <NewRegistrationComponent
                   title="Nova Tarefa"
                   buttonText="Criar"
@@ -358,10 +99,8 @@ const TaskPage: React.FC = () => {
               )
             )}
 
-            {/* Mostrar estado vazio se não houver tarefas e não estiver carregando */}
             {!isLoading && !error && tasks.length === 0 && renderEmptyState()}
 
-            {/* Mostrar lista de tarefas apenas se houver tarefas */}
             {!isLoading && !error && tasks.length > 0 && (
               <TaskList
                 tasks={tasks}
@@ -377,16 +116,13 @@ const TaskPage: React.FC = () => {
               />
             )}
 
-            {/* Mostrar mensagem de carregamento */}
             {isLoading && <p className="loading-message">Carregando tarefas...</p>}
 
-            {/* Mostrar mensagem de erro */}
             {error && <p className="error-message">{error}</p>}
           </div>
         </main>
       </div>
 
-      {/* Modal de criação de tarefas */}
       <TaskCreateModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
@@ -394,7 +130,6 @@ const TaskPage: React.FC = () => {
         missionId={mission?.id || 0}
       />
 
-      {/* Modal de exclusão */}
       <Modal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
@@ -403,12 +138,10 @@ const TaskPage: React.FC = () => {
         message="Tem certeza que deseja excluir esta tarefa? Esta ação não pode ser desfeita."
       />
 
-      {/* Modal para ações de tarefa (completar, aprovar, rejeitar) */}
       <Modal
         isOpen={isActionModalOpen}
         onClose={() => {
           setIsActionModalOpen(false);
-          setCurrentTaskId(null);
         }}
         onConfirm={handleActionConfirm}
         title={actionModalTitle}

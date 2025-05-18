@@ -1,0 +1,66 @@
+.mission-info-container {
+    background-color: #f7f9fc;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .mission-info-container h2 {
+    font-size: 1.4rem;
+    color: #2c3e50;
+    margin: 0 0 8px 0;
+  }
+  
+  .mission-info-container p {
+    font-size: 1rem;
+    color: #7f8c8d;
+    margin: 0 0 12px 0;
+  }
+  
+  .mission-progress-container {
+    margin-top: 16px;
+  }
+  
+  .mission-progress-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+    color: #34495e;
+  }
+  
+  .mission-completed {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+    color: #4CAF50;
+  }
+  
+  .mission-progress-bar {
+    height: 10px;
+    background-color: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  
+  .mission-progress-fill {
+    height: 100%;
+    background-color: #3498db;
+    border-radius: 10px;
+    transition: width 0.5s ease;
+  }
+  
+  .mission-progress-fill.completed {
+    background-color: #4CAF50;
+  }
+  
+  .mission-progress-details {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #7f8c8d;
+  }

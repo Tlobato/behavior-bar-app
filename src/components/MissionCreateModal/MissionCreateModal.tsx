@@ -24,7 +24,6 @@ const MissionCreateModal: React.FC<MissionCreateModalProps> = ({ isOpen, onClose
   const dropdownRef = useRef<HTMLDivElement>(null);
   const selectHeaderRef = useRef<HTMLDivElement>(null);
 
-  // Carregar lista de usuários quando o modal abrir
   useEffect(() => {
     if (isOpen) {
       fetchUsers();
@@ -32,7 +31,6 @@ const MissionCreateModal: React.FC<MissionCreateModalProps> = ({ isOpen, onClose
     }
   }, [isOpen]);
 
-  // Fechar dropdown ao clicar fora dele
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -46,7 +44,6 @@ const MissionCreateModal: React.FC<MissionCreateModalProps> = ({ isOpen, onClose
     };
   }, []);
 
-  // Determinar a direção do dropdown com base no espaço disponível
   const calculateDropdownDirection = () => {
     if (selectHeaderRef.current) {
       const rect = selectHeaderRef.current.getBoundingClientRect();
@@ -147,7 +144,6 @@ const MissionCreateModal: React.FC<MissionCreateModalProps> = ({ isOpen, onClose
 
   if (!isOpen) return null;
   
-  // Componente personalizado para o DatePicker com forwardRef
   const DatePickerCustomInput = React.forwardRef<HTMLDivElement, { value?: string; onClick?: () => void }>(
     ({ value, onClick }, ref) => (
       <div className="date-picker-custom-input" onClick={onClick} ref={ref}>

@@ -1,49 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { InfractionCategory } from '../../types';
-import { getInfractionCategories } from '../../services/behaviorService'; // Importa a função para buscar categorias
+import { InfractionCategory, InfractionFormProps } from '../../types';
+import { getInfractionCategories } from '../../services/behaviorService';
 import './InfractionForm.css';
 
-interface InfractionFormProps {
-  categories: InfractionCategory[];
-  onAddInfraction: (
-    description: string,
-    points: number,
-    saveAsPredefined: boolean,
-    behaviorTypeId: number | null // Adicionado o quarto parâmetro
-  ) => void;
-}
-
 const InfractionForm: React.FC<InfractionFormProps> = ({ categories, onAddInfraction }) => {
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null); // Para categorias pré-definidas
-  const [customDescription, setCustomDescription] = useState<string>(''); // Para descrição personalizada
-  const [customPoints, setCustomPoints] = useState<number>(5); // Para pontos personalizados
-  const [useCustom, setUseCustom] = useState<boolean>(false); // Alterna entre pré-definido e personalizado
-  const [isPositive, setIsPositive] = useState<boolean>(false); // Define se é comportamento positivo ou negativo
-  const [saveAsPredefined, setSaveAsPredefined] = useState<boolean>(false); // Define se o comportamento será salvo como pré-definido
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [customDescription, setCustomDescription] = useState<string>('');
+  const [customPoints, setCustomPoints] = useState<number>(5);
+  const [useCustom, setUseCustom] = useState<boolean>(false);
+  const [isPositive, setIsPositive] = useState<boolean>(false);
+  const [saveAsPredefined, setSaveAsPredefined] = useState<boolean>(false);
 
-  const [localCategories, setLocalCategories] = useState<InfractionCategory[]>(categories); // Usa estado local para categorias
+  const [localCategories, setLocalCategories] = useState<InfractionCategory[]>(categories);
 
-  // Busca categorias do backend ao carregar o componente
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const initialCategories = await getInfractionCategories(); // Faz chamada ao backend
-        setLocalCategories(initialCategories); // Atualiza o estado local com as categorias
-        console.log('Categorias carregadas ao iniciar:', initialCategories); // Log para depuração
+        const initialCategories = await getInfractionCategories();
+        setLocalCategories(initialCategories);
+        console.log('Categorias carregadas ao iniciar:', initialCategories);
       } catch (error) {
         console.error('Erro ao carregar categorias:', error);
       }
     };
 
-    fetchCategories(); // Chama a função para buscar categorias
-  }, []); // Executa apenas ao carregar o componente
+    fetchCategories();
+  }, []);
 
-  // Atualiza categorias dinamicamente após salvar um comportamento
   const updateCategories = async () => {
     try {
-      const updatedCategories = await getInfractionCategories(); // Faz chamada ao backend
-      setLocalCategories(updatedCategories); // Atualiza o estado local com as novas categorias
-      console.log('Categorias atualizadas:', updatedCategories); // Log para depuração
+      const updatedCategories = await getInfractionCategories();
+      setLocalCategories(updatedCategories);
+      console.log('Categorias atualizadas:', updatedCategories);
     } catch (error) {
       console.error('Erro ao atualizar categorias:', error);
     }
@@ -53,23 +41,21 @@ const InfractionForm: React.FC<InfractionFormProps> = ({ categories, onAddInfrac
     e.preventDefault();
 
     if (useCustom) {
-      // Comportamento Personalizado
       if (customDescription.trim() && customPoints > 0) {
-        const points = isPositive ? customPoints : -customPoints; // Ajusta o sinal dos pontos
-        await onAddInfraction(customDescription.trim(), points, saveAsPredefined, null); // Passa null para behaviorTypeId
-        await updateCategories(); // Atualiza a lista de categorias após salvar
+        const points = isPositive ? customPoints : -customPoints;
+        await onAddInfraction(customDescription.trim(), points, saveAsPredefined, null);
+        await updateCategories();
         setCustomDescription('');
         setCustomPoints(5);
-        setIsPositive(false); // Reseta para comportamento negativo por padrão
-        setSaveAsPredefined(false); // Reseta o estado do checkbox
+        setIsPositive(false);
+        setSaveAsPredefined(false);
       }
     } else {
-      // Comportamento Pré-definido
       if (selectedCategory !== null) {
         const category = localCategories.find(cat => cat.id === selectedCategory);
         if (category) {
-          await onAddInfraction(category.description, category.pointsDeduction, false, selectedCategory); // Passa o ID da categoria
-          setSelectedCategory(null); // Reseta o estado para nenhum selecionado
+          await onAddInfraction(category.description, category.pointsDeduction, false, selectedCategory);
+          setSelectedCategory(null);
         }
       }
     }
@@ -105,13 +91,12 @@ const InfractionForm: React.FC<InfractionFormProps> = ({ categories, onAddInfrac
 
       <form onSubmit={handleSubmit}>
         {!useCustom ? (
-          // Comportamento Pré-definido
           <div className="category-selector">
             <label htmlFor="category-select">Selecione a categoria:</label>
             <select
               id="category-select"
-              value={selectedCategory ?? ''} // Usa uma string vazia se selectedCategory for null
-              onChange={(e) => setSelectedCategory(Number(e.target.value))} // Converte para número
+              value={selectedCategory ?? ''}
+              onChange={(e) => setSelectedCategory(Number(e.target.value))}
               required
               style={{
                 width: '100%',
@@ -130,7 +115,6 @@ const InfractionForm: React.FC<InfractionFormProps> = ({ categories, onAddInfrac
             </select>
           </div>
         ) : (
-          // Comportamento Personalizado
           <div className="custom-infraction">
             <div style={{ marginBottom: '10px' }}>
               <label htmlFor="description">Descrição do comportamento:</label>
@@ -156,7 +140,7 @@ const InfractionForm: React.FC<InfractionFormProps> = ({ categories, onAddInfrac
                 <input
                   type="checkbox"
                   checked={isPositive}
-                  onChange={(e) => setIsPositive(e.target.checked)} // Alterna entre positivo e negativo
+                  onChange={(e) => setIsPositive(e.target.checked)}
                 />
                 {' '}É um comportamento positivo?
               </label>
@@ -187,7 +171,7 @@ const InfractionForm: React.FC<InfractionFormProps> = ({ categories, onAddInfrac
                 <input
                   type="checkbox"
                   checked={saveAsPredefined}
-                  onChange={(e) => setSaveAsPredefined(e.target.checked)} // Alterna entre salvar ou não como pré-definido
+                  onChange={(e) => setSaveAsPredefined(e.target.checked)}
                 />
                 {' '}Salvar como pré-definido?
               </label>

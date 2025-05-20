@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
 import './Hotspot.css';
-
-interface HotspotProps {
-  message: string;
-  position?: 'top' | 'bottom' | 'left' | 'right';
-  onClose?: () => void;
-}
+import { HotspotProps } from '../../types';
 
 const Hotspot: React.FC<HotspotProps> = ({ 
   message, 

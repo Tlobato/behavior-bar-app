@@ -1,16 +1,7 @@
 import React from 'react';
-import { User } from '../../types';
+import { UserListProps } from '../../types';
 import { FaTrash, FaEdit, FaChartBar, FaUserFriends } from 'react-icons/fa';
 import './UserList.css';
-
-interface UserListProps {
-  users: User[];
-  isLoading: boolean;
-  error: string;
-  onAccessBoard: (user: User) => void;
-  onEditUser: (user: User) => void;
-  onDeleteUser: (userId: number) => void;
-}
 
 const UserList: React.FC<UserListProps> = ({
   users,

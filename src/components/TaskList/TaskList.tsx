@@ -44,10 +44,8 @@ const TaskList: React.FC<TaskListProps> = ({
               <td>{translateStatus(task.status)}</td>
               <td>{mission?.deadline ? formatDateTime(mission.deadline) : 'Sem prazo'}</td>
               <td className="action-icons">
-                {/* PARA USUÁRIO NÃO ADMIN */}
                 {!isAdmin && (
                   <>
-                    {/* Botão de marcar como concluído para tarefas disponíveis ou negadas (para usuários) */}
                     {(task.status === MissionTaskStatus.AVAILABLE || task.status === MissionTaskStatus.DENIED) && (
                       <div
                         className="action-icon complete-task-icon"
@@ -58,7 +56,6 @@ const TaskList: React.FC<TaskListProps> = ({
                       </div>
                     )}
 
-                    {/* Ícone de atenção amarelo para tarefas com status PENDING (para usuários) */}
                     {task.status === MissionTaskStatus.PENDING && (
                       <div
                         className="action-icon pending-icon"
@@ -68,7 +65,6 @@ const TaskList: React.FC<TaskListProps> = ({
                       </div>
                     )}
                     
-                    {/* Ícone verde de check para tarefas com status APPROVED (para usuários) */}
                     {task.status === MissionTaskStatus.APPROVED && (
                       <div
                         className="action-icon approved-icon"
@@ -80,10 +76,8 @@ const TaskList: React.FC<TaskListProps> = ({
                   </>
                 )}
 
-                {/* PARA ADMIN */}
                 {isAdmin && (
                   <>
-                    {/* Exibir botões de aceitar/rejeitar apenas para admins e quando o status for PENDING */}
                     {task.status === MissionTaskStatus.PENDING && (
                       <>
                         <div
@@ -103,7 +97,6 @@ const TaskList: React.FC<TaskListProps> = ({
                       </>
                     )}
                     
-                    {/* Ícone verde de check para tarefas com status APPROVED (para admin) */}
                     {task.status === MissionTaskStatus.APPROVED && (
                       <div
                         className="action-icon approved-icon"
@@ -113,7 +106,6 @@ const TaskList: React.FC<TaskListProps> = ({
                       </div>
                     )}
                     
-                    {/* Botões de editar/excluir sempre visíveis para admins */}
                     <div
                       className="action-icon"
                       title="Editar"

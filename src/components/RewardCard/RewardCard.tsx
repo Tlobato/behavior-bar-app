@@ -4,32 +4,32 @@ import { RewardCardProps } from '../../types';
 import { FaImage, FaEdit, FaTrash } from 'react-icons/fa';
 import { authService } from '../../services/authService';
 
-const RewardCard: React.FC<RewardCardProps> = ({ 
-  title, 
+const RewardCard: React.FC<RewardCardProps> = ({
+  title,
   description = "Descrição não disponível",
-  imageUrl, 
-  points, 
-  isAvailable = false, 
-  onClick, 
-  onEdit, 
-  onDelete 
+  imageUrl,
+  points,
+  isAvailable = false,
+  onClick,
+  onEdit,
+  onDelete
 }) => {
   const isAdmin = authService.isAdmin();
   const [isFlipped, setIsFlipped] = useState(false);
 
   const handleFlip = (e: React.MouseEvent) => {
     e.stopPropagation();
-    
+
     const target = e.target as HTMLElement;
     if (
-      target.tagName === 'BUTTON' || 
+      target.tagName === 'BUTTON' ||
       target.closest('button') ||
-      target.classList.contains('edit-button') || 
+      target.classList.contains('edit-button') ||
       target.classList.contains('delete-button')
     ) {
       return;
     }
-    
+
     setIsFlipped(!isFlipped);
   };
 
@@ -51,7 +51,6 @@ const RewardCard: React.FC<RewardCardProps> = ({
   return (
     <div className="reward-card-wrapper">
       <div className={`reward-card ${isFlipped ? 'is-flipped' : ''}`}>
-        {/* Frente do Card */}
         <div className="card-front" onClick={handleFlip}>
           <div className="image-container">
             {imageUrl ? (
@@ -62,24 +61,24 @@ const RewardCard: React.FC<RewardCardProps> = ({
               </div>
             )}
           </div>
-          
+
           <div className="text-container">
             <h3 className="reward-title">{title}</h3>
           </div>
-          
+
           <div className="action-container">
             <p className="reward-points">{points} pontos</p>
-            
+
             {isAdmin ? (
               <div className="admin-buttons">
-                <button 
-                  className="edit-button" 
+                <button
+                  className="edit-button"
                   onClick={handleEditClick}
                 >
                   <FaEdit /> Editar
                 </button>
-                <button 
-                  className="delete-button" 
+                <button
+                  className="delete-button"
                   onClick={handleDeleteClick}
                 >
                   <FaTrash /> Excluir
@@ -97,7 +96,6 @@ const RewardCard: React.FC<RewardCardProps> = ({
           </div>
         </div>
 
-        {/* Verso do Card */}
         <div className="card-back" onClick={handleFlip}>
           <div className="card-back-content">
             <h3 className="card-back-title">{title}</h3>

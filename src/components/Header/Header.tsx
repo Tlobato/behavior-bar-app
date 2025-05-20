@@ -14,13 +14,11 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  
-  // Verifica se o usuário está na página de recompensas
+
   const isRewardsPage = location.pathname.includes('/rewards');
-  
-  // Verifica se o usuário é do tipo USER
+
   const isUserType = userRole === 'USER';
-  
+
   const goToRewards = () => {
     if (!isRewardsPage) {
       navigate('/rewards');
@@ -41,27 +39,25 @@ const Header: React.FC<HeaderProps> = ({
         </h1>
       </div>
       <div className="header-right">
-        {/* Exibe os pontos e ícone de recompensa para usuários USER */}
         {isUserType && (
           <div className="reward-points-container">
             <span className="reward-points">{rewardPoints}</span>
-            <div 
+            <div
               className={`header-icon ${isRewardsPage ? 'disabled-icon' : ''}`}
-              onClick={!isRewardsPage ? goToRewards : undefined} 
+              onClick={!isRewardsPage ? goToRewards : undefined}
               title={isRewardsPage ? "Você está na página de recompensas" : "Recompensas"}
             >
               <FaGift />
             </div>
           </div>
         )}
-        
-        {/* Para ADMINs, manter o comportamento original */}
+
         {!isUserType && !isRewardsPage && (
           <div className="header-icon" onClick={goToRewards} title="Recompensas">
             <FaGift />
           </div>
         )}
-        
+
         <span className="user-name">{userName}</span>
         <span className="profile-icon">👤</span>
         <button className="logout-button-header" onClick={onLogout}>

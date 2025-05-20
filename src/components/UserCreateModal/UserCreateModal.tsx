@@ -1,18 +1,13 @@
 import React, { useState } from 'react';
 import './UserCreateModal.css';
-
-interface UserCreateModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onCreate: (userData: { name: string; email: string; password: string; role: 'USER' | 'ADMIN' }) => void;
-}
+import { UserCreateModalProps } from '../../types';
 
 const UserCreateModal: React.FC<UserCreateModalProps> = ({ isOpen, onClose, onCreate }) => {
   const [userData, setUserData] = useState({
-    name: '', // Nome inicial vazio
-    email: '', // Email inicial vazio
-    password: '', // Senha inicial vazia
-    role: 'USER' as 'USER' | 'ADMIN', // Papel padrão como "USER"
+    name: '',
+    email: '',
+    password: '',
+    role: 'USER' as 'USER' | 'ADMIN',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -24,25 +19,24 @@ const UserCreateModal: React.FC<UserCreateModalProps> = ({ isOpen, onClose, onCr
   };
 
   const handleCreate = () => {
-    onCreate(userData); // Passa os dados do usuário para o método de criação
-    onClose(); // Fecha o modal
+    onCreate(userData);
+    onClose();
   };
 
-  if (!isOpen) return null; // Não renderiza o modal se ele estiver fechado
-
+  if (!isOpen) return null;
   return (
     <div className="modal">
       <div className="modal-content">
         <h2>Criar Novo Usuário</h2>
-        <div className="modal-divider"></div> {/* Divider abaixo do título */}
-        <form autoComplete="off"> {/* Desativa o autocompletar no formulário */}
+        <div className="modal-divider"></div>
+        <form autoComplete="off">
           <label>Nome:</label>
           <input
             type="text"
             name="name"
             value={userData.name}
             onChange={handleInputChange}
-            autoComplete="off" /* Desativa o autocompletar */
+            autoComplete="off"
           />
 
           <label>Email:</label>
@@ -51,7 +45,7 @@ const UserCreateModal: React.FC<UserCreateModalProps> = ({ isOpen, onClose, onCr
             name="email"
             value={userData.email}
             onChange={handleInputChange}
-            autoComplete="off" /* Desativa o autocompletar */
+            autoComplete="off"
           />
 
           <label>Senha:</label>
@@ -60,7 +54,7 @@ const UserCreateModal: React.FC<UserCreateModalProps> = ({ isOpen, onClose, onCr
             name="password"
             value={userData.password}
             onChange={handleInputChange}
-            autoComplete="new-password" /* Valor recomendado para senhas */
+            autoComplete="new-password"
           />
 
           <label>Papel:</label>

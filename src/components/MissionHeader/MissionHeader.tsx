@@ -1,15 +1,7 @@
 import React from 'react';
 import { FaCheckCircle } from 'react-icons/fa';
-import { Mission, MissionTask, User } from '../../types';
+import { MissionHeaderProps } from '../../types';
 import './MissionHeader.css';
-
-interface MissionHeaderProps {
-  mission: Mission | null;
-  user: User | null;
-  tasks: MissionTask[];
-  missionProgress: number;
-  isMissionCompleted: boolean;
-}
 
 const MissionHeader: React.FC<MissionHeaderProps> = ({
   mission,

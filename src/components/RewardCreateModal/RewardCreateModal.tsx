@@ -1,17 +1,6 @@
 import React, { useState } from 'react';
 import './RewardCreateModal.css';
-
-interface RewardCreateModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onCreate: (rewardData: { 
-    title: string; 
-    description: string; 
-    points: number; 
-    imageFile?: File | null; // Alterado de imageUrl para imageFile
-    active?: boolean;
-  }) => void;
-}
+import { RewardCreateModalProps } from '../../types';
 
 const RewardCreateModal: React.FC<RewardCreateModalProps> = ({ isOpen, onClose, onCreate }) => {
   const [rewardData, setRewardData] = useState({
@@ -21,7 +10,7 @@ const RewardCreateModal: React.FC<RewardCreateModalProps> = ({ isOpen, onClose, 
     active: true
   });
   
-  const [imageFile, setImageFile] = useState<File | null>(null);  // Novo estado para o arquivo
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -43,9 +32,8 @@ const RewardCreateModal: React.FC<RewardCreateModalProps> = ({ isOpen, onClose, 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImageFile(file);  // Salva o arquivo em si
+      setImageFile(file);
       
-      // Preview da imagem
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -55,7 +43,6 @@ const RewardCreateModal: React.FC<RewardCreateModalProps> = ({ isOpen, onClose, 
   };
 
   const handleCreate = () => {
-    // Validação básica
     if (!rewardData.title || !rewardData.description || rewardData.points <= 0) {
       alert("Por favor, preencha todos os campos corretamente.");
       return;
@@ -68,7 +55,7 @@ const RewardCreateModal: React.FC<RewardCreateModalProps> = ({ isOpen, onClose, 
 
     onCreate({
       ...rewardData,
-      imageFile  // Passa o arquivo para o método de criação
+      imageFile
     });
     resetForm();
   };

@@ -1,23 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './RewardEditModal.css';
-import { Reward } from '../../types';
+import { EditRewardData, RewardEditModalProps } from '../../types';
 import { FiX } from 'react-icons/fi';
-
-interface RewardEditModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: (editedReward: EditRewardData) => void;
-  reward: Reward | null;
-}
-
-export interface EditRewardData {
-  id: number;
-  title: string;
-  description: string;
-  points: number;
-  imageFile?: File | null;
-  active?: boolean;
-}
 
 const RewardEditModal: React.FC<RewardEditModalProps> = ({ 
   isOpen, 
@@ -33,15 +17,14 @@ const RewardEditModal: React.FC<RewardEditModalProps> = ({
   const [active, setActive] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Resetar os campos quando o modal abrir com uma nova recompensa
   useEffect(() => {
     if (reward) {
       setTitle(reward.title || '');
       setDescription(reward.description || '');
       setPoints(reward.points || 0);
-      setActive(reward.active !== false); // Se active for undefined, assume true
+      setActive(reward.active !== false);
       setImagePreview(reward.imageUrl || null);
-      setImageFile(null); // Reset do arquivo ao carregar novos dados
+      setImageFile(null);
     }
   }, [reward]);
 
@@ -52,7 +35,6 @@ const RewardEditModal: React.FC<RewardEditModalProps> = ({
       const file = e.target.files[0];
       setImageFile(file);
       
-      // Criar preview da imagem
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);

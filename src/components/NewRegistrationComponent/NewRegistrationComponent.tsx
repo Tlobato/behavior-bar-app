@@ -1,12 +1,6 @@
 import React from 'react';
 import './NewRegistrationComponent.css';
-
-interface NewRegistrationComponentProps {
-  title: string;
-  buttonText: string;
-  onButtonClick: () => void;
-  width?: string; // Nova propriedade opcional
-}
+import { NewRegistrationComponentProps } from '../../types';
 
 const NewRegistrationComponent: React.FC<NewRegistrationComponentProps> = ({
   title,

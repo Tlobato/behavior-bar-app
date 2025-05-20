@@ -9,7 +9,6 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ isOpen, onClose, onUpdate
     role: 'USER' as 'USER' | 'ADMIN',
   });
 
-  // Atualiza o estado quando o usuário muda
   useEffect(() => {
     if (user) {
       setUserData({

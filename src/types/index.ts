@@ -69,12 +69,11 @@ export interface RewardCreateModalProps {
     title: string;
     description: string;
     points: number;
-    imageFile?: File | null; // Modificado para File em vez de imageUrl
+    imageFile?: File | null;
     active?: boolean;
   }) => void;
 }
 
-// Definir interface para o tipo de resposta do backend
 export interface BackendReward {
   id: number;
   title: string;
@@ -189,4 +188,109 @@ export interface TaskListProps {
   onRejectTask: (taskId: number) => void;
   onEditTask: (taskId: number) => void;
   onDeleteTask: (taskId: number) => void;
+}
+
+export interface BehaviorBarProps {
+  behaviorState: BehaviorState;
+  userName: string;
+  rewardPoints?: number;
+}
+
+export interface BehaviorHistoryProps {
+  infractions: Infraction[];
+  formatDate: (date: Date) => string;
+  isAdmin: boolean;
+}
+
+export interface HotspotProps {
+  message: string;
+  position?: 'top' | 'bottom' | 'left' | 'right';
+  onClose?: () => void;
+}
+
+export interface InfractionFormProps {
+  categories: InfractionCategory[];
+  onAddInfraction: (
+    description: string,
+    points: number,
+    saveAsPredefined: boolean,
+    behaviorTypeId: number | null
+  ) => void;
+}
+
+export interface MissionHeaderProps {
+  mission: Mission | null;
+  user: User | null;
+  tasks: MissionTask[];
+  missionProgress: number;
+  isMissionCompleted: boolean;
+}
+
+export interface MissionListProps {
+  missions: Mission[];
+  isLoading: boolean;
+  error: string;
+  shouldShowHotspot: boolean;
+  getUserName: (userId: number | undefined) => string;
+  handleManageTasks: (mission: Mission) => void;
+  openEditModal: (mission: Mission) => void;
+  openDeleteModal: (missionId: number) => void;
+  handleHotspotClose: () => void;
+}
+
+export interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  title: string;
+  message: string;
+}
+
+export interface NewRegistrationComponentProps {
+  title: string;
+  buttonText: string;
+  onButtonClick: () => void;
+  width?: string; // Nova propriedade opcional
+}
+
+export interface RewardEditModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (editedReward: EditRewardData) => void;
+  reward: Reward | null;
+}
+
+export interface EditRewardData {
+  id: number;
+  title: string;
+  description: string;
+  points: number;
+  imageFile?: File | null;
+  active?: boolean;
+}
+
+export interface TaskCreateModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onCreate: (task: Partial<MissionTask>) => void;
+  missionId: number;
+}
+
+export interface UserCreateModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onCreate: (userData: { name: string; email: string; password: string; role: 'USER' | 'ADMIN' }) => void;
+}
+
+export interface UserListProps {
+  users: User[];
+  isLoading: boolean;
+  error: string;
+  onAccessBoard: (user: User) => void;
+  onEditUser: (user: User) => void;
+  onDeleteUser: (userId: number) => void;
+}
+
+export interface UserMissionsListProps {
+  userId: number;
 }

@@ -1,13 +1,7 @@
 import React from 'react';
-import { Infraction } from '../../types';
+import { BehaviorHistoryProps, Infraction } from '../../types';
 import { FaThumbsUp } from 'react-icons/fa';
 import './BehaviorHistory.css';
-
-interface BehaviorHistoryProps {
-  infractions: Infraction[];
-  formatDate: (date: Date) => string;
-  isAdmin: boolean;
-}
 
 const BehaviorHistory: React.FC<BehaviorHistoryProps> = ({ infractions, formatDate, isAdmin }) => {
   return (

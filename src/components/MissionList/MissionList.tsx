@@ -1,23 +1,11 @@
 import React from 'react';
 import { FaTrash, FaEdit, FaTasks } from 'react-icons/fa';
-import { Mission } from '../../types';
+import { MissionListProps } from '../../types';
 import Hotspot from '../Hotspot/Hotspot';
 import { formatDateTime } from '../../utils/dateUtils';
 import { translateMissionStatus } from '../../utils/statusUtils';
 import './MissionList.css';
 import { FaClipboardList } from 'react-icons/fa';
-
-interface MissionListProps {
-  missions: Mission[];
-  isLoading: boolean;
-  error: string;
-  shouldShowHotspot: boolean;
-  getUserName: (userId: number | undefined) => string;
-  handleManageTasks: (mission: Mission) => void;
-  openEditModal: (mission: Mission) => void;
-  openDeleteModal: (missionId: number) => void;
-  handleHotspotClose: () => void;
-}
 
 const MissionList: React.FC<MissionListProps> = ({
   missions,

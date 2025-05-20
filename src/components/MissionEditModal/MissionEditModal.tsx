@@ -18,11 +18,9 @@ const MissionEditModal: React.FC<MissionEditModalProps> = ({ isOpen, onClose, on
   const [selectedUserName, setSelectedUserName] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   
-  // Função para buscar detalhes do usuário da missão
   const fetchUserDetails = useCallback(async (userId: number) => {
     setIsLoading(true);
     try {
-      // Busca apenas o usuário específico da missão
       const user = await userService.getUserById(userId);
       if (user) {
         setSelectedUserName(user.name);
@@ -37,7 +35,6 @@ const MissionEditModal: React.FC<MissionEditModalProps> = ({ isOpen, onClose, on
     }
   }, []);
 
-  // Inicializar dados quando o modal é aberto
   useEffect(() => {
     if (isOpen && mission) {
       setMissionData({
@@ -48,14 +45,12 @@ const MissionEditModal: React.FC<MissionEditModalProps> = ({ isOpen, onClose, on
         userId: mission.userId,
       });
       
-      // Converter a string do deadline para objeto Date
       if (mission.deadline) {
         setSelectedDate(new Date(mission.deadline));
       } else {
         setSelectedDate(null);
       }
       
-      // Buscar nome do usuário selecionado
       fetchUserDetails(mission.userId);
     }
   }, [isOpen, mission, fetchUserDetails]);
@@ -95,7 +90,6 @@ const MissionEditModal: React.FC<MissionEditModalProps> = ({ isOpen, onClose, on
   const handleUpdate = () => {
     const { name, description, rewardPoints, deadline, userId } = missionData;
 
-    // Validação básica
     if (!name || !description || !rewardPoints || !deadline || !userId) {
       alert('Por favor, preencha todos os campos corretamente.');
       return;
@@ -108,7 +102,6 @@ const MissionEditModal: React.FC<MissionEditModalProps> = ({ isOpen, onClose, on
 
   if (!isOpen) return null;
   
-  // Componente personalizado para o DatePicker com forwardRef
   const DatePickerCustomInput = React.forwardRef<HTMLDivElement, { value?: string; onClick?: () => void }>(
     ({ value, onClick }, ref) => (
       <div className="date-picker-custom-input" onClick={onClick} ref={ref}>

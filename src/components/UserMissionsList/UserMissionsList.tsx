@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Mission } from '../../types';
+import { Mission, UserMissionsListProps } from '../../types';
 import { missionService } from '../../services/missionService';
 import { useNavigate } from 'react-router-dom';
 import { FaTasks, FaClipboardList, FaClock } from 'react-icons/fa';
 import { formatDateTime } from '../../utils/dateUtils';
 import './UserMissionsList.css';
-
-interface UserMissionsListProps {
-  userId: number;
-}
 
 const UserMissionsList: React.FC<UserMissionsListProps> = ({ userId }) => {
   const [missions, setMissions] = useState<Mission[]>([]);
@@ -17,7 +13,6 @@ const UserMissionsList: React.FC<UserMissionsListProps> = ({ userId }) => {
   
   const navigate = useNavigate();
 
-  // Função para traduzir o status da missão
   const translateStatus = (status: string): string => {
     switch (status) {
       case 'IN_PROGRESS':
@@ -31,16 +26,13 @@ const UserMissionsList: React.FC<UserMissionsListProps> = ({ userId }) => {
     }
   };
 
-  // Buscar apenas missões do usuário atual
   useEffect(() => {
     const fetchUserMissions = async () => {
       if (!userId) return;
       
       setIsLoading(true);
       try {
-        // Buscar todas as missões
         const allMissions = await missionService.getMissions();
-        // Filtrar apenas as do usuário atual
         const userMissions = allMissions.filter(mission => mission.userId === userId);
         setMissions(userMissions);
       } catch (err) {
@@ -54,7 +46,6 @@ const UserMissionsList: React.FC<UserMissionsListProps> = ({ userId }) => {
     fetchUserMissions();
   }, [userId]);
 
-  // Redirecionar para a página de gerenciamento de tarefas
   const handleViewTasks = (mission: Mission) => {
     navigate(`/missions/${mission.id}/tasks`);
   };

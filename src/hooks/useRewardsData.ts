@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Reward } from '../types';
-import { EditRewardData } from '../components/RewardEditModal/RewardEditModal';
+import { EditRewardData, Reward } from '../types';
 import { authService } from '../services/authService';
 import { rewardService } from '../services/rewardService';
 import { userService } from '../services/userService';

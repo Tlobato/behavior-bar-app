@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
 import './TaskCreateModal.css';
-import { MissionTask, MissionTaskStatus } from '../../types';
-
-interface TaskCreateModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onCreate: (task: Partial<MissionTask>) => void;
-  missionId: number;
-}
+import { MissionTask, MissionTaskStatus, TaskCreateModalProps } from '../../types';
 
 const TaskCreateModal: React.FC<TaskCreateModalProps> = ({ 
   isOpen, 
@@ -38,7 +31,6 @@ const TaskCreateModal: React.FC<TaskCreateModalProps> = ({
       return;
     }
 
-    // Garantir que o missionId esteja definido
     onCreate({
       ...taskData,
       missionId: missionId

@@ -68,7 +68,7 @@ const TaskList: React.FC<TaskListProps> = ({
                     {task.status === MissionTaskStatus.APPROVED && (
                       <div
                         className="action-icon approved-icon"
-                        title="Tarefa aprovada pelo Administrador"
+                        title="Tarefa aprovada"
                       >
                         <FaCheckCircle />
                       </div>
@@ -106,20 +106,24 @@ const TaskList: React.FC<TaskListProps> = ({
                       </div>
                     )}
                     
-                    <div
-                      className="action-icon"
-                      title="Editar"
-                      onClick={() => onEditTask(task.id)}
-                    >
-                      <FaEdit />
-                    </div>
-                    <div
-                      className="action-icon delete-icon"
-                      title="Excluir"
-                      onClick={() => onDeleteTask(task.id)}
-                    >
-                      <FaTrash />
-                    </div>
+                    {task.status !== MissionTaskStatus.APPROVED && (
+                      <>
+                        <div
+                          className="action-icon"
+                          title="Editar"
+                          onClick={() => onEditTask(task.id)}
+                        >
+                          <FaEdit />
+                        </div>
+                        <div
+                          className="action-icon delete-icon"
+                          title="Excluir"
+                          onClick={() => onDeleteTask(task.id)}
+                        >
+                          <FaTrash />
+                        </div>
+                      </>
+                    )}
                   </>
                 )}
               </td>

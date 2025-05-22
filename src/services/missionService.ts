@@ -7,7 +7,7 @@ export const missionService = {
   // Listar todas as missões
   async getMissions(): Promise<Mission[]> {
     try {
-      const token = localStorage.getItem('token'); // Recupera o token JWT armazenado
+      const token = localStorage.getItem('accessToken'); // Recupera o token JWT armazenado
 
       const response = await axios.get(API_URL, {
         headers: {
@@ -127,7 +127,7 @@ export const missionService = {
   // Excluir uma missão
   async deleteMission(id: number): Promise<boolean> {
     try {
-      const token = localStorage.getItem('token'); // Recupera o token JWT armazenado
+      const token = localStorage.getItem('accessToken'); // Recupera o token JWT armazenado
 
       await axios.delete(`${API_URL}/${id}`, {
         headers: {
@@ -143,7 +143,7 @@ export const missionService = {
 
   async updateMissionStatus(id: number, status: MissionStatus): Promise<boolean> {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('accessToken');
       
       const response = await axios.patch(`${API_URL}/${id}/status`, { status }, {
         headers: {

@@ -6,14 +6,12 @@ const API_URL = 'http://localhost:8080/api/rewards'; // URL base da API de recom
 export const rewardService = {
   async getAllRewards(): Promise<Reward[]> {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('accessToken');
       const response = await axios.get(API_URL, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      
-
       
       // Mapear os dados para garantir compatibilidade
       return response.data.map((reward: BackendReward) => ({
@@ -34,7 +32,7 @@ export const rewardService = {
   async getRewardById(id: number): Promise<Reward | null> {
     try {
       // Obter o token do localStorage
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('accessToken');
 
       const response = await axios.get(`${API_URL}/${id}`, {
         headers: {
@@ -57,7 +55,7 @@ export const rewardService = {
   }): Promise<Reward | null> {
     try {
       // Obter o token do localStorage
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('accessToken');
 
       // Criar um FormData para enviar os dados multipart
       const formData = new FormData();
@@ -112,7 +110,7 @@ export const rewardService = {
   }): Promise<Reward | null> {
     try {
       // Obter o token do localStorage
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('accessToken');
 
       // Criar um FormData para enviar os dados multipart
       const formData = new FormData();
@@ -140,8 +138,7 @@ export const rewardService = {
   // Excluir uma recompensa
   async deleteReward(id: number): Promise<boolean> {
     try {
-      // Obter o token do localStorage
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('accessToken');
 
       await axios.delete(`${API_URL}/${id}`, {
         headers: {
@@ -158,8 +155,7 @@ export const rewardService = {
   // Upload de imagem para uma recompensa
   async uploadRewardImage(file: File): Promise<string | null> {
     try {
-      // Obter o token do localStorage
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('accessToken');
 
       const formData = new FormData();
       formData.append('image', file);
@@ -181,8 +177,7 @@ export const rewardService = {
   // Desativar uma recompensa
   async deactivateReward(id: number): Promise<boolean> {
     try {
-      // Obter o token do localStorage
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('accessToken');
 
       await axios.put(`${API_URL}/${id}/deactivate`, {}, {
         headers: {
@@ -199,8 +194,7 @@ export const rewardService = {
   // Obter recompensas disponíveis com base nos pontos
   async getAvailableRewards(points: number): Promise<Reward[]> {
     try {
-      // Obter o token do localStorage
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('accessToken');
 
       const response = await axios.get(`${API_URL}/available`, {
         params: { points },

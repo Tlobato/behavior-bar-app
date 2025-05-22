@@ -1,14 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './UserCreateModal.css';
 import { UserCreateModalProps } from '../../types';
+import { authService } from '../../services/authService';
 
 const UserCreateModal: React.FC<UserCreateModalProps> = ({ isOpen, onClose, onCreate }) => {
   const [userData, setUserData] = useState({
     name: '',
     email: '',
     password: '',
-    role: 'USER' as 'USER' | 'ADMIN',
+    role: 'USER' as 'USER' | 'ADMIN' | 'TUTOR',
   });
+
+  const currentUser = authService.getCurrentUser();
+  const isAdmin = currentUser?.role === 'ADMIN';
+  const isTutor = currentUser?.role === 'TUTOR';
+
+  useEffect(() => {
+    // Se for tutor, força o papel como USER
+    if (isTutor) {
+      setUserData(prev => ({ ...prev, role: 'USER' }));
+    }
+  }, [isTutor]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -62,9 +74,11 @@ const UserCreateModal: React.FC<UserCreateModalProps> = ({ isOpen, onClose, onCr
             name="role"
             value={userData.role}
             onChange={handleInputChange}
+            disabled={isTutor} // Desabilita a seleção se for tutor
           >
             <option value="USER">Usuário</option>
-            <option value="ADMIN">Administrador</option>
+            {isAdmin && <option value="TUTOR">Tutor</option>}
+            {isAdmin && <option value="ADMIN">Administrador</option>}
           </select>
 
           <div className="modal-actions">

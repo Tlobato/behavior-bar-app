@@ -13,7 +13,7 @@ export const useTaskData = () => {
     const [mission, setMission] = useState<Mission | null>(null);
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string>('');
+    const [error, setError] = useState<string | null>(null);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
     const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
@@ -24,7 +24,7 @@ export const useTaskData = () => {
     const [currentTaskId, setCurrentTaskId] = useState<number | null>(null);
     const [actionModalTitle, setActionModalTitle] = useState<string>('');
     const [actionModalMessage, setActionModalMessage] = useState<string>('');
-    const [currentAction, setCurrentAction] = useState<'complete' | 'approve' | 'reject'>('complete');
+    const [currentAction, setCurrentAction] = useState<'complete' | 'approve' | 'reject' | null>(null);
 
     const navigate = useNavigate();
     const currentUser = authService.getCurrentUser();
@@ -53,25 +53,54 @@ export const useTaskData = () => {
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
+            setError(null);
             try {
                 if (!missionId) {
                     throw new Error('ID da missão não fornecido');
                 }
 
+                console.log('Iniciando busca de dados para missão:', missionId);
                 const missionIdNumber = parseInt(missionId);
 
+                // Buscar dados do usuário atual
+                const token = localStorage.getItem('accessToken');
+                console.log('Token encontrado:', !!token);
+                if (!token) {
+                    console.error('Token não encontrado');
+                    navigate('/login');
+                    return;
+                }
+
+                console.log('Token encontrado, buscando dados do usuário atual...');
+                const currentUserData = authService.getCurrentUser();
+                console.log('Usuário atual encontrado:', currentUserData);
+                if (!currentUserData) {
+                    console.error('Usuário atual não encontrado');
+                    navigate('/login');
+                    return;
+                }
+                setUser(currentUserData);
+
+                console.log('Buscando missão:', missionIdNumber);
                 const fetchedMission = await missionService.getMissionById(missionIdNumber);
                 if (!fetchedMission) {
                     throw new Error('Missão não encontrada');
                 }
+                console.log('Missão encontrada:', fetchedMission);
                 setMission(fetchedMission);
 
                 if (fetchedMission.userId) {
+                    console.log('Buscando usuário da missão:', fetchedMission.userId);
                     const fetchedUser = await userService.getUserById(fetchedMission.userId);
-                    setUser(fetchedUser);
+                    if (fetchedUser) {
+                        console.log('Usuário da missão encontrado:', fetchedUser);
+                        setUser(fetchedUser);
+                    }
                 }
 
+                console.log('Buscando tarefas da missão:', missionIdNumber);
                 const missionTasks = await taskService.getTasksByMissionId(missionIdNumber);
+                console.log('Tarefas encontradas:', missionTasks);
                 setTasks(missionTasks);
 
                 calculateMissionProgress(missionTasks, fetchedMission);
@@ -79,13 +108,16 @@ export const useTaskData = () => {
             } catch (err) {
                 console.error('Erro ao buscar dados:', err);
                 setError('Não foi possível carregar os dados.');
+                if (err instanceof Error && err.message.includes('não encontrado')) {
+                    navigate('/board');
+                }
             } finally {
                 setIsLoading(false);
             }
         };
 
         fetchData();
-    }, [missionId]);
+    }, [missionId, navigate]);
 
     const handleLogout = () => {
         authService.logout();
@@ -108,15 +140,17 @@ export const useTaskData = () => {
                     return;
                 }
 
+                console.log('Criando nova tarefa:', taskRequest);
                 const newTask = await taskService.createTask(taskRequest);
 
                 if (newTask) {
+                    console.log('Tarefa criada com sucesso:', newTask);
                     const updatedTasks = [...tasks, newTask];
                     setTasks(updatedTasks);
                     calculateMissionProgress(updatedTasks, mission);
                 }
             } catch (error) {
-                console.error("Erro ao criar tarefa:", error);
+                console.error('Erro ao criar tarefa:', error);
             }
         }
         setIsCreateModalOpen(false);
@@ -147,12 +181,15 @@ export const useTaskData = () => {
 
     const handleDelete = async () => {
         if (taskToDelete !== null) {
+            console.log('Excluindo tarefa:', taskToDelete);
             const success = await taskService.deleteTask(taskToDelete);
             if (success) {
+                console.log('Tarefa excluída com sucesso');
                 const updatedTasks = tasks.filter(task => task.id !== taskToDelete);
                 setTasks(updatedTasks);
                 calculateMissionProgress(updatedTasks, mission);
-                setIsDeleteModalOpen(false);
+            } else {
+                console.error('Erro ao excluir tarefa');
             }
         }
     };
@@ -197,12 +234,14 @@ export const useTaskData = () => {
                 newStatus = MissionTaskStatus.DENIED;
                 break;
             default:
-                return; // Sai da função se a ação não for reconhecida
+                return;
         }
 
+        console.log(`Atualizando status da tarefa ${currentTaskId} para ${newStatus}`);
         const updatedTask = await taskService.updateTaskStatus(currentTaskId, newStatus);
 
         if (updatedTask) {
+            console.log('Tarefa atualizada com sucesso:', updatedTask);
             const updatedTasks = tasks.map(task =>
                 task.id === currentTaskId ? updatedTask : task
             );
@@ -217,6 +256,7 @@ export const useTaskData = () => {
                     const isWithinDeadline = mission.deadline ? new Date() <= new Date(mission.deadline) : true;
 
                     if (isWithinDeadline) {
+                        console.log('Todas as tarefas aprovadas, atualizando status da missão para COMPLETED');
                         await missionService.updateMissionStatus(mission.id, MissionStatus.COMPLETED);
 
                         setMission({
@@ -244,10 +284,8 @@ export const useTaskData = () => {
         missionProgress,
         isMissionCompleted,
         isActionModalOpen,
-        currentTaskId,
         actionModalTitle,
         actionModalMessage,
-        currentAction,
         currentUser,
         isAdmin,
         pageName,

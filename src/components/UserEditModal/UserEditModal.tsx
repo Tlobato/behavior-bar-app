@@ -1,20 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import './UserEditModal.css';
 import { UserEditModalProps } from '../../types';
+import { authService } from '../../services/authService';
 
 const UserEditModal: React.FC<UserEditModalProps> = ({ isOpen, onClose, onUpdate, user }) => {
   const [userData, setUserData] = useState({
     name: '',
     email: '',
-    role: 'USER' as 'USER' | 'ADMIN',
+    role: 'USER' as 'USER' | 'ADMIN' | 'TUTOR',
   });
+
+  const currentUser = authService.getCurrentUser();
+  const isAdmin = currentUser?.role === 'ADMIN';
+  const isTutor = currentUser?.role === 'TUTOR';
 
   useEffect(() => {
     if (user) {
       setUserData({
         name: user.name,
         email: user.email,
-        role: user.role as 'USER' | 'ADMIN',
+        role: user.role as 'USER' | 'ADMIN' | 'TUTOR',
       });
     }
   }, [user]);
@@ -65,9 +70,11 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ isOpen, onClose, onUpdate
             name="role"
             value={userData.role}
             onChange={handleInputChange}
+            disabled={isTutor}
           >
             <option value="USER">Usuário</option>
-            <option value="ADMIN">Administrador</option>
+            {isAdmin && <option value="TUTOR">Tutor</option>}
+            {isAdmin && <option value="ADMIN">Administrador</option>}
           </select>
 
           <div className="modal-actions">

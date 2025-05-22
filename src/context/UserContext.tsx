@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '../types';
 import { userService } from '../services/userService';
 import { authService } from '../services/authService';
+import { jwtDecode } from 'jwt-decode';
+import axios from 'axios';
 
 interface UserContextProps {
   user: User | null;
@@ -16,19 +18,46 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  // Função para verificar se o token está expirado
+  const isTokenExpired = (): boolean => {
+    const token = localStorage.getItem('token');
+    if (!token) return true;
+
+    try {
+      const decodedToken: any = jwtDecode(token);
+      const currentTime = Date.now() / 1000;
+      return decodedToken.exp < currentTime;
+    } catch {
+      return true;
+    }
+  };
+
   // Função para carregar os dados do usuário do servidor
   const refreshUserData = async () => {
     const currentUser = authService.getCurrentUser();
+    
+    // Se o token estiver expirado, limpa os dados do usuário
+    if (isTokenExpired()) {
+      authService.logout();
+      setUser(null);
+      setIsLoading(false);
+      return;
+    }
+
     if (currentUser && currentUser.id) {
       setIsLoading(true);
       try {
         const userData = await userService.getUserById(currentUser.id);
         if (userData) {
-          // Atualiza apenas se o usuário atual for o mesmo no contexto
-          setUser((prevUser) => (prevUser?.id === currentUser.id ? userData : userData)); // Ajuste: Sempre atualiza com os dados mais recentes
+          setUser((prevUser) => (prevUser?.id === currentUser.id ? userData : userData));
         }
       } catch (error) {
         console.error('Erro ao atualizar dados do usuário:', error);
+        // Se houver erro 403, limpa os dados do usuário
+        if (axios.isAxiosError(error) && error.response?.status === 403) {
+          authService.logout();
+          setUser(null);
+        }
       } finally {
         setIsLoading(false);
       }

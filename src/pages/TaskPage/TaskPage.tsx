@@ -107,7 +107,7 @@ const TaskPage: React.FC = () => {
                 mission={mission}
                 isAdmin={isAdmin}
                 isLoading={isLoading}
-                error={error}
+                error={error || ''}
                 onCompleteTask={handleTaskCheckClick}
                 onAcceptTask={handleAcceptTask}
                 onRejectTask={handleRejectTask}

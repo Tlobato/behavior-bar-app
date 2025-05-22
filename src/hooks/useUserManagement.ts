@@ -3,7 +3,7 @@ import { User } from '../types';
 import { userService } from '../services/userService';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
-import { useUser } from '../context/UserContext';
+import { useUser } from '../contexts/UserContext';
 import { usePageTitle } from './usePageTitle';
 
 export const useUserManagement = () => {
@@ -30,8 +30,12 @@ export const useUserManagement = () => {
     const fetchUsers = async () => {
       try {
         const fetchedUsers = await userService.getUsers();
-        const filteredUsers = fetchedUsers.filter(user => user.role === 'USER');
-        setUsers(filteredUsers);
+        console.log('Usuários retornados pela API:', fetchedUsers);
+        const mappedUsers = fetchedUsers.map(user => ({
+          ...user,
+          name: (user as any).nome ?? user.name,
+        }));
+        setUsers(mappedUsers);
       } catch (err) {
         console.error('Erro ao buscar usuários:', err);
         setError('Não foi possível carregar os usuários.');
@@ -48,7 +52,7 @@ export const useUserManagement = () => {
     setIsEditModalOpen(true);
   };
 
-  const handleUpdate = async (userId: number, userData: { name: string; email: string; role: 'USER' | 'ADMIN' }) => {
+  const handleUpdate = async (userId: number, userData: { name: string; email: string; role: 'USER' | 'ADMIN' | 'TUTOR' }) => {
     try {
       const success = await userService.updateUser(userId, userData);
       if (success) {
@@ -85,7 +89,7 @@ export const useUserManagement = () => {
     navigate(`/user/${user.id}/board`);
   };
 
-  const handleCreateUser = async (userData: { name: string; email: string; password: string; role: 'USER' | 'ADMIN' }) => {
+  const handleCreateUser = async (userData: { name: string; email: string; password: string; role: 'USER' | 'ADMIN' | 'TUTOR' }) => {
     try {
       const createdUser = await userService.createUser(userData);
       console.log("Usuário criado retornado pelo backend:", createdUser);
@@ -93,7 +97,7 @@ export const useUserManagement = () => {
       if (createdUser) {
         const mappedUser: User = {
           id: createdUser.id,
-          name: createdUser.nome,
+          name: createdUser.name,
           email: createdUser.email,
           role: createdUser.role,
         };

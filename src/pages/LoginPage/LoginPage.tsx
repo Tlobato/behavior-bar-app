@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { authService } from '../../services/authService';
+import { useUser } from '../../contexts/UserContext';
 import './LoginPage.css';
 
 interface LoginProps {
@@ -7,10 +7,11 @@ interface LoginProps {
 }
 
 const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
-  const [username, setUsername] = useState(''); // Inicializa o campo vazio
-  const [password, setPassword] = useState(''); // Inicializa o campo vazio
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { login } = useUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,13 +19,8 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     setIsLoading(true);
 
     try {
-      const user = await authService.login(username, password);
-
-      if (user) {
-        onLoginSuccess();
-      } else {
-        setError('Nome de usuário ou senha incorretos');
-      }
+      await login(email, password);
+      onLoginSuccess();
     } catch (err) {
       setError('Erro ao fazer login. Por favor, tente novamente.');
     } finally {
@@ -42,13 +38,13 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="username">Nome de Usuário</label>
+            <label htmlFor="email">Email</label>
             <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              autoComplete="off" /* Desativa o autocompletar */
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
               required
             />
           </div>
@@ -60,7 +56,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password" /* Valor recomendado para senhas */
+              autoComplete="current-password"
               required
             />
           </div>

@@ -6,6 +6,7 @@ import { formatDateTime } from '../../utils/dateUtils';
 import { translateMissionStatus } from '../../utils/statusUtils';
 import './MissionList.css';
 import { FaClipboardList } from 'react-icons/fa';
+import { MissionStatus } from '../../types';
 
 const MissionList: React.FC<MissionListProps> = ({
   missions,
@@ -69,20 +70,26 @@ const MissionList: React.FC<MissionListProps> = ({
                       onClose={handleHotspotClose}
                     />
                   )}
-                </div>
-                <div
-                  className="action-icon"
-                  title="Editar"
-                  onClick={() => openEditModal(mission)}
-                >
-                  <FaEdit />
-                </div>
-                <div
-                  className="action-icon delete-icon"
-                  title="Excluir"
-                  onClick={() => openDeleteModal(mission.id)}
-                >
-                  <FaTrash />
+                  <div className="mission-actions">
+                    {mission.status !== MissionStatus.COMPLETED && (
+                      <>
+                        <button
+                          onClick={() => openEditModal(mission)}
+                          className="action-button"
+                          title="Editar missão"
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          onClick={() => openDeleteModal(mission.id)}
+                          className="action-button delete"
+                          title="Excluir missão"
+                        >
+                          <FaTrash />
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
               </td>
             </tr>

@@ -9,8 +9,14 @@ const UserList: React.FC<UserListProps> = ({
   error,
   onAccessBoard,
   onEditUser,
-  onDeleteUser
+  onDeleteUser,
+  currentUser
 }) => {
+  const isTutor = currentUser?.role === 'TUTOR';
+
+  // Filtra usuários: TUTOR só vê USER, ADMIN vê todos
+  const filteredUsers = isTutor ? users.filter(u => u.role === 'USER') : users;
+
   const renderEmptyState = () => {
     return (
       <div className="empty-state">
@@ -31,7 +37,7 @@ const UserList: React.FC<UserListProps> = ({
     return <p className="error-message">{error}</p>;
   }
 
-  if (users.length === 0) {
+  if (filteredUsers.length === 0) {
     return renderEmptyState();
   }
 
@@ -47,7 +53,7 @@ const UserList: React.FC<UserListProps> = ({
           </tr>
         </thead>
         <tbody>
-          {users.map(user => (
+          {filteredUsers.map(user => (
             <tr key={user.id}>
               <td>{user.name}</td>
               <td>{user.email}</td>
@@ -62,20 +68,24 @@ const UserList: React.FC<UserListProps> = ({
                     <FaChartBar />
                   </div>
                 )}
-                <div
-                  className="action-icon"
-                  title="Editar"
-                  onClick={() => onEditUser(user)}
-                >
-                  <FaEdit />
-                </div>
-                <div
-                  className="action-icon delete-icon"
-                  title="Excluir"
-                  onClick={() => onDeleteUser(user.id)}
-                >
-                  <FaTrash />
-                </div>
+                {(!isTutor || user.role === 'USER') && (
+                  <>
+                    <div
+                      className="action-icon"
+                      title="Editar"
+                      onClick={() => onEditUser(user)}
+                    >
+                      <FaEdit />
+                    </div>
+                    <div
+                      className="action-icon delete-icon"
+                      title="Excluir"
+                      onClick={() => onDeleteUser(user.id)}
+                    >
+                      <FaTrash />
+                    </div>
+                  </>
+                )}
               </td>
             </tr>
           ))}

@@ -61,6 +61,7 @@ const UserManagement: React.FC = () => {
               onAccessBoard={handleAccessBoard}
               onEditUser={openEditModal}
               onDeleteUser={openDeleteModal}
+              currentUser={currentUser}
             />
           </div>
         </main>

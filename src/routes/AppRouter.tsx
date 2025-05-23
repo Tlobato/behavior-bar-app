@@ -10,7 +10,7 @@ import MissionPage from '../pages/MissionPage/MissionPage';
 import TaskPage from '../pages/TaskPage/TaskPage'; // Importação da TaskPage
 
 // Componente para proteger rotas privadas
-const PrivateRoute: React.FC<{ children: JSX.Element; requiredRole?: 'ADMIN' | 'USER' | 'TUTOR' }> = ({ children, requiredRole }) => {
+const PrivateRoute: React.FC<{ children: JSX.Element; requiredRole?: 'ADMIN' | 'USER' | 'TUTOR' | Array<'ADMIN' | 'USER' | 'TUTOR'> }> = ({ children, requiredRole }) => {
   const isAuthenticated = authService.isAuthenticated();
   const currentUser = authService.getCurrentUser();
 
@@ -23,8 +23,17 @@ const PrivateRoute: React.FC<{ children: JSX.Element; requiredRole?: 'ADMIN' | '
   }
 
   // Permite ADMIN acessar qualquer rota
-  if (requiredRole && currentUser?.role !== requiredRole && currentUser?.role !== 'ADMIN') {
-    return <Navigate to="/" />;
+  if (requiredRole) {
+    const userRole = currentUser?.role as 'ADMIN' | 'USER' | 'TUTOR';
+    if (Array.isArray(requiredRole)) {
+      if (!userRole || (!requiredRole.includes(userRole) && userRole !== 'ADMIN')) {
+        return <Navigate to="/" />;
+      }
+    } else {
+      if (!userRole || (userRole !== requiredRole && userRole !== 'ADMIN')) {
+        return <Navigate to="/" />;
+      }
+    }
   }
 
   return children;
@@ -51,11 +60,11 @@ const AppRouter: React.FC = () => {
         }
       />
 
-      {/* Rota de Gerenciamento de Usuários (Apenas Admins e Tutores) */}
+      {/* Rota de Gerenciamento de Usuários (Admins e Tutores) */}
       <Route
         path="/users"
         element={
-          <PrivateRoute requiredRole="ADMIN">
+          <PrivateRoute requiredRole={['ADMIN', 'TUTOR']}>
             <UserManagement />
           </PrivateRoute>
         }
@@ -65,7 +74,7 @@ const AppRouter: React.FC = () => {
       <Route
         path="/user/:id/board"
         element={
-          <PrivateRoute requiredRole="USER">
+          <PrivateRoute requiredRole={['USER', 'ADMIN', 'TUTOR']}>
             <BoardPage />
           </PrivateRoute>
         }
@@ -75,17 +84,17 @@ const AppRouter: React.FC = () => {
       <Route
         path="/rewards"
         element={
-          <PrivateRoute requiredRole="USER">
+          <PrivateRoute requiredRole={['USER', 'ADMIN', 'TUTOR']}>
             <RewardsPage />
           </PrivateRoute>
         }
       />
 
-      {/* Rota de Missões (Apenas Admins) */}
+      {/* Rota de Missões (Admins e Tutores) */}
       <Route
         path="/missions"
         element={
-          <PrivateRoute requiredRole="ADMIN">
+          <PrivateRoute requiredRole={['ADMIN', 'TUTOR']}>
             <MissionPage />
           </PrivateRoute>
         }

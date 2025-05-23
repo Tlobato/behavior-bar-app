@@ -25,6 +25,13 @@ export interface InfractionCategory {
   pointsDeduction: number; // Quantos pontos são deduzidos
 }
 
+export interface UserScore {
+  id: number;
+  pontuacaoAtual: number;
+  pontuacaoMaxima: number;
+  ultimoReset?: Date;
+}
+
 export interface User {
   id: number;
   name: string;
@@ -34,6 +41,7 @@ export interface User {
   password?: string;
   senha?: string; // Campo do backend
   rewardPoints?: number;
+  userScore?: UserScore;
 }
 
 export interface RewardCardProps {
@@ -291,6 +299,7 @@ export interface UserListProps {
   onAccessBoard: (user: User) => void;
   onEditUser: (user: User) => void;
   onDeleteUser: (userId: number) => void;
+  currentUser?: User | null;
 }
 
 export interface UserMissionsListProps {

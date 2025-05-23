@@ -14,7 +14,7 @@ export function useBoardData() {
     const { id: userIdFromUrl } = useParams<{ id: string }>(); // Captura o ID do usuário clicado na URL
     const pageName = usePageTitle();
 
-    const isAdmin = currentUser?.role === 'ADMIN';
+    const isAdmin = currentUser?.role === 'ADMIN' || currentUser?.role === 'TUTOR';
 
     const [boardUser, setBoardUser] = useState<User | null>(null); // Estado local para o usuário do BoardPage
     const [isLoadingBoardUser, setIsLoadingBoardUser] = useState<boolean>(true); // Estado de carregamento
@@ -31,7 +31,8 @@ export function useBoardData() {
         const loadBoardUser = async () => {
             setIsLoadingBoardUser(true); // Inicia o estado de carregamento
             try {
-                const userIdToLoad = isAdmin && userIdFromUrl ? parseInt(userIdFromUrl, 10) : currentUser?.id;
+                const isPrivileged = (currentUser?.role === 'ADMIN' || currentUser?.role === 'TUTOR');
+                const userIdToLoad = isPrivileged && userIdFromUrl ? parseInt(userIdFromUrl, 10) : currentUser?.id;
 
                 if (userIdToLoad && (!boardUser || boardUser.id !== userIdToLoad)) {
                     const userData = await userService.getUserById(userIdToLoad);
@@ -69,13 +70,8 @@ export function useBoardData() {
                 const infractions = await behaviorService.getBehaviorRecordsByUserId(boardUser.id);
                 const activeInfractions = infractions.filter((inf) => inf.ativo);
 
-                let currentPoints = DEFAULT_POINTS;
-                if (activeInfractions.length > 0) {
-                    currentPoints = activeInfractions.reduce((acc, inf) => acc + inf.points, DEFAULT_POINTS);
-                }
-
                 setBehaviorState({
-                    currentPoints: Math.max(0, currentPoints),
+                    currentPoints: Math.max(0, boardUser.userScore?.pontuacaoAtual ?? DEFAULT_POINTS),
                     maxPoints: 100,
                     infractions: activeInfractions,
                     lastReset: new Date(),
@@ -133,13 +129,16 @@ export function useBoardData() {
                 return; // Interrompe a execução caso o usuário não seja encontrado
             }
 
-            setBoardUser(updatedUser); // Atualiza o estado do usuário
+            setBoardUser({
+                ...updatedUser,
+                name: updatedUser.nome ?? updatedUser.name
+            }); // Atualiza o estado do usuário garantindo o campo name
 
             const infractions = await behaviorService.getBehaviorRecordsByUserId(boardUser.id);
             const activeInfractions = infractions.filter((inf) => inf.ativo);
 
             setBehaviorState({
-                currentPoints: Math.max(0, updatedUser.rewardPoints ?? 0), // Usa 0 como fallback caso rewardPoints seja undefined
+                currentPoints: Math.max(0, updatedUser.userScore?.pontuacaoAtual ?? DEFAULT_POINTS),
                 maxPoints: 100,
                 infractions: activeInfractions,
                 lastReset: behaviorState.lastReset,

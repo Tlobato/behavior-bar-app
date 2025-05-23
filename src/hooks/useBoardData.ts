@@ -38,7 +38,10 @@ export function useBoardData() {
                     if (!userData) {
                         throw new Error('Usuário não encontrado.');
                     }
-                    setBoardUser(userData);
+                    setBoardUser({
+                        ...userData,
+                        name: (userData as any).nome ?? userData.name,
+                    });
                 } else if (!userIdToLoad) {
                     throw new Error('ID do usuário não encontrado.');
                 }

@@ -68,7 +68,12 @@ const MissionCreateModal: React.FC<MissionCreateModalProps> = ({ isOpen, onClose
     setIsLoading(true);
     try {
       const fetchedUsers = await userService.getUsers();
-      const regularUsers = fetchedUsers.filter(user => user.role === 'USER');
+      const regularUsers = fetchedUsers
+        .filter(user => user.role === 'USER')
+        .map(user => ({
+          ...user,
+          name: user.nome || user.name // Usa nome do backend se disponível, senão usa name
+        }));
       setUsers(regularUsers);
     } catch (error) {
       console.error('Erro ao buscar usuários:', error);

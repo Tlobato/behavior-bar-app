@@ -35,7 +35,10 @@ export function useMissionData() {
         const fetchedUsers = await userService.getUsers();
         const usersMap: {[key: number]: User} = {};
         fetchedUsers.forEach(user => {
-            usersMap[user.id] = user;
+            usersMap[user.id] = {
+              ...user,
+              name: user.nome || user.name
+            };
         });
         setUsers(usersMap);
         

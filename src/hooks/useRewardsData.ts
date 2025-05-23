@@ -5,7 +5,7 @@ import { authService } from '../services/authService';
 import { rewardService } from '../services/rewardService';
 import { userService } from '../services/userService';
 import { usePageTitle } from './usePageTitle';
-import { useUser } from '../context/UserContext';
+import { useUser } from '../contexts/UserContext';
 
 export const useRewardsData = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

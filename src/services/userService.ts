@@ -58,9 +58,18 @@ export const userService = {
   },
 
   // Criar um novo usuário
-  async createUser(user: Omit<User, 'id'>): Promise<User | null> {
+  async createUser(user: { name: string; email: string; senha: string; role: 'USER' | 'ADMIN' | 'TUTOR' }): Promise<User | null> {
     try {
-      const response = await axios.post(API_URL, user);
+      // Mapeando os campos do frontend para o backend
+      const userData = {
+        nome: user.name,
+        email: user.email,
+        senha: user.senha,
+        role: user.role,
+        rewardPoints: 0 // Valor inicial padrão
+      };
+      
+      const response = await axios.post(API_URL, userData);
       return response.data;
     } catch (error) {
       console.error('Erro ao criar usuário:', error);
@@ -72,15 +81,24 @@ export const userService = {
   async updateUser(id: number, user: Partial<User>): Promise<boolean> {
     try {
       const token = localStorage.getItem('accessToken');
-      const response = await axios.put(`${API_URL}/${id}`, user, {
+      // Mapeando os campos do frontend para o backend
+      const userData = {
+        nome: user.name, // Mapeando 'name' para 'nome'
+        email: user.email,
+        role: user.role,
+        // Não enviamos senha na atualização
+        // Não enviamos rewardPoints na atualização
+      };
+      
+      const response = await axios.put(`${API_URL}/${id}`, userData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      return response.status === 200;
+      return response.status >= 200 && response.status < 300;
     } catch (error) {
       console.error(`Erro ao atualizar usuário com ID ${id}:`, error);
-      return false;
+      throw error; // Propaga o erro para ser tratado pelo componente
     }
   },
 
@@ -93,10 +111,11 @@ export const userService = {
           Authorization: `Bearer ${token}`,
         },
       });
-      return response.status === 200;
+      // Considera sucesso qualquer status 2xx (200, 201, 204, etc)
+      return response.status >= 200 && response.status < 300;
     } catch (error) {
       console.error(`Erro ao excluir usuário com ID ${id}:`, error);
-      return false;
+      throw error; // Propaga o erro para ser tratado pelo componente
     }
   },
 };

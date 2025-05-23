@@ -17,6 +17,8 @@ export const useTaskData = () => {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
     const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+    const [taskToEdit, setTaskToEdit] = useState<MissionTask | null>(null);
     const [missionProgress, setMissionProgress] = useState<number>(0);
     const [isMissionCompleted, setIsMissionCompleted] = useState<boolean>(false);
 
@@ -94,7 +96,10 @@ export const useTaskData = () => {
                     const fetchedUser = await userService.getUserById(fetchedMission.userId);
                     if (fetchedUser) {
                         console.log('Usuário da missão encontrado:', fetchedUser);
-                        setUser(fetchedUser);
+                        setUser({
+                            ...fetchedUser,
+                            name: fetchedUser.nome || fetchedUser.name
+                        });
                     }
                 }
 
@@ -157,20 +162,21 @@ export const useTaskData = () => {
     };
 
     const handleEditTask = async (taskId: number) => {
-        console.log(`Editar tarefa ${taskId}`);
         const taskToUpdate = tasks.find(task => task.id === taskId);
         if (taskToUpdate) {
-            const success = await taskService.updateTask(taskId, {
-                name: "Nome atualizado", // Valor que viria do formulário
-                status: taskToUpdate.status
-            });
-            if (success) {
-                const updatedTasks = tasks.map(task =>
-                    task.id === taskId ? { ...task, name: "Nome atualizado" } : task
-                );
-                setTasks(updatedTasks);
-                calculateMissionProgress(updatedTasks, mission);
-            }
+            setTaskToEdit(taskToUpdate);
+            setIsEditModalOpen(true);
+        }
+    };
+
+    const handleUpdateTask = async (taskId: number, taskData: Partial<MissionTask>) => {
+        const success = await taskService.updateTask(taskId, taskData);
+        if (success) {
+            const updatedTasks = tasks.map(task =>
+                task.id === taskId ? { ...task, ...taskData } : task
+            );
+            setTasks(updatedTasks);
+            calculateMissionProgress(updatedTasks, mission);
         }
     };
 
@@ -191,6 +197,7 @@ export const useTaskData = () => {
             } else {
                 console.error('Erro ao excluir tarefa');
             }
+            setIsDeleteModalOpen(false);
         }
     };
 
@@ -280,7 +287,9 @@ export const useTaskData = () => {
         error,
         isCreateModalOpen,
         isDeleteModalOpen,
+        isEditModalOpen,
         taskToDelete,
+        taskToEdit,
         missionProgress,
         isMissionCompleted,
         isActionModalOpen,
@@ -292,11 +301,13 @@ export const useTaskData = () => {
 
         setIsCreateModalOpen,
         setIsDeleteModalOpen,
+        setIsEditModalOpen,
         setIsActionModalOpen,
 
         handleLogout,
         handleCreateTask,
         handleEditTask,
+        handleUpdateTask,
         openDeleteModal,
         handleDelete,
         handleTaskCheckClick,

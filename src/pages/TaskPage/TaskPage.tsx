@@ -5,6 +5,7 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import NewRegistrationComponent from '../../components/NewRegistrationComponent/NewRegistrationComponent';
 import Modal from '../../components/Modal/Modal';
 import TaskCreateModal from '../../components/TaskCreateModal/TaskCreateModal';
+import TaskEditModal from '../../components/TaskEditModal/TaskEditModal';
 import TaskList from '../../components/TaskList/TaskList';
 import MissionHeader from '../../components/MissionHeader/MissionHeader';
 import { MissionStatus } from '../../types';
@@ -20,6 +21,8 @@ const TaskPage: React.FC = () => {
     error,
     isCreateModalOpen,
     isDeleteModalOpen,
+    isEditModalOpen,
+    taskToEdit,
     missionProgress,
     isMissionCompleted,
     isActionModalOpen,
@@ -31,11 +34,13 @@ const TaskPage: React.FC = () => {
 
     setIsCreateModalOpen,
     setIsDeleteModalOpen,
+    setIsEditModalOpen,
     setIsActionModalOpen,
 
     handleLogout,
     handleCreateTask,
     handleEditTask,
+    handleUpdateTask,
     openDeleteModal,
     handleDelete,
     handleTaskCheckClick,
@@ -128,6 +133,13 @@ const TaskPage: React.FC = () => {
         onClose={() => setIsCreateModalOpen(false)}
         onCreate={handleCreateTask}
         missionId={mission?.id || 0}
+      />
+
+      <TaskEditModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onUpdate={handleUpdateTask}
+        task={taskToEdit}
       />
 
       <Modal

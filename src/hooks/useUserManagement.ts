@@ -32,8 +32,11 @@ export const useUserManagement = () => {
         const fetchedUsers = await userService.getUsers();
         console.log('Usuários retornados pela API:', fetchedUsers);
         const mappedUsers = fetchedUsers.map(user => ({
-          ...user,
-          name: (user as any).nome ?? user.name,
+          id: user.id,
+          name: user.nome || user.name,
+          email: user.email,
+          role: user.role,
+          rewardPoints: user.rewardPoints
         }));
         setUsers(mappedUsers);
       } catch (err) {
@@ -54,28 +57,28 @@ export const useUserManagement = () => {
 
   const handleUpdate = async (userId: number, userData: { name: string; email: string; role: 'USER' | 'ADMIN' | 'TUTOR' }) => {
     try {
-      const success = await userService.updateUser(userId, userData);
-      if (success) {
-        setUsers(users.map(user => 
-          user.id === userId ? { ...user, ...userData } : user
-        ));
-      } else {
-        alert('Erro ao atualizar usuário.');
-      }
+      await userService.updateUser(userId, userData);
+      setUsers(prevUsers => prevUsers.map(user => 
+        user.id === userId 
+          ? { ...user, name: userData.name, email: userData.email, role: userData.role }
+          : user
+      ));
     } catch (error) {
       console.error('Erro ao atualizar usuário:', error);
+      alert('Não foi possível atualizar o usuário. Por favor, tente novamente.');
     }
   };
 
   const handleDelete = async () => {
     if (userToDelete !== null) {
-      const success = await userService.deleteUser(userToDelete);
-      if (success) {
-        setUsers(users.filter(user => user.id !== userToDelete));
-      } else {
-        alert('Erro ao excluir usuário.');
+      try {
+        await userService.deleteUser(userToDelete);
+        setUsers(prevUsers => prevUsers.filter(user => user.id !== userToDelete));
+        setIsDeleteModalOpen(false);
+      } catch (error) {
+        console.error('Erro ao excluir usuário:', error);
+        alert('Não foi possível excluir o usuário. Por favor, tente novamente.');
       }
-      setIsDeleteModalOpen(false);
     }
   };
 
@@ -89,7 +92,7 @@ export const useUserManagement = () => {
     navigate(`/user/${user.id}/board`);
   };
 
-  const handleCreateUser = async (userData: { name: string; email: string; password: string; role: 'USER' | 'ADMIN' | 'TUTOR' }) => {
+  const handleCreateUser = async (userData: { name: string; email: string; senha: string; role: 'USER' | 'ADMIN' | 'TUTOR' }) => {
     try {
       const createdUser = await userService.createUser(userData);
       console.log("Usuário criado retornado pelo backend:", createdUser);
@@ -97,11 +100,13 @@ export const useUserManagement = () => {
       if (createdUser) {
         const mappedUser: User = {
           id: createdUser.id,
-          name: createdUser.name,
+          name: createdUser.nome || userData.name,
           email: createdUser.email,
           role: createdUser.role,
+          rewardPoints: createdUser.rewardPoints,
+          nome: createdUser.nome
         };
-        setUsers([...users, mappedUser]);
+        setUsers(prevUsers => [...prevUsers, mappedUser]);
       } else {
         alert('Erro ao criar usuário.');
       }

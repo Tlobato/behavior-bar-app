@@ -28,9 +28,11 @@ export interface InfractionCategory {
 export interface User {
   id: number;
   name: string;
+  nome?: string; // Campo do backend
   role: 'ADMIN' | 'USER' | 'TUTOR';
   email: string;
   password?: string;
+  senha?: string; // Campo do backend
   rewardPoints?: number;
 }
 
@@ -279,7 +281,7 @@ export interface TaskCreateModalProps {
 export interface UserCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreate: (userData: { name: string; email: string; password: string; role: 'USER' | 'ADMIN' | 'TUTOR' }) => void;
+  onCreate: (userData: { name: string; email: string; senha: string; role: 'USER' | 'ADMIN' | 'TUTOR' }) => void;
 }
 
 export interface UserListProps {

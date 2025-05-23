@@ -7,7 +7,7 @@ const UserCreateModal: React.FC<UserCreateModalProps> = ({ isOpen, onClose, onCr
   const [userData, setUserData] = useState({
     name: '',
     email: '',
-    password: '',
+    senha: '',
     role: 'USER' as 'USER' | 'ADMIN' | 'TUTOR',
   });
 
@@ -63,8 +63,8 @@ const UserCreateModal: React.FC<UserCreateModalProps> = ({ isOpen, onClose, onCr
           <label>Senha:</label>
           <input
             type="password"
-            name="password"
-            value={userData.password}
+            name="senha"
+            value={userData.senha}
             onChange={handleInputChange}
             autoComplete="new-password"
           />

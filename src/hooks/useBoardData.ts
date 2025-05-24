@@ -5,16 +5,17 @@ import { behaviorService } from '../services/behaviorService';
 import { userService } from '../services/userService';
 import { BehaviorState, InfractionCategory, User } from '../types';
 import { usePageTitle } from './usePageTitle';
+import { useUser } from '../contexts/UserContext';
 
 const DEFAULT_POINTS = 50;
 
 export function useBoardData() {
-    const currentUser = authService.getCurrentUser(); // Usuário logado
+    const { user: currentUser } = useUser(); // Usando o contexto do usuário ao invés do authService
     const navigate = useNavigate();
     const { id: userIdFromUrl } = useParams<{ id: string }>(); // Captura o ID do usuário clicado na URL
     const pageName = usePageTitle();
 
-    const isAdmin = currentUser?.role === 'ADMIN' || currentUser?.role === 'TUTOR';
+    const isAdminOrTutor = currentUser?.role === 'ADMIN' || currentUser?.role === 'TUTOR';
 
     const [boardUser, setBoardUser] = useState<User | null>(null); // Estado local para o usuário do BoardPage
     const [isLoadingBoardUser, setIsLoadingBoardUser] = useState<boolean>(true); // Estado de carregamento
@@ -31,25 +32,25 @@ export function useBoardData() {
         const loadBoardUser = async () => {
             setIsLoadingBoardUser(true); // Inicia o estado de carregamento
             try {
-                const isPrivileged = (currentUser?.role === 'ADMIN' || currentUser?.role === 'TUTOR');
-                const userIdToLoad = isPrivileged && userIdFromUrl ? parseInt(userIdFromUrl, 10) : currentUser?.id;
+                const userIdToLoad = isAdminOrTutor && userIdFromUrl ? parseInt(userIdFromUrl, 10) : currentUser?.id;
 
-                if (userIdToLoad && (!boardUser || boardUser.id !== userIdToLoad)) {
+                if (!userIdToLoad) {
+                    throw new Error('ID do usuário não encontrado.');
+                }
+
+                if (!boardUser || boardUser.id !== userIdToLoad) {
                     const userData = await userService.getUserById(userIdToLoad);
                     if (!userData) {
                         throw new Error('Usuário não encontrado.');
                     }
                     setBoardUser({
                         ...userData,
-                        name: (userData as any).nome ?? userData.name,
+                        name: userData.nome ?? userData.name,
                     });
-                } else if (!userIdToLoad) {
-                    throw new Error('ID do usuário não encontrado.');
                 }
             } catch (error) {
                 console.error('Erro ao carregar usuário do BoardPage:', error);
-                // Redireciona para UserManagement se ocorrer erro
-                if (isAdmin) {
+                if (isAdminOrTutor) {
                     navigate('/users');
                 } else {
                     navigate('/login');
@@ -60,7 +61,7 @@ export function useBoardData() {
         };
 
         loadBoardUser();
-    }, [userIdFromUrl, currentUser, isAdmin, navigate, boardUser]);
+    }, [userIdFromUrl, currentUser?.id, isAdminOrTutor, navigate, boardUser]);
 
     useEffect(() => {
         if (!boardUser) return;
@@ -176,12 +177,15 @@ export function useBoardData() {
         isLoadingBoardUser,
         behaviorState,
         categories,
-        isAdmin,
         isModalOpen,
-        setIsModalOpen,
+        isAdminOrTutor,
         pageName,
-        handleLogout,
+        setIsModalOpen,
         handleAddInfraction,
-        confirmReset
+        handleLogout,
+        confirmReset,
+        formatDate: (date: Date) => {
+            return new Date(date).toLocaleDateString('pt-BR');
+        }
     };
 }

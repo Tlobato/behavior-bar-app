@@ -70,26 +70,24 @@ const MissionList: React.FC<MissionListProps> = ({
                       onClose={handleHotspotClose}
                     />
                   )}
-                  <div className="mission-actions">
-                    {mission.status !== MissionStatus.COMPLETED && (
-                      <>
-                        <button
-                          onClick={() => openEditModal(mission)}
-                          className="action-button"
-                          title="Editar missão"
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          onClick={() => openDeleteModal(mission.id)}
-                          className="action-button delete"
-                          title="Excluir missão"
-                        >
-                          <FaTrash />
-                        </button>
-                      </>
-                    )}
-                  </div>
+                  {mission.status !== MissionStatus.COMPLETED && (
+                    <>
+                      <button
+                        onClick={() => openEditModal(mission)}
+                        className="action-button"
+                        title="Editar missão"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        onClick={() => openDeleteModal(mission.id)}
+                        className="action-button delete"
+                        title="Excluir missão"
+                      >
+                        <FaTrash />
+                      </button>
+                    </>
+                  )}
                 </div>
               </td>
             </tr>

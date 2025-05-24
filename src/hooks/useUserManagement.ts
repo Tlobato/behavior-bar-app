@@ -17,7 +17,7 @@ export const useUserManagement = () => {
   const [userToEdit, setUserToEdit] = useState<User | null>(null);
   
   const navigate = useNavigate();
-  const { setUser, user: currentUser } = useUser();
+  const { user: currentUser } = useUser();
   const pageName = usePageTitle();
 
   const handleLogout = () => {
@@ -91,7 +91,6 @@ export const useUserManagement = () => {
   };
 
   const handleAccessBoard = (user: User) => {
-    setUser(user);
     navigate(`/user/${user.id}/board`);
   };
 

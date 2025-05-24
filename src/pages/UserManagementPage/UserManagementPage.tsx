@@ -38,7 +38,7 @@ const UserManagement: React.FC = () => {
     <div className="user-management-page">
       <Header
         projectName="Behavior Bar"
-        userName={currentUser?.name || 'Usuário'}
+        userName={currentUser?.nome || currentUser?.name || 'Usuário'}
         onLogout={handleLogout}
         pageName={pageName}
       />

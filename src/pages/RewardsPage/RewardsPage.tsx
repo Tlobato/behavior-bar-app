@@ -21,6 +21,7 @@ const RewardsPage: React.FC = () => {
     rewardToEdit,
     currentUser,
     isAdmin,
+    isAdminOrTutor,
     user,
     pageName,
     
@@ -44,7 +45,7 @@ const RewardsPage: React.FC = () => {
     <div className="RewardsPage">
       <Header
         projectName="Behavior Bar"
-        userName={currentUser?.name || 'Usuário'}
+        userName={currentUser?.nome || currentUser?.name || 'Usuário'}
         onLogout={handleLogout}
         pageName={pageName}
         rewardPoints={!isAdmin && user ? user.rewardPoints : undefined}
@@ -54,7 +55,7 @@ const RewardsPage: React.FC = () => {
         <Sidebar />
         <main className="main-content">
           <div className="rewards-container">
-            {isAdmin && (
+            {isAdminOrTutor && (
               <div className="reward-registration-wrapper">
                 <NewRegistrationComponent
                   title="Nova Recompensa"
@@ -83,7 +84,7 @@ const RewardsPage: React.FC = () => {
                   <FaGift size={64} />
                 </div>
                 <h3>Nenhuma recompensa cadastrada</h3>
-                {isAdmin && <p>Crie sua primeira recompensa clicando no botão "Criar" acima!</p>}
+                {isAdminOrTutor && <p>Crie sua primeira recompensa clicando no botão "Criar" acima!</p>}
               </div>
             )}
 

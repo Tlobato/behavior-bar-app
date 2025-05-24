@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authService } from '../services/authService';
+import { userService } from '../services/userService';
 import { User } from '../types';
 
 interface UserContextType {
   user: User | null;
   loading: boolean;
   error: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, keepLogged?: boolean) => Promise<void>;
   logout: () => void;
   refreshUserData: () => Promise<void>;
   setUser: (user: User | null) => void;
@@ -24,29 +25,38 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const accessToken = localStorage.getItem('accessToken');
         if (accessToken) {
-          const userData = authService.getUserFromToken(accessToken);
+          // Buscar usuário do backend via /me
+          const userData = await userService.getCurrentUser();
           if (userData) {
             setUser(userData);
+          } else {
+            setUser(null);
           }
+        } else {
+          setUser(null);
         }
       } catch (error) {
         console.error('Erro ao inicializar usuário:', error);
+        setUser(null);
       } finally {
         setLoading(false);
       }
     };
-
     initializeUser();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, keepLogged: boolean = true) => {
     try {
       setLoading(true);
       setError(null);
-      const { accessToken, refreshToken, user: userData } = await authService.login(email, password);
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
-      setUser(userData);
+      await authService.login(email, password, keepLogged);
+      // Buscar usuário do backend após login
+      const userData = await userService.getCurrentUser();
+      if (userData) {
+        setUser(userData);
+      } else {
+        setUser(null);
+      }
     } catch (error) {
       setError('Erro ao fazer login. Verifique suas credenciais.');
       throw error;
@@ -64,7 +74,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const accessToken = localStorage.getItem('accessToken');
       if (accessToken) {
-        const userData = authService.getUserFromToken(accessToken);
+        const userData = await userService.getCurrentUser();
         if (userData) {
           setUser(userData);
         }

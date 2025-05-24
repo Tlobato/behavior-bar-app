@@ -35,11 +35,13 @@ const MissionPage: React.FC = () => {
         handleCreateMission
     } = useMissionData();
 
+    const isAdminOrTutor = currentUser?.role === 'ADMIN' || currentUser?.role === 'TUTOR';
+
     return (
         <div className="mission-page">
             <Header
                 projectName="Behavior Bar"
-                userName={currentUser?.name || 'Usuário'}
+                userName={currentUser?.nome || currentUser?.name || 'Usuário'}
                 onLogout={handleLogout}
                 pageName={pageName}
             />
@@ -49,23 +51,27 @@ const MissionPage: React.FC = () => {
 
                 <main className="main-content">
                     <div className="mission-container">
-                        <NewRegistrationComponent
-                            title="Nova Missão"
-                            buttonText="Criar"
-                            onButtonClick={() => setIsModalOpen(true)}
-                        />
+                        {isAdminOrTutor && (
+                            <NewRegistrationComponent
+                                title="Nova Missão"
+                                buttonText="Criar"
+                                onButtonClick={() => setIsModalOpen(true)}
+                            />
+                        )}
 
-                        <MissionList
-                            missions={missions}
-                            isLoading={isLoading}
-                            error={error}
-                            shouldShowHotspot={shouldShowHotspot}
-                            getUserName={getUserName}
-                            handleManageTasks={handleManageTasks}
-                            openEditModal={openEditModal}
-                            openDeleteModal={openDeleteModal}
-                            handleHotspotClose={handleHotspotClose}
-                        />
+                        {isAdminOrTutor && (
+                            <MissionList
+                                missions={missions}
+                                isLoading={isLoading}
+                                error={error}
+                                shouldShowHotspot={shouldShowHotspot}
+                                getUserName={getUserName}
+                                handleManageTasks={handleManageTasks}
+                                openEditModal={openEditModal}
+                                openDeleteModal={openDeleteModal}
+                                handleHotspotClose={handleHotspotClose}
+                            />
+                        )}
                     </div>
                 </main>
             </div>

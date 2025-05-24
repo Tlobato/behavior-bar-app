@@ -17,8 +17,7 @@ export const useUserManagement = () => {
   const [userToEdit, setUserToEdit] = useState<User | null>(null);
   
   const navigate = useNavigate();
-  const { setUser } = useUser();
-  const currentUser = authService.getCurrentUser();
+  const { setUser, user: currentUser } = useUser();
   const pageName = usePageTitle();
 
   const handleLogout = () => {
@@ -30,7 +29,6 @@ export const useUserManagement = () => {
     const fetchUsers = async () => {
       try {
         const fetchedUsers = await userService.getUsers();
-        console.log('Usuários retornados pela API:', fetchedUsers);
         const mappedUsers = fetchedUsers.map(user => ({
           id: user.id,
           name: user.nome || user.name,
@@ -38,7 +36,12 @@ export const useUserManagement = () => {
           role: user.role,
           rewardPoints: user.rewardPoints
         }));
-        setUsers(mappedUsers);
+        let filteredUsers = mappedUsers.filter(user => Number(user.id) !== Number(currentUser?.id));
+        // Filtro extra para TUTOR: só vê USER
+        if (currentUser?.role === 'TUTOR') {
+          filteredUsers = filteredUsers.filter(user => user.role === 'USER');
+        }
+        setUsers(filteredUsers);
       } catch (err) {
         console.error('Erro ao buscar usuários:', err);
         setError('Não foi possível carregar os usuários.');
@@ -48,7 +51,7 @@ export const useUserManagement = () => {
     };
 
     fetchUsers();
-  }, []);
+  }, [currentUser]);
 
   const openEditModal = (user: User) => {
     setUserToEdit(user);

@@ -1,96 +1,141 @@
 /* src/components/Login/Login.css */
 
-/* Contêiner principal do login */
-.login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #f5f5f5;
+/* Fundo da página de login */
+.login-bg {
+  min-height: 100vh;
+  width: 100vw;
+  background: #f6f8fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Cartão de login */
+.login-card-new {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 6px 32px rgba(0,0,0,0.10);
+  padding: 40px 32px 32px 32px;
+  max-width: 400px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.login-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #222;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.login-subtitle {
+  font-size: 1rem;
+  color: #666;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.login-error {
+  background: #ffeaea;
+  color: #c62828;
+  border-radius: 5px;
+  padding: 10px 12px;
+  margin-bottom: 18px;
+  text-align: center;
+  font-size: 0.98rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.login-field label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.login-field input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 5px;
+  font-size: 1rem;
+  background: #f7faff;
+  transition: border 0.2s;
+  box-sizing: border-box;
+}
+
+.login-field input:focus {
+  border: 1.5px solid #4CAF50;
+  outline: none;
+  background: #f0fff0;
+}
+
+.login-options {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 4px;
+}
+
+.login-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.97rem;
+  color: #555;
+  cursor: pointer;
+  user-select: none;
+}
+
+.login-checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #4CAF50;
+  cursor: pointer;
+}
+
+.login-btn {
+  background: #4CAF50;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 14px 0;
+  width: 100%;
+  font-size: 1.08rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 6px;
+}
+
+.login-btn:hover:not(:disabled) {
+  background: #43a047;
+}
+
+.login-btn:disabled {
+  background: #bdbdbd;
+  cursor: not-allowed;
+}
+
+@media (max-width: 500px) {
+  .login-card-new {
+    padding: 28px 8px 24px 8px;
+    max-width: 98vw;
   }
-  
-  /* Cartão de login */
-  .login-card {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 30px;
-    width: 100%;
-    max-width: 400px;
+  .login-title {
+    font-size: 1.3rem;
   }
-  
-  .login-card h2 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 8px;
-  }
-  
-  .login-card p {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #666;
-  }
-  
-  /* Grupo de formulário */
-  .form-group {
-    margin-bottom: 20px;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-  }
-  
-  .form-group input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
-  }
-  
-  /* Botão de login */
-  .login-button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 12px;
-    width: 100%;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-  }
-  
-  .login-button:hover {
-    background-color: #45a049;
-  }
-  
-  .login-button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-  }
-  
-  /* Mensagem de erro */
-  .error-message {
-    background-color: #ffebee;
-    color: #c62828;
-    padding: 10px;
-    border-radius: 4px;
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  
-  /* Ajuda do login */
-  .login-help {
-    margin-top: 20px;
-    border-top: 1px solid #eee;
-    padding-top: 10px;
-    font-size: 14px;
-    color: #666;
-  }
-  
-  .login-help p {
-    margin: 5px 0;
-  }
+}

@@ -26,6 +26,7 @@ export const useRewardsData = () => {
 
   const currentUser = authService.getCurrentUser();
   const isAdmin = authService.isAdmin();
+  const isAdminOrTutor = authService.isAdminOrTutor();
 
   useEffect(() => {
     if (isDataLoaded || !user) {
@@ -210,6 +211,7 @@ export const useRewardsData = () => {
     rewardToEdit,
     currentUser,
     isAdmin,
+    isAdminOrTutor,
     user,
     pageName,
     

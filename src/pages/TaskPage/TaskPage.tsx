@@ -29,7 +29,6 @@ const TaskPage: React.FC = () => {
     actionModalTitle,
     actionModalMessage,
     currentUser,
-    isAdmin,
     pageName,
 
     setIsCreateModalOpen,
@@ -49,6 +48,9 @@ const TaskPage: React.FC = () => {
     handleActionConfirm
   } = useTaskData();
 
+  // Forçar isAdmin para ADMIN ou TUTOR
+  const isAdminOrTutor = currentUser?.role === 'ADMIN' || currentUser?.role === 'TUTOR';
+
   const renderEmptyState = () => {
     return (
       <div className="empty-state">
@@ -56,7 +58,7 @@ const TaskPage: React.FC = () => {
           <FaTasks size={50} color="#cccccc" />
         </div>
         <h2>Nenhuma tarefa cadastrada</h2>
-        {isAdmin ? (
+        {isAdminOrTutor ? (
           <p>Crie sua primeira tarefa clicando no botão "Criar" acima!</p>
         ) : (
           <p>Não há tarefas disponíveis para esta missão no momento.</p>
@@ -69,7 +71,7 @@ const TaskPage: React.FC = () => {
     <div className="task-page">
       <Header
         projectName="Behavior Bar"
-        userName={currentUser?.name || 'Usuário'}
+        userName={currentUser?.nome || currentUser?.name || 'Usuário'}
         onLogout={handleLogout}
         pageName={pageName}
       />
@@ -89,7 +91,7 @@ const TaskPage: React.FC = () => {
               />
             )}
 
-            {isAdmin && (
+            {isAdminOrTutor && (
               mission?.status === MissionStatus.COMPLETED ? (
                 <div className="mission-completed-info">
                   <FaCheckCircle color="#4CAF50" size={18} />
@@ -110,7 +112,7 @@ const TaskPage: React.FC = () => {
               <TaskList
                 tasks={tasks}
                 mission={mission}
-                isAdmin={isAdmin}
+                isAdmin={isAdminOrTutor}
                 isLoading={isLoading}
                 error={error || ''}
                 onCompleteTask={handleTaskCheckClick}

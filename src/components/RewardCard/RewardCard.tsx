@@ -14,7 +14,8 @@ const RewardCard: React.FC<RewardCardProps> = ({
   onEdit,
   onDelete
 }) => {
-  const isAdmin = authService.isAdmin();
+
+  const isAdminOrTutor = authService.isAdminOrTutor();
   const [isFlipped, setIsFlipped] = useState(false);
 
   const handleFlip = (e: React.MouseEvent) => {
@@ -69,7 +70,7 @@ const RewardCard: React.FC<RewardCardProps> = ({
           <div className="action-container">
             <p className="reward-points">{points} pontos</p>
 
-            {isAdmin ? (
+            {isAdminOrTutor ? (
               <div className="admin-buttons">
                 <button
                   className="edit-button"

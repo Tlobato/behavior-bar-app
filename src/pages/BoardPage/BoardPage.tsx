@@ -17,7 +17,6 @@ const BoardPage: React.FC = () => {
     isLoadingBoardUser,
     behaviorState,
     categories,
-    isAdmin,
     isModalOpen,
     setIsModalOpen,
     pageName,
@@ -26,14 +25,17 @@ const BoardPage: React.FC = () => {
     confirmReset
   } = useBoardData();
 
+  // Forçar isAdmin para ADMIN ou TUTOR
+  const isAdminOrTutor = currentUser?.role === 'ADMIN' || currentUser?.role === 'TUTOR';
+
   return (
     <div className="BoardPage">
       <Header
         projectName="Behavior Bar"
-        userName={currentUser?.name || ''}
+        userName={currentUser?.nome || currentUser?.name || ''}
         onLogout={handleLogout}
         pageName={pageName}
-        rewardPoints={isAdmin ? undefined : boardUser?.rewardPoints}
+        rewardPoints={isAdminOrTutor ? undefined : boardUser?.rewardPoints}
         userRole={currentUser?.role}
       />
       <div className="page-content">
@@ -51,7 +53,7 @@ const BoardPage: React.FC = () => {
                 />
               )}
 
-              {isAdmin && (
+              {isAdminOrTutor && (
                 <div className="reset-section">
                   <button onClick={() => setIsModalOpen(true)} className="reset-button">
                     Resetar Pontuação
@@ -63,17 +65,17 @@ const BoardPage: React.FC = () => {
               )}
             </div>
 
-            {isAdmin && (
+            {isAdminOrTutor && (
               <div className="form-section">
                 <InfractionForm categories={categories} onAddInfraction={handleAddInfraction} />
               </div>
             )}
 
             <div className="history-section">
-              <BehaviorHistory infractions={behaviorState.infractions} formatDate={formatDate} isAdmin={isAdmin} />
+              <BehaviorHistory infractions={behaviorState.infractions} formatDate={formatDate} isAdmin={isAdminOrTutor} />
             </div>
 
-            {!isAdmin && boardUser && (
+            {!isAdminOrTutor && boardUser && (
               <div className="missions-section">
                 <UserMissionsList userId={boardUser.id} />
               </div>

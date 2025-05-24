@@ -11,6 +11,8 @@ const Sidebar: React.FC = () => {
 
   const currentUser = authService.getCurrentUser();
   const isAdmin = currentUser?.role === 'ADMIN';
+  const isTutor = currentUser?.role === 'TUTOR';
+  const isUser = currentUser?.role === 'USER';
 
   const isOnBoardPage = pathname.includes('/board');
   const isOnRewardsPage = pathname.includes('/rewards');
@@ -19,7 +21,7 @@ const Sidebar: React.FC = () => {
 
   return (
     <div className="sidebar">
-      {isAdmin && !isOnUsersPage && (
+      {(isAdmin || isTutor) && !isOnUsersPage && (
         <div 
           className="sidebar-icon" 
           onClick={() => navigate('/users')} 
@@ -29,7 +31,7 @@ const Sidebar: React.FC = () => {
         </div>
       )}
 
-      {isAdmin && !isOnMissionsPage && (
+      {(isAdmin || isTutor) && !isOnMissionsPage && (
         <div 
           className="sidebar-icon" 
           onClick={() => navigate('/missions')} 
@@ -39,7 +41,7 @@ const Sidebar: React.FC = () => {
         </div>
       )}
 
-      {!isAdmin && !isOnBoardPage && (
+      {isUser && !isOnBoardPage && (
         <div 
           className="sidebar-icon" 
           onClick={() => navigate(

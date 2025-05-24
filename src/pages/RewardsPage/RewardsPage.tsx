@@ -61,7 +61,6 @@ const RewardsPage: React.FC = () => {
                   title="Nova Recompensa"
                   buttonText="Criar"
                   onButtonClick={handleOpenCreateRewardModal}
-                  width='1112px'
                 />
               </div>
             )}

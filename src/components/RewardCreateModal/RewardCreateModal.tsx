@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './RewardCreateModal.css';
 import { RewardCreateModalProps } from '../../types';
+import { FiUpload } from 'react-icons/fi';
 
 const RewardCreateModal: React.FC<RewardCreateModalProps> = ({ isOpen, onClose, onCreate }) => {
   const [rewardData, setRewardData] = useState({
@@ -12,6 +13,14 @@ const RewardCreateModal: React.FC<RewardCreateModalProps> = ({ isOpen, onClose, 
   
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isEntering, setIsEntering] = useState(true);
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsEntering(true);
+      setTimeout(() => setIsEntering(false), 50);
+    }
+  }, [isOpen]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -42,7 +51,9 @@ const RewardCreateModal: React.FC<RewardCreateModalProps> = ({ isOpen, onClose, 
     }
   };
 
-  const handleCreate = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
     if (!rewardData.title || !rewardData.description || rewardData.points <= 0) {
       alert("Por favor, preencha todos os campos corretamente.");
       return;
@@ -75,79 +86,91 @@ const RewardCreateModal: React.FC<RewardCreateModalProps> = ({ isOpen, onClose, 
 
   return (
     <div className="modal">
-      <div className="modal-content reward-modal-content">
+      <div className="modal-content">
         <h2>Criar Nova Recompensa</h2>
-        <div className="modal-divider"></div>
         
-        <form autoComplete="off">
-          <label>Título da Recompensa:</label>
-          <input
-            type="text"
-            name="title"
-            value={rewardData.title}
-            onChange={handleInputChange}
-            autoComplete="off"
-            placeholder="Ex: Cartão presente Xbox"
-          />
-
-          <label>Descrição:</label>
-          <textarea
-            name="description"
-            value={rewardData.description}
-            onChange={handleInputChange}
-            rows={4}
-            placeholder="Descreva a recompensa..."
-          />
-
-          <label>Pontos Necessários:</label>
-          <input
-            type="number"
-            name="points"
-            value={rewardData.points}
-            onChange={handleInputChange}
-            min="1"
-            placeholder="Ex: 1000"
-          />
-
-          <label>Imagem da Recompensa:</label>
-          <div className="image-upload-container">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="file-input"
-            />
-            <div className="image-preview-container">
-              {imagePreview ? (
-                <img src={imagePreview} alt="Preview" className="image-preview" />
-              ) : (
-                <div className="no-image-placeholder">
-                  <span>Nenhuma imagem selecionada</span>
-                </div>
-              )}
+        <div className="modal-body">
+          <form onSubmit={handleSubmit}>
+            <div>
+              <label htmlFor="title">Título da Recompensa</label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={rewardData.title}
+                onChange={handleInputChange}
+                placeholder="Ex: Cartão presente Xbox"
+                required
+              />
             </div>
-          </div>
 
-          <div className="active-status">
-            <input
-              type="checkbox"
-              name="active"
-              checked={rewardData.active}
-              onChange={e => setRewardData(prev => ({ ...prev, active: e.target.checked }))}
-              id="active-checkbox"
-            />
-            <label htmlFor="active-checkbox">Disponível para resgate</label>
-          </div>
+            <div>
+              <label htmlFor="description">Descrição</label>
+              <textarea
+                id="description"
+                name="description"
+                value={rewardData.description}
+                onChange={handleInputChange}
+                placeholder="Descreva a recompensa..."
+                required
+              />
+            </div>
 
-          <div className="modal-actions">
-            <button type="button" onClick={handleCreate} className="create-reward-button">
-              Criar
-            </button>
-            <button type="button" onClick={onClose} className="cancel-button">
-              Cancelar
-            </button>
-          </div>
-        </form>
+            <div>
+              <label htmlFor="points">Pontos Necessários</label>
+              <input
+                type="number"
+                id="points"
+                name="points"
+                value={rewardData.points}
+                onChange={handleInputChange}
+                min="0"
+                required
+              />
+            </div>
+
+            <div>
+              <label>Imagem da Recompensa</label>
+              <div className="image-upload-container">
+                <div className="image-preview-container">
+                  {imagePreview ? (
+                    <img src={imagePreview} alt="Preview" className="image-preview" />
+                  ) : (
+                    <div className="no-image-placeholder">
+                      Nenhuma imagem selecionada
+                    </div>
+                  )}
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="file-input"
+                />
+              </div>
+            </div>
+
+            <div className="active-status">
+              <input
+                type="checkbox"
+                id="isAvailable"
+                name="active"
+                checked={rewardData.active}
+                onChange={e => setRewardData(prev => ({ ...prev, active: e.target.checked }))}
+              />
+              <label htmlFor="isAvailable">Disponível para resgate</label>
+            </div>
+          </form>
+        </div>
+
+        <div className="modal-actions">
+          <button type="button" className="cancel-button" onClick={onClose}>
+            Cancelar
+          </button>
+          <button type="button" className="create-reward-button" onClick={handleSubmit}>
+            Criar Recompensa
+          </button>
+        </div>
       </div>
     </div>
   );

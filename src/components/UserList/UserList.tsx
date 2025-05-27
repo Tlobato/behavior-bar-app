@@ -53,13 +53,15 @@ const UserList: React.FC<UserListProps> = ({
               <td>{user.email}</td>
               <td>{user.role}</td>
               <td className="action-icons">
-                <div
-                  className="action-icon"
-                  title="Board"
-                  onClick={() => onAccessBoard(user)}
-                >
-                  <FaChartBar />
-                </div>
+                {user.role === 'USER' && (
+                  <div
+                    className="action-icon"
+                    title="Board"
+                    onClick={() => onAccessBoard(user)}
+                  >
+                    <FaChartBar />
+                  </div>
+                )}
                 <div
                   className="action-icon"
                   title="Editar"

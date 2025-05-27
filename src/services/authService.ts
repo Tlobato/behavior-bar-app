@@ -70,4 +70,30 @@ export const authService = {
     const user = this.getCurrentUser();
     return user !== null && user.role === 'TUTOR';
   },
+
+  // Verifica se o e-mail existe no backend
+  async checkEmailExists(email: string): Promise<boolean> {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/users/check-email?email=${encodeURIComponent(email)}`);
+      return response.data.exists;
+    } catch (err) {
+      throw new Error('Erro ao verificar e-mail');
+    }
+  },
+
+  // Onboarding: cria tenant e admin
+  async onboarding(email: string, name: string, password: string): Promise<User | null> {
+    try {
+      // Usa o nome como tenantName (pode ajustar para outro campo se quiser)
+      await axios.post(`http://localhost:8080/api/users/onboarding?tenantName=${encodeURIComponent(name)}`, {
+        nome: name,
+        email,
+        senha: password,
+      });
+      // Login automático após onboarding
+      return await this.login(email, password);
+    } catch (err) {
+      return null;
+    }
+  },
 };

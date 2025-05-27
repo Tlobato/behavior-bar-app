@@ -8,6 +8,7 @@ import RewardsPage from '../pages/RewardsPage/RewardsPage';
 import Login from '../pages/LoginPage/LoginPage';
 import MissionPage from '../pages/MissionPage/MissionPage';
 import TaskPage from '../pages/TaskPage/TaskPage'; // Importação da TaskPage
+import AuthFlow from '../pages/AuthFlow';
 
 // Componente para proteger rotas privadas
 const PrivateRoute: React.FC<{ children: JSX.Element; requiredRole?: 'ADMIN' | 'USER' | 'TUTOR' }> = ({ children, requiredRole }) => {
@@ -41,17 +42,7 @@ const AppRouter: React.FC = () => {
         <Route
           path="/login"
           element={
-            <Login
-              onLoginSuccess={() => {
-                const user = authService.getCurrentUser();
-                if (user?.role === 'ADMIN' || user?.role === 'TUTOR') {
-                  window.location.href = '/users';
-                } else {
-                  // Redirecionar usuários USER para o board
-                  window.location.href = `/user/${user?.id}/board`;
-                }
-              }}
-            />
+            <AuthFlow />
           }
         />
 

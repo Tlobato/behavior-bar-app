@@ -2,6 +2,7 @@ import React from 'react';
 import { FaCheckCircle } from 'react-icons/fa';
 import { MissionHeaderProps } from '../../types';
 import './MissionHeader.css';
+import Confetti from 'react-confetti';
 
 const MissionHeader: React.FC<MissionHeaderProps> = ({
   mission,
@@ -13,7 +14,16 @@ const MissionHeader: React.FC<MissionHeaderProps> = ({
   if (!mission || !user) return null;
 
   return (
-    <div className="mission-info-container">
+    <div className="mission-info-container" style={{ position: 'relative' }}>
+      {isMissionCompleted && (
+        <Confetti
+          numberOfPieces={180}
+          recycle={false}
+          width={window.innerWidth}
+          height={250}
+          style={{ position: 'absolute', left: 0, top: 0, pointerEvents: 'none', zIndex: 10 }}
+        />
+      )}
       <h2>Missão: {mission.name}</h2>
       <p>Responsável: {user.name}</p>
 

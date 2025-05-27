@@ -46,7 +46,7 @@ export const useUserManagement = () => {
     };
 
     fetchUsers();
-  }, []);
+  }, [currentUser?.role, currentUser?.id]);
 
   const openEditModal = (user: User) => {
     setUserToEdit(user);

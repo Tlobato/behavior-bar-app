@@ -95,11 +95,11 @@ const AppRouter: React.FC = () => {
           }
         />
 
-        {/* Rota de Tarefas da Missão (Admins e Tutores) */}
+        {/* Rota de Tarefas da Missão (Admins, Tutores e Usuários) */}
         <Route
           path="/missions/:missionId/tasks"
           element={
-            <PrivateRoute requiredRole="TUTOR">
+            <PrivateRoute requiredRole="USER">
               <TaskPage />
             </PrivateRoute>
           }

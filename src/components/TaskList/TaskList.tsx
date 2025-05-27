@@ -5,7 +5,12 @@ import { MissionTaskStatus, TaskListProps } from '../../types';
 import { formatDateTime } from '../../utils/dateUtils';
 import { translateStatus } from '../../utils/statusUtils';
 
-const TaskList: React.FC<TaskListProps> = ({
+interface TaskListPropsComResgate extends TaskListProps {
+  onRedeemMissionPoints?: () => void;
+  podeResgatar?: boolean;
+}
+
+const TaskList: React.FC<TaskListPropsComResgate> = ({
   tasks,
   mission,
   isAdmin,
@@ -15,7 +20,9 @@ const TaskList: React.FC<TaskListProps> = ({
   onAcceptTask,
   onRejectTask,
   onEditTask,
-  onDeleteTask
+  onDeleteTask,
+  onRedeemMissionPoints,
+  podeResgatar
 }) => {
 
   if (isLoading) {
@@ -28,6 +35,11 @@ const TaskList: React.FC<TaskListProps> = ({
 
   return (
     <div className="table-container">
+      {!isAdmin && podeResgatar && (
+        <button className="redeem-mission-btn" onClick={onRedeemMissionPoints} style={{marginBottom: 16}}>
+          Resgatar Pontos da Missão
+        </button>
+      )}
       <table className="task-table">
         <thead>
           <tr>

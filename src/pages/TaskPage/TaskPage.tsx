@@ -41,7 +41,8 @@ const TaskPage: React.FC = () => {
     handleTaskCheckClick,
     handleAcceptTask,
     handleRejectTask,
-    handleActionConfirm
+    handleActionConfirm,
+    handleRedeemMissionPoints
   } = useTaskData();
 
   const renderEmptyState = () => {
@@ -102,18 +103,30 @@ const TaskPage: React.FC = () => {
             {!isLoading && !error && tasks.length === 0 && renderEmptyState()}
 
             {!isLoading && !error && tasks.length > 0 && (
-              <TaskList
-                tasks={tasks}
-                mission={mission}
-                isAdmin={isAdmin}
-                isLoading={isLoading}
-                error={error}
-                onCompleteTask={handleTaskCheckClick}
-                onAcceptTask={handleAcceptTask}
-                onRejectTask={handleRejectTask}
-                onEditTask={handleEditTask}
-                onDeleteTask={openDeleteModal}
-              />
+              <>
+                <TaskList
+                  tasks={tasks}
+                  mission={mission}
+                  isAdmin={isAdmin}
+                  isLoading={isLoading}
+                  error={error}
+                  onCompleteTask={handleTaskCheckClick}
+                  onAcceptTask={handleAcceptTask}
+                  onRejectTask={handleRejectTask}
+                  onEditTask={handleEditTask}
+                  onDeleteTask={openDeleteModal}
+                />
+                {/* Botão de resgatar pontos fora do card */}
+                {(!isAdmin && user?.role === 'USER' && isMissionCompleted && mission?.status === 'COMPLETED') && (
+                  <button
+                    className="redeem-mission-btn"
+                    onClick={handleRedeemMissionPoints}
+                    style={{ margin: '30px auto 0 auto', display: 'block' }}
+                  >
+                    Resgatar Pontos da Missão
+                  </button>
+                )}
+              </>
             )}
 
             {isLoading && <p className="loading-message">Carregando tarefas...</p>}

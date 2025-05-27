@@ -232,6 +232,27 @@ export const useTaskData = () => {
         setCurrentTaskId(null);
     };
 
+    // Função para resgatar pontos da missão
+    const handleRedeemMissionPoints = async () => {
+        if (!mission || !user) return;
+        // Evita resgate duplo
+        if (mission.status !== 'COMPLETED') return;
+        try {
+            const pontosAtuais = user.rewardPoints || 0;
+            const pontosMissao = mission.rewardPoints || 0;
+            const novosPontos = pontosAtuais + pontosMissao;
+            // Atualiza pontos do usuário
+            await userService.updateUserRewardPoints(user.id, novosPontos);
+            // Atualiza status da missão para 'FAIL' (ou outro status que indique resgatada, se houver)
+            // Aqui apenas um exemplo, pode ser necessário um campo extra no backend para 'resgatada'
+            // await missionService.updateMissionStatus(mission.id, 'REDEEMED');
+            // Atualiza usuário localmente
+            setUser({ ...user, rewardPoints: novosPontos });
+        } catch (error) {
+            console.error('Erro ao resgatar pontos da missão:', error);
+        }
+    };
+
     return {
         tasks,
         mission,
@@ -264,6 +285,7 @@ export const useTaskData = () => {
         handleTaskCheckClick,
         handleAcceptTask,
         handleRejectTask,
-        handleActionConfirm
+        handleActionConfirm,
+        handleRedeemMissionPoints
     };
 };

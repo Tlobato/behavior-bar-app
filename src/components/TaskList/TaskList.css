@@ -102,3 +102,45 @@
     color: #4CAF50;  /* Cor verde para indicar aprovação */
     cursor: default;
   }
+
+  .redeem-mission-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 30px auto 10px auto;
+    display: block;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.2s;
+  }
+
+  .redeem-mission-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-20deg);
+    animation: shine 2.2s infinite;
+    pointer-events: none;
+  }
+
+  @keyframes shine {
+    0% {
+      left: -75%;
+    }
+    100% {
+      left: 125%;
+    }
+  }
+
+  .redeem-mission-btn:hover {
+    background-color: #388e3c;
+  }

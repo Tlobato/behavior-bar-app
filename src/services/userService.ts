@@ -111,4 +111,20 @@ export const userService = {
       return false; // Retorna false em caso de erro
     }
   },
+
+  // Atualizar apenas os pontos de recompensa do usuário
+  async updateUserRewardPoints(id: number, rewardPoints: number): Promise<boolean> {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.patch(`${API_URL}/${id}/rewardPoints`, { rewardPoints }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return true;
+    } catch (error) {
+      console.error('Erro ao atualizar pontos de recompensa do usuário:', error);
+      return false;
+    }
+  },
 };

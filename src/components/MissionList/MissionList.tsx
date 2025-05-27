@@ -6,6 +6,7 @@ import { formatDateTime } from '../../utils/dateUtils';
 import { translateMissionStatus } from '../../utils/statusUtils';
 import './MissionList.css';
 import { FaClipboardList } from 'react-icons/fa';
+import { FaCheckCircle } from 'react-icons/fa';
 
 const MissionList: React.FC<MissionListProps> = ({
   missions,
@@ -54,36 +55,44 @@ const MissionList: React.FC<MissionListProps> = ({
               <td>{formatDateTime(mission.deadline)}</td>
               <td>{getUserName(mission.userId)}</td>
               <td className="action-icons">
-                <div className="action-icon-wrapper">
-                  <div
-                    className="action-icon"
-                    title="Gerenciar Tarefas"
-                    onClick={() => handleManageTasks(mission)}
-                  >
-                    <FaTasks />
+                {mission.status === 'COMPLETED' ? (
+                  <div className="action-icon" title="Missão finalizada">
+                    <FaCheckCircle color="#4CAF50" size={22} />
                   </div>
-                  {shouldShowHotspot && index === 0 && (
-                    <Hotspot
-                      message="Clique aqui para adicionar tarefas à sua missão!"
-                      position="left"
-                      onClose={handleHotspotClose}
-                    />
-                  )}
-                </div>
-                <div
-                  className="action-icon"
-                  title="Editar"
-                  onClick={() => openEditModal(mission)}
-                >
-                  <FaEdit />
-                </div>
-                <div
-                  className="action-icon delete-icon"
-                  title="Excluir"
-                  onClick={() => openDeleteModal(mission.id)}
-                >
-                  <FaTrash />
-                </div>
+                ) : (
+                  <>
+                    <div className="action-icon-wrapper">
+                      <div
+                        className="action-icon"
+                        title="Gerenciar Tarefas"
+                        onClick={() => handleManageTasks(mission)}
+                      >
+                        <FaTasks />
+                      </div>
+                      {shouldShowHotspot && index === 0 && (
+                        <Hotspot
+                          message="Clique aqui para adicionar tarefas à sua missão!"
+                          position="left"
+                          onClose={handleHotspotClose}
+                        />
+                      )}
+                    </div>
+                    <div
+                      className="action-icon"
+                      title="Editar"
+                      onClick={() => openEditModal(mission)}
+                    >
+                      <FaEdit />
+                    </div>
+                    <div
+                      className="action-icon delete-icon"
+                      title="Excluir"
+                      onClick={() => openDeleteModal(mission.id)}
+                    >
+                      <FaTrash />
+                    </div>
+                  </>
+                )}
               </td>
             </tr>
           ))}

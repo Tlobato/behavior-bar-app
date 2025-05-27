@@ -6,7 +6,7 @@ const API_URL = 'http://localhost:8080/api/auth'; // URL base da API de autentic
 
 export const authService = {
   // Método de Login
-  async login(username: string, password: string): Promise<User | null> {
+  async login(username: string, password: string, keepLoggedIn: boolean = false): Promise<User | null> {
     try {
       // Envia as credenciais para o backend
       const response = await axios.post(`${API_URL}/login`, {
@@ -16,7 +16,11 @@ export const authService = {
 
       // Salva o token JWT retornado pelo backend
       const { token } = response.data;
-      localStorage.setItem('token', token);
+      if (keepLoggedIn) {
+        localStorage.setItem('token', token);
+      } else {
+        sessionStorage.setItem('token', token);
+      }
 
       // Decodifica o token para obter informações do usuário
       const decodedToken: { [key: string]: any } = jwtDecode(token);
@@ -28,8 +32,13 @@ export const authService = {
         password: decodedToken.password
       };
 
-      // Salva o usuário decodificado no localStorage para fácil acesso
-      localStorage.setItem('currentUser', JSON.stringify(user));
+      // Salva o usuário decodificado no localStorage/sessionStorage para fácil acesso
+      const userStr = JSON.stringify(user);
+      if (keepLoggedIn) {
+        localStorage.setItem('currentUser', userStr);
+      } else {
+        sessionStorage.setItem('currentUser', userStr);
+      }
 
       return user;
     } catch (error) {
@@ -42,11 +51,13 @@ export const authService = {
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('currentUser');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('currentUser');
   },
 
   // Obtém o usuário atual do localStorage
   getCurrentUser(): User | null {
-    const savedUser = localStorage.getItem('currentUser');
+    const savedUser = localStorage.getItem('currentUser') || sessionStorage.getItem('currentUser');
     if (savedUser) {
       return JSON.parse(savedUser);
     }
@@ -55,7 +66,7 @@ export const authService = {
 
   // Verifica se o usuário está autenticado
   isAuthenticated(): boolean {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     return !!token; // Retorna true se o token existir
   },
 

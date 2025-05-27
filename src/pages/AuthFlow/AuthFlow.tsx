@@ -30,11 +30,11 @@ const AuthFlow: React.FC = () => {
   };
 
   // Login
-  const handleLogin = async (password: string) => {
+  const handleLogin = async (password: string, keepLoggedIn: boolean) => {
     setError('');
     setLoading(true);
     try {
-      const user = await authService.login(email, password);
+      const user = await authService.login(email, password, keepLoggedIn);
       if (user) {
         // Redireciona conforme o papel
         if (user.role === 'ADMIN' || user.role === 'TUTOR') {

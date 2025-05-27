@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './UserCreateModal.css';
 import { UserCreateModalProps } from '../../types';
+import { authService } from '../../services/authService';
 
 const UserCreateModal: React.FC<UserCreateModalProps> = ({ isOpen, onClose, onCreate }) => {
   const [userData, setUserData] = useState({
@@ -9,6 +10,8 @@ const UserCreateModal: React.FC<UserCreateModalProps> = ({ isOpen, onClose, onCr
     password: '',
     role: 'USER' as 'USER' | 'ADMIN',
   });
+
+  const currentUser = authService.getCurrentUser();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -64,7 +67,8 @@ const UserCreateModal: React.FC<UserCreateModalProps> = ({ isOpen, onClose, onCr
             onChange={handleInputChange}
           >
             <option value="USER">Usuário</option>
-            <option value="ADMIN">Administrador</option>
+            {currentUser?.role === 'ADMIN' && <option value="ADMIN">Administrador</option>}
+            {currentUser?.role === 'ADMIN' && <option value="TUTOR">Tutor</option>}
           </select>
 
           <div className="modal-actions">

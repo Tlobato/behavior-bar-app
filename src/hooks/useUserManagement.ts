@@ -30,7 +30,12 @@ export const useUserManagement = () => {
     const fetchUsers = async () => {
       try {
         const fetchedUsers = await userService.getUsers();
-        const filteredUsers = fetchedUsers.filter(user => user.role === 'USER');
+        let filteredUsers;
+        if (currentUser?.role === 'ADMIN') {
+          filteredUsers = fetchedUsers.filter(user => user.id !== currentUser.id);
+        } else {
+          filteredUsers = fetchedUsers.filter(user => user.role === 'USER');
+        }
         setUsers(filteredUsers);
       } catch (err) {
         console.error('Erro ao buscar usuários:', err);
@@ -48,7 +53,11 @@ export const useUserManagement = () => {
     setIsEditModalOpen(true);
   };
 
-  const handleUpdate = async (userId: number, userData: { name: string; email: string; role: 'USER' | 'ADMIN' }) => {
+  const handleUpdate = async (userId: number, userData: { name: string; email: string; role: 'USER' | 'ADMIN' | 'TUTOR' }) => {
+    if (currentUser?.role === 'TUTOR' && userData.role !== 'USER') {
+      alert('Tutores só podem editar usuários do tipo USER.');
+      return;
+    }
     try {
       const success = await userService.updateUser(userId, userData);
       if (success) {
@@ -65,6 +74,12 @@ export const useUserManagement = () => {
 
   const handleDelete = async () => {
     if (userToDelete !== null) {
+      const user = users.find(u => u.id === userToDelete);
+      if (currentUser?.role === 'TUTOR' && user?.role !== 'USER') {
+        alert('Tutores só podem deletar usuários do tipo USER.');
+        setIsDeleteModalOpen(false);
+        return;
+      }
       const success = await userService.deleteUser(userToDelete);
       if (success) {
         setUsers(users.filter(user => user.id !== userToDelete));
@@ -85,7 +100,11 @@ export const useUserManagement = () => {
     navigate(`/user/${user.id}/board`);
   };
 
-  const handleCreateUser = async (userData: { name: string; email: string; password: string; role: 'USER' | 'ADMIN' }) => {
+  const handleCreateUser = async (userData: { name: string; email: string; password: string; role: 'USER' | 'ADMIN' | 'TUTOR' }) => {
+    if (currentUser?.role === 'TUTOR' && userData.role !== 'USER') {
+      alert('Tutores só podem criar usuários do tipo USER.');
+      return;
+    }
     try {
       const createdUser = await userService.createUser(userData);
       console.log("Usuário criado retornado pelo backend:", createdUser);

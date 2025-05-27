@@ -10,7 +10,8 @@ const Sidebar: React.FC = () => {
   const pathname = location.pathname;
 
   const currentUser = authService.getCurrentUser();
-  const isAdmin = currentUser?.role === 'ADMIN';
+  const isAdmin = currentUser?.role === 'ADMIN' || currentUser?.role === 'TUTOR';
+  const isOnlyAdmin = currentUser?.role === 'ADMIN';
 
   const isOnBoardPage = pathname.includes('/board');
   const isOnRewardsPage = pathname.includes('/rewards');

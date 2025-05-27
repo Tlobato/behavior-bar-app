@@ -28,7 +28,7 @@ export interface InfractionCategory {
 export interface User {
   id: number;
   name: string;
-  role: 'ADMIN' | 'USER';
+  role: 'ADMIN' | 'USER' | 'TUTOR';
   email: string;
   password?: string;
   rewardPoints?: number;
@@ -48,7 +48,7 @@ export interface RewardCardProps {
 export interface UserEditModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onUpdate: (userId: number, userData: { name: string; email: string; role: 'USER' | 'ADMIN' }) => void;
+  onUpdate: (userId: number, userData: { name: string; email: string; role: 'USER' | 'ADMIN' | 'TUTOR' }) => void;
   user: User | null;
 }
 
@@ -279,7 +279,7 @@ export interface TaskCreateModalProps {
 export interface UserCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreate: (userData: { name: string; email: string; password: string; role: 'USER' | 'ADMIN' }) => void;
+  onCreate: (userData: { name: string; email: string; password: string; role: 'USER' | 'ADMIN' | 'TUTOR' }) => void;
 }
 
 export interface UserListProps {

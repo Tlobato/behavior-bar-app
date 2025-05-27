@@ -25,7 +25,7 @@ export const useRewardsData = () => {
   const navigate = useNavigate();
 
   const currentUser = authService.getCurrentUser();
-  const isAdmin = authService.isAdmin();
+  const isAdmin = currentUser?.role === 'ADMIN' || currentUser?.role === 'TUTOR';
 
   useEffect(() => {
     if (isDataLoaded || !user) {

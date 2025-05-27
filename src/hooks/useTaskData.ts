@@ -30,7 +30,7 @@ export const useTaskData = () => {
     const currentUser = authService.getCurrentUser();
     const pageName = usePageTitle();
 
-    const isAdmin = currentUser?.role === 'ADMIN';
+    const isAdmin = currentUser?.role === 'ADMIN' || currentUser?.role === 'TUTOR';
 
     const calculateMissionProgress = (tasksList: MissionTask[], currentMission: Mission | null) => {
         if (!tasksList.length || !currentMission) {

@@ -10,7 +10,7 @@ import MissionPage from '../pages/MissionPage/MissionPage';
 import TaskPage from '../pages/TaskPage/TaskPage'; // Importação da TaskPage
 
 // Componente para proteger rotas privadas
-const PrivateRoute: React.FC<{ children: JSX.Element; requiredRole?: 'ADMIN' | 'USER' }> = ({ children, requiredRole }) => {
+const PrivateRoute: React.FC<{ children: JSX.Element; requiredRole?: 'ADMIN' | 'USER' | 'TUTOR' }> = ({ children, requiredRole }) => {
   const isAuthenticated = authService.isAuthenticated();
   const currentUser = authService.getCurrentUser();
 
@@ -23,7 +23,10 @@ const PrivateRoute: React.FC<{ children: JSX.Element; requiredRole?: 'ADMIN' | '
   }
 
   // Permite ADMIN acessar qualquer rota
-  if (requiredRole && currentUser?.role !== requiredRole && currentUser?.role !== 'ADMIN') {
+  if (requiredRole === 'ADMIN' && currentUser?.role !== 'ADMIN') {
+    return <Navigate to="/" />;
+  }
+  if (requiredRole && requiredRole !== 'ADMIN' && currentUser?.role !== requiredRole && currentUser?.role !== 'ADMIN' && currentUser?.role !== 'TUTOR') {
     return <Navigate to="/" />;
   }
 
@@ -41,7 +44,7 @@ const AppRouter: React.FC = () => {
             <Login
               onLoginSuccess={() => {
                 const user = authService.getCurrentUser();
-                if (user?.role === 'ADMIN') {
+                if (user?.role === 'ADMIN' || user?.role === 'TUTOR') {
                   window.location.href = '/users';
                 } else {
                   // Redirecionar usuários USER para o board
@@ -52,11 +55,11 @@ const AppRouter: React.FC = () => {
           }
         />
 
-        {/* Rota de Gerenciamento de Usuários (Apenas Admins) */}
+        {/* Rota de Gerenciamento de Usuários (Admins e Tutores) */}
         <Route
           path="/users"
           element={
-            <PrivateRoute requiredRole="ADMIN">
+            <PrivateRoute requiredRole="TUTOR">
               <UserManagement />
             </PrivateRoute>
           }
@@ -82,21 +85,21 @@ const AppRouter: React.FC = () => {
           }
         />
 
-        {/* Rota de Missões (Apenas Admins) */}
+        {/* Rota de Missões (Admins e Tutores) */}
         <Route
           path="/missions"
           element={
-            <PrivateRoute requiredRole="ADMIN">
+            <PrivateRoute requiredRole="TUTOR">
               <MissionPage />
             </PrivateRoute>
           }
         />
 
-        {/* Rota de Tarefas da Missão (Apenas Admins) */}
+        {/* Rota de Tarefas da Missão (Admins e Tutores) */}
         <Route
           path="/missions/:missionId/tasks"
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="TUTOR">
               <TaskPage />
             </PrivateRoute>
           }

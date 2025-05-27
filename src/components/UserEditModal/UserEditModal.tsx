@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './UserEditModal.css';
 import { UserEditModalProps } from '../../types';
+import { authService } from '../../services/authService';
 
 const UserEditModal: React.FC<UserEditModalProps> = ({ isOpen, onClose, onUpdate, user }) => {
   const [userData, setUserData] = useState({
@@ -8,6 +9,8 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ isOpen, onClose, onUpdate
     email: '',
     role: 'USER' as 'USER' | 'ADMIN',
   });
+
+  const currentUser = authService.getCurrentUser();
 
   useEffect(() => {
     if (user) {
@@ -67,7 +70,8 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ isOpen, onClose, onUpdate
             onChange={handleInputChange}
           >
             <option value="USER">Usuário</option>
-            <option value="ADMIN">Administrador</option>
+            {currentUser?.role === 'ADMIN' && <option value="ADMIN">Administrador</option>}
+            {currentUser?.role === 'ADMIN' && <option value="TUTOR">Tutor</option>}
           </select>
 
           <div className="modal-actions">

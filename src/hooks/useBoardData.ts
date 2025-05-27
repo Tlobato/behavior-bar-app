@@ -14,7 +14,7 @@ export function useBoardData() {
     const { id: userIdFromUrl } = useParams<{ id: string }>(); // Captura o ID do usuário clicado na URL
     const pageName = usePageTitle();
 
-    const isAdmin = currentUser?.role === 'ADMIN';
+    const isAdmin = currentUser?.role === 'ADMIN' || currentUser?.role === 'TUTOR';
 
     const [boardUser, setBoardUser] = useState<User | null>(null); // Estado local para o usuário do BoardPage
     const [isLoadingBoardUser, setIsLoadingBoardUser] = useState<boolean>(true); // Estado de carregamento

@@ -62,6 +62,12 @@ export const authService = {
   // Verifica se o usuário é um administrador
   isAdmin(): boolean {
     const user = this.getCurrentUser();
-    return user !== null && user.role === 'ADMIN'; // Comparação com "ADMIN" em maiúsculas
+    return user !== null && (user.role === 'ADMIN' || user.role === 'TUTOR');
+  },
+
+  // Verifica se o usuário é tutor
+  isTutor(): boolean {
+    const user = this.getCurrentUser();
+    return user !== null && user.role === 'TUTOR';
   },
 };

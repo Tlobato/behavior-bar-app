@@ -46,7 +46,7 @@ export const userService = {
     }
   },
 
-  async createUser(user: Omit<User, 'id'>): Promise<{ id: number; nome: string; email: string; role: 'USER' | 'ADMIN' } | null> {
+  async createUser(user: Omit<User, 'id'>): Promise<{ id: number; nome: string; email: string; role: 'USER' | 'ADMIN' | 'TUTOR' } | null> {
     try {
       const token = localStorage.getItem('token'); // Recupera o token JWT armazenado
   
@@ -71,7 +71,7 @@ export const userService = {
   },
 
   // Atualizar informações de um usuário existente
-  async updateUser(id: number, user: { name: string; email: string; role: 'USER' | 'ADMIN' }): Promise<boolean> {
+  async updateUser(id: number, user: { name: string; email: string; role: 'USER' | 'ADMIN' | 'TUTOR' }): Promise<boolean> {
     try {
       const token = localStorage.getItem('token'); // Recupera o token JWT armazenado
       

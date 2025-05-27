@@ -3,7 +3,6 @@ import { Mission, UserMissionsListProps } from '../../types';
 import { missionService } from '../../services/missionService';
 import { useNavigate } from 'react-router-dom';
 import { FaTasks, FaClipboardList, FaClock } from 'react-icons/fa';
-import { FaCheckCircle } from 'react-icons/fa';
 import { formatDateTime } from '../../utils/dateUtils';
 import './UserMissionsList.css';
 
@@ -85,15 +84,11 @@ const UserMissionsList: React.FC<UserMissionsListProps> = ({ userId }) => {
                   />
                 </span>
                 <span className="mission-tasks">
-                  {mission.status === 'COMPLETED' ? (
-                    <FaCheckCircle className="mission-icon" color="#4CAF50" size={20} title="Missão finalizada" />
-                  ) : (
-                    <FaTasks 
-                      className="mission-icon" 
-                      onClick={() => handleViewTasks(mission)} 
-                      title="Ver Tarefas"
-                    />
-                  )}
+                  <FaTasks 
+                    className="mission-icon" 
+                    onClick={() => handleViewTasks(mission)} 
+                    title="Ver Tarefas"
+                  />
                 </span>
               </li>
             ))}

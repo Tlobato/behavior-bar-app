@@ -1,9 +1,23 @@
 .mission-info-container {
     background-color: #f7f9fc;
     border-radius: 8px;
-    padding: 16px 20px;
+    padding: 16px 20px 16px 32px;
     margin-bottom: 20px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: relative;
+  }
+  
+  .mission-info-container::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 100%;
+    background-color: #4CAF50;
+    border-radius: 8px 0 0 8px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
   }
   
   .mission-info-container h2 {

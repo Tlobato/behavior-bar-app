@@ -68,6 +68,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ isOpen, onClose, onUpdate
             name="role"
             value={userData.role}
             onChange={handleInputChange}
+            disabled
           >
             <option value="USER">Usuário</option>
             {currentUser?.role === 'ADMIN' && <option value="ADMIN">Administrador</option>}

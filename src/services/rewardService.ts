@@ -117,6 +117,7 @@ export const rewardService = {
       // Criar um FormData para enviar os dados multipart
       const formData = new FormData();
       formData.append('title', rewardData.title);
+      formData.append('description', rewardData.description); // Adiciona o campo description
       formData.append('pointsRequired', rewardData.points.toString());
 
       // Adicionar a imagem, se existir

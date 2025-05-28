@@ -5,7 +5,6 @@ import { authService } from '../services/authService';
 import BoardPage from '../pages/BoardPage/BoardPage';
 import UserManagement from '../pages/UserManagementPage/UserManagementPage';
 import RewardsPage from '../pages/RewardsPage/RewardsPage';
-import Login from '../pages/LoginPage/LoginPage';
 import MissionPage from '../pages/MissionPage/MissionPage';
 import TaskPage from '../pages/TaskPage/TaskPage'; // Importação da TaskPage
 import AuthFlow from '../pages/AuthFlow';

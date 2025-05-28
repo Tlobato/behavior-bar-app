@@ -18,14 +18,20 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Função para carregar os dados do usuário do servidor
   const refreshUserData = async () => {
+    // Verifica se existe token antes de tentar buscar usuário
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    if (!token) {
+      setUser(null);
+      setIsLoading(false);
+      return;
+    }
     const currentUser = authService.getCurrentUser();
     if (currentUser && currentUser.id) {
       setIsLoading(true);
       try {
         const userData = await userService.getUserById(currentUser.id);
         if (userData) {
-          // Atualiza apenas se o usuário atual for o mesmo no contexto
-          setUser((prevUser) => (prevUser?.id === currentUser.id ? userData : userData)); // Ajuste: Sempre atualiza com os dados mais recentes
+          setUser(userData);
         }
       } catch (error) {
         console.error('Erro ao atualizar dados do usuário:', error);

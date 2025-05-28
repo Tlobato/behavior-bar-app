@@ -7,7 +7,7 @@ export const taskService = {
   // Listar todas as tarefas
   async getAllTasks(): Promise<MissionTask[]> {
     try {
-      const token = localStorage.getItem('token'); // Recupera o token JWT armazenado
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
       const response = await axios.get(API_URL, {
         headers: {
@@ -33,7 +33,7 @@ export const taskService = {
   // Obter uma única tarefa pelo ID
   async getTaskById(id: number): Promise<MissionTask | null> {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
       const response = await axios.get(`${API_URL}/${id}`, {
         headers: {
@@ -59,7 +59,7 @@ export const taskService = {
   // Criar uma nova tarefa
   async createTask(taskRequest: MissionTaskRequest): Promise<MissionTask | null> {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
       const response = await axios.post(API_URL, taskRequest, {
         headers: {
@@ -88,7 +88,7 @@ export const taskService = {
     taskUpdateRequest: MissionTaskUpdateRequest
   ): Promise<boolean> {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
       const response = await axios.put(`${API_URL}/${id}`, taskUpdateRequest, {
         headers: {
@@ -109,7 +109,7 @@ export const taskService = {
     status: MissionTaskStatus
   ): Promise<MissionTask | null> {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
       const response = await axios.patch(`${API_URL}/${id}/status`, { status }, {
         headers: {
@@ -138,7 +138,7 @@ export const taskService = {
   // Excluir uma tarefa
   async deleteTask(id: number): Promise<boolean> {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
       await axios.delete(`${API_URL}/${id}`, {
         headers: {
@@ -155,7 +155,7 @@ export const taskService = {
   // Buscar tarefas por missão
   async getTasksByMissionId(missionId: number): Promise<MissionTask[]> {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
       const response = await axios.get(`${API_URL}/mission/${missionId}`, {
         headers: {

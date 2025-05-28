@@ -12,6 +12,8 @@ const INITIAL_STATE: BehaviorState = {
 // Chave para armazenamento local
 const STORAGE_KEY = 'behavior-bar-data';
 
+const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+
 // Carregar dados do localStorage
 const loadData = (): BehaviorState => {
   const savedData = localStorage.getItem(STORAGE_KEY);
@@ -73,7 +75,11 @@ const addInfraction = (description: string, points: number): BehaviorState => {
 // Resetar histórico no backend para um usuário específico
 const resetBehaviorRecords = async (userId: number): Promise<void> => {
   try {
-    await axios.put(`/api/behavior-records/reset/${userId}`); // Inclui o userId na URL
+    await axios.put(`/api/behavior-records/reset/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }); // Inclui o userId na URL
     console.log(`Histórico resetado com sucesso para o usuário ${userId}.`);
   } catch (error) {
     console.error(`Erro ao resetar o histórico para o usuário ${userId}:`, error);
@@ -84,7 +90,11 @@ const resetBehaviorRecords = async (userId: number): Promise<void> => {
 // Buscar categorias de infrações do backend
 export const getInfractionCategories = async (): Promise<InfractionCategory[]> => {
   try {
-    const response = await axios.get('/api/behavior-types'); // Exemplo de rota
+    const response = await axios.get('/api/behavior-types', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }); // Exemplo de rota
     return response.data; // Assumindo que o backend retorna um array de categorias
   } catch (error) {
     console.error('Erro ao buscar categorias de infrações:', error);
@@ -112,7 +122,11 @@ const registerBehavior = async (
 
     console.log('Payload enviado:', payload); // Log para verificar o que está sendo enviado
 
-    await axios.post('/api/behavior-records', payload); // Faz a chamada POST para o backend
+    await axios.post('/api/behavior-records', payload, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }); // Faz a chamada POST para o backend
   } catch (error) {
     console.error('Erro ao registrar comportamento:', error);
     throw error; // Lança o erro para ser tratado no frontend
@@ -122,7 +136,11 @@ const registerBehavior = async (
 // Listar o histórico de comportamentos do backend
 const getBehaviorRecords = async (): Promise<Infraction[]> => {
   try {
-    const response = await axios.get('/api/behavior-records'); // Faz a chamada GET para o backend
+    const response = await axios.get('/api/behavior-records', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }); // Faz a chamada GET para o backend
 
     // Log para inspecionar os dados retornados pelo backend
     console.log('Histórico retornado pelo backend:', response.data);
@@ -137,7 +155,11 @@ const getBehaviorRecords = async (): Promise<Infraction[]> => {
 // Buscar o histórico de comportamentos de um usuário específico
 const getBehaviorRecordsByUserId = async (userId: number): Promise<Infraction[]> => {
   try {
-    const response = await axios.get(`/api/behavior-records/user/${userId}`); // Faz a chamada GET com o userId
+    const response = await axios.get(`/api/behavior-records/user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }); // Faz a chamada GET com o userId
 
     // Log para verificar os dados retornados pelo backend
     console.log(`Histórico retornado pelo backend para o usuário ${userId}:`, response.data);

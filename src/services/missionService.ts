@@ -7,7 +7,7 @@ export const missionService = {
   // Listar todas as missões
   async getMissions(): Promise<Mission[]> {
     try {
-      const token = localStorage.getItem('token'); // Recupera o token JWT armazenado
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
       const response = await axios.get(API_URL, {
         headers: {
@@ -36,7 +36,7 @@ export const missionService = {
   // Obter uma única missão pelo ID
   async getMissionById(id: number): Promise<Mission | null> {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
       const response = await axios.get(`${API_URL}/${id}`, {
         headers: {
@@ -71,7 +71,7 @@ export const missionService = {
     userId: number;
   }): Promise<Mission | null> {
     try {
-      const token = localStorage.getItem('token'); // Recupera o token JWT armazenado
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
       const response = await axios.post(API_URL, missionData, {
         headers: {
@@ -109,7 +109,7 @@ export const missionService = {
     }
   ): Promise<boolean> {
     try {
-      const token = localStorage.getItem('token'); // Recupera o token JWT armazenado
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
       const response = await axios.put(`${API_URL}/${id}`, missionData, {
         headers: {
@@ -127,7 +127,7 @@ export const missionService = {
   // Excluir uma missão
   async deleteMission(id: number): Promise<boolean> {
     try {
-      const token = localStorage.getItem('token'); // Recupera o token JWT armazenado
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
       await axios.delete(`${API_URL}/${id}`, {
         headers: {
@@ -143,7 +143,7 @@ export const missionService = {
 
   async updateMissionStatus(id: number, status: MissionStatus): Promise<boolean> {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
       
       const response = await axios.patch(`${API_URL}/${id}/status`, { status }, {
         headers: {

@@ -7,7 +7,12 @@ export const userService = {
   // Listar todos os usuários
   async getUsers(): Promise<User[]> {
     try {
-      const response = await axios.get(API_URL); // Faz a chamada GET para obter os usuários
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      const response = await axios.get(API_URL, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       // Mapeia os dados retornados do backend para os nomes usados no frontend
       return response.data.map((user: any) => ({
         id: user.id,
@@ -25,8 +30,7 @@ export const userService = {
   // Obter um único usuário pelo ID
   async getUserById(id: number): Promise<User | null> {
     try {
-      const token = localStorage.getItem('token');
-      
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
       const response = await axios.get(`${API_URL}/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -48,7 +52,7 @@ export const userService = {
 
   async createUser(user: Omit<User, 'id'>): Promise<{ id: number; nome: string; email: string; role: 'USER' | 'ADMIN' | 'TUTOR' } | null> {
     try {
-      const token = localStorage.getItem('token'); // Recupera o token JWT armazenado
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
   
       // Mapeia os campos para corresponder aos nomes esperados no backend
       const payload = {
@@ -60,7 +64,7 @@ export const userService = {
   
       const response = await axios.post(API_URL, payload, {
         headers: {
-          Authorization: `Bearer ${token}`, // Inclui o token JWT no cabeçalho
+          Authorization: `Bearer ${token}`,
         },
       });
       return response.data; // Retorna o formato esperado pelo backend
@@ -73,7 +77,7 @@ export const userService = {
   // Atualizar informações de um usuário existente
   async updateUser(id: number, user: { name: string; email: string; role: 'USER' | 'ADMIN' | 'TUTOR' }): Promise<boolean> {
     try {
-      const token = localStorage.getItem('token'); // Recupera o token JWT armazenado
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
       
       // Mapeia os campos para corresponder aos nomes esperados no backend
       const payload = {
@@ -84,7 +88,7 @@ export const userService = {
 
       await axios.put(`${API_URL}/${id}`, payload, {
         headers: {
-          Authorization: `Bearer ${token}`, // Inclui o token JWT no cabeçalho
+          Authorization: `Bearer ${token}`,
         },
       });
       
@@ -98,11 +102,11 @@ export const userService = {
   // Excluir um usuário
   async deleteUser(id: number): Promise<boolean> {
     try {
-      const token = localStorage.getItem('token'); // Recupera o token JWT armazenado
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
   
       await axios.delete(`${API_URL}/${id}`, {
         headers: {
-          Authorization: `Bearer ${token}`, // Inclui o token JWT no cabeçalho
+          Authorization: `Bearer ${token}`,
         },
       });
       return true; // Retorna true se a exclusão for bem-sucedida
@@ -115,7 +119,7 @@ export const userService = {
   // Atualizar apenas os pontos de recompensa do usuário
   async updateUserRewardPoints(id: number, rewardPoints: number): Promise<boolean> {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
       await axios.patch(`${API_URL}/${id}/rewardPoints`, { rewardPoints }, {
         headers: {
           Authorization: `Bearer ${token}`,

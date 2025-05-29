@@ -26,6 +26,8 @@ export const useTaskData = () => {
     const [actionModalMessage, setActionModalMessage] = useState<string>('');
     const [currentAction, setCurrentAction] = useState<'complete' | 'approve' | 'reject'>('complete');
 
+    const [hasRedeemed, setHasRedeemed] = useState<boolean>(false);
+
     const navigate = useNavigate();
     const currentUser = authService.getCurrentUser();
     const pageName = usePageTitle();
@@ -75,6 +77,14 @@ export const useTaskData = () => {
                 setTasks(missionTasks);
 
                 calculateMissionProgress(missionTasks, fetchedMission);
+
+                // Consulta se já foi resgatado
+                const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+                const res = await fetch(`/api/mission-redemptions/has-redeemed?missionId=${missionIdNumber}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const redeemed = await res.json();
+                setHasRedeemed(!!redeemed);
 
             } catch (err) {
                 console.error('Erro ao buscar dados:', err);
@@ -235,19 +245,19 @@ export const useTaskData = () => {
     // Função para resgatar pontos da missão
     const handleRedeemMissionPoints = async () => {
         if (!mission || !user) return;
-        // Evita resgate duplo
         if (mission.status !== 'COMPLETED') return;
         try {
-            const pontosAtuais = user.rewardPoints || 0;
-            const pontosMissao = mission.rewardPoints || 0;
-            const novosPontos = pontosAtuais + pontosMissao;
-            // Atualiza pontos do usuário
-            await userService.updateUserRewardPoints(user.id, novosPontos);
-            // Atualiza status da missão para 'FAIL' (ou outro status que indique resgatada, se houver)
-            // Aqui apenas um exemplo, pode ser necessário um campo extra no backend para 'resgatada'
-            // await missionService.updateMissionStatus(mission.id, 'REDEEMED');
-            // Atualiza usuário localmente
-            setUser({ ...user, rewardPoints: novosPontos });
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            await fetch(`/api/mission-redemptions/redeem?missionId=${mission.id}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            // Atualiza usuário localmente (refaz fetch do usuário)
+            const updatedUser = await userService.getUserById(user.id);
+            setUser(updatedUser);
+            setHasRedeemed(true);
         } catch (error) {
             console.error('Erro ao resgatar pontos da missão:', error);
         }
@@ -272,6 +282,7 @@ export const useTaskData = () => {
         currentUser,
         isAdmin,
         pageName,
+        hasRedeemed,
 
         setIsCreateModalOpen,
         setIsDeleteModalOpen,

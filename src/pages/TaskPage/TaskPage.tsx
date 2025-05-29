@@ -42,7 +42,8 @@ const TaskPage: React.FC = () => {
     handleAcceptTask,
     handleRejectTask,
     handleActionConfirm,
-    handleRedeemMissionPoints
+    handleRedeemMissionPoints,
+    hasRedeemed
   } = useTaskData();
 
   const renderEmptyState = () => {
@@ -68,6 +69,8 @@ const TaskPage: React.FC = () => {
         userName={currentUser?.name || 'Usuário'}
         onLogout={handleLogout}
         pageName={pageName}
+        rewardPoints={user?.rewardPoints}
+        userRole={currentUser?.role}
       />
 
       <div className="page-content">
@@ -119,11 +122,19 @@ const TaskPage: React.FC = () => {
                 {/* Botão de resgatar pontos fora do card */}
                 {(!isAdmin && user?.role === 'USER' && isMissionCompleted && mission?.status === 'COMPLETED') && (
                   <button
-                    className="redeem-mission-btn"
+                    className={`redeem-mission-btn${hasRedeemed ? ' redeemed' : ''}`}
                     onClick={handleRedeemMissionPoints}
-                    style={{ margin: '30px auto 0 auto', display: 'block' }}
+                    style={{
+                      margin: '30px auto 0 auto',
+                      display: 'block',
+                      background: hasRedeemed ? '#ccc' : undefined,
+                      color: hasRedeemed ? '#666' : undefined,
+                      cursor: hasRedeemed ? 'not-allowed' : 'pointer',
+                      fontWeight: hasRedeemed ? 600 : undefined
+                    }}
+                    disabled={hasRedeemed}
                   >
-                    Resgatar Pontos da Missão
+                    {hasRedeemed ? <><FaCheckCircle style={{ marginRight: 8, color: '#4CAF50' }} />Pontuação Resgatada!</> : 'Resgatar Pontos da Missão'}
                   </button>
                 )}
               </>

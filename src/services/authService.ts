@@ -9,7 +9,7 @@ export const authService = {
   async login(username: string, password: string, keepLoggedIn: boolean = false): Promise<User | null> {
     try {
       // Envia as credenciais para o backend
-      const response = await axios.post(`${API_URL}/login`, {
+      const response = await axios.post(`/api/auth/login`, {
         username,
         password,
       });
@@ -85,7 +85,7 @@ export const authService = {
   // Verifica se o e-mail existe no backend
   async checkEmailExists(email: string): Promise<boolean> {
     try {
-      const response = await axios.get(`http://localhost:8080/api/users/check-email?email=${encodeURIComponent(email)}`);
+      const response = await axios.get(`/api/users/check-email?email=${encodeURIComponent(email)}`);
       return response.data.exists;
     } catch (err) {
       throw new Error('Erro ao verificar e-mail');
@@ -96,7 +96,7 @@ export const authService = {
   async onboarding(email: string, name: string, password: string): Promise<User | null> {
     try {
       // Usa o nome como tenantName (pode ajustar para outro campo se quiser)
-      await axios.post(`http://localhost:8080/api/users/onboarding?tenantName=${encodeURIComponent(name)}`, {
+      await axios.post(`/api/users/onboarding?tenantName=${encodeURIComponent(name)}`, {
         nome: name,
         email,
         senha: password,

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Mission, UserMissionsListProps } from '../../types';
 import { missionService } from '../../services/missionService';
 import { useNavigate } from 'react-router-dom';
-import { FaTasks, FaClipboardList, FaClock } from 'react-icons/fa';
+import { FaTasks, FaClipboardList, FaClock, FaTimesCircle } from 'react-icons/fa';
 import { formatDateTime } from '../../utils/dateUtils';
 import './UserMissionsList.css';
 
@@ -84,11 +84,15 @@ const UserMissionsList: React.FC<UserMissionsListProps> = ({ userId }) => {
                   />
                 </span>
                 <span className="mission-tasks">
-                  <FaTasks 
-                    className="mission-icon" 
-                    onClick={() => handleViewTasks(mission)} 
-                    title="Ver Tarefas"
-                  />
+                  {mission.status === 'FAIL' ? (
+                    <FaTimesCircle className="fail-icon" color="#e53935" size={22} title="Missão não concluída no prazo" />
+                  ) : (
+                    <FaTasks 
+                      className="mission-icon" 
+                      onClick={() => handleViewTasks(mission)} 
+                      title="Ver Tarefas"
+                    />
+                  )}
                 </span>
               </li>
             ))}

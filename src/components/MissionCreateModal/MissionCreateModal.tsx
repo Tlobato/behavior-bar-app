@@ -96,7 +96,8 @@ const MissionCreateModal: React.FC<MissionCreateModalProps> = ({ isOpen, onClose
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date);
     if (date) {
-      const formattedDate = date.toISOString().slice(0, 16);
+      const pad = (n: number) => n.toString().padStart(2, '0');
+      const formattedDate = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
       setMissionData(prev => ({
         ...prev,
         deadline: formattedDate

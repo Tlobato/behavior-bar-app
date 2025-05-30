@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaTrash, FaEdit, FaTasks } from 'react-icons/fa';
+import { FaTrash, FaEdit, FaTasks, FaTimesCircle } from 'react-icons/fa';
 import { MissionListProps } from '../../types';
 import Hotspot from '../Hotspot/Hotspot';
 import { formatDateTime } from '../../utils/dateUtils';
@@ -58,6 +58,10 @@ const MissionList: React.FC<MissionListProps> = ({
                 {mission.status === 'COMPLETED' ? (
                   <div className="action-icon" title="Missão finalizada">
                     <FaCheckCircle color="#4CAF50" size={22} />
+                  </div>
+                ) : mission.status === 'FAIL' ? (
+                  <div className="action-icon" title="Missão não concluída no prazo">
+                    <FaTimesCircle color="#e53935" size={22} />
                   </div>
                 ) : (
                   <>

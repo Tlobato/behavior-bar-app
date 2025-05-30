@@ -36,6 +36,14 @@ const ScoreUpModal: React.FC<ScoreUpModalProps> = ({ isOpen, onClose, points }) 
     return () => clearInterval(interval);
   }, [isOpen, points]);
 
+  // Toca o som ao abrir o modal
+  useEffect(() => {
+    if (isOpen) {
+      const audio = new Audio('/sounds/win.mp3');
+      audio.play();
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (

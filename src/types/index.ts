@@ -294,3 +294,10 @@ export interface UserListProps {
 export interface UserMissionsListProps {
   userId: number;
 }
+
+export interface TaskEditModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onUpdate: (taskId: number, updatedTask: Partial<MissionTask>) => void;
+  task: MissionTask | null;
+}

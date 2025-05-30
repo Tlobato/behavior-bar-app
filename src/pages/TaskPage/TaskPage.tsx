@@ -11,6 +11,7 @@ import { MissionStatus } from '../../types';
 import { FaTasks, FaCheckCircle } from 'react-icons/fa';
 import { useTaskData } from '../../hooks/useTaskData';
 import ScoreUpModal from '../../components/Modal/ScoreUpModal';
+import TaskEditModal from '../../components/TaskEditModal/TaskEditModal';
 
 const TaskPage: React.FC = () => {
   const {
@@ -44,7 +45,11 @@ const TaskPage: React.FC = () => {
     handleRejectTask,
     handleActionConfirm,
     handleRedeemMissionPoints,
-    hasRedeemed
+    hasRedeemed,
+    isEditModalOpen,
+    setIsEditModalOpen,
+    taskToEdit,
+    handleUpdateTask
   } = useTaskData();
 
   const [isScoreUpModalOpen, setIsScoreUpModalOpen] = useState(false);
@@ -183,6 +188,13 @@ const TaskPage: React.FC = () => {
         isOpen={isScoreUpModalOpen}
         onClose={() => setIsScoreUpModalOpen(false)}
         points={mission?.rewardPoints || 0}
+      />
+
+      <TaskEditModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onUpdate={handleUpdateTask}
+        task={taskToEdit}
       />
     </div>
   );

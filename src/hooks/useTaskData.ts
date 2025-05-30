@@ -28,6 +28,9 @@ export const useTaskData = () => {
 
     const [hasRedeemed, setHasRedeemed] = useState<boolean>(false);
 
+    const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+    const [taskToEdit, setTaskToEdit] = useState<MissionTask | null>(null);
+
     const navigate = useNavigate();
     const currentUser = authService.getCurrentUser();
     const pageName = usePageTitle();
@@ -132,21 +135,28 @@ export const useTaskData = () => {
         setIsCreateModalOpen(false);
     };
 
-    const handleEditTask = async (taskId: number) => {
-        console.log(`Editar tarefa ${taskId}`);
-        const taskToUpdate = tasks.find(task => task.id === taskId);
-        if (taskToUpdate) {
-            const success = await taskService.updateTask(taskId, {
-                name: "Nome atualizado", // Valor que viria do formulário
-                status: taskToUpdate.status
-            });
+    const handleEditTask = (taskId: number) => {
+        const task = tasks.find(t => t.id === taskId) || null;
+        setTaskToEdit(task);
+        setIsEditModalOpen(true);
+    };
+
+    const handleUpdateTask = async (taskId: number, updatedTask: Partial<MissionTask>) => {
+        try {
+            const success = await taskService.updateTask(taskId, updatedTask);
             if (success) {
                 const updatedTasks = tasks.map(task =>
-                    task.id === taskId ? { ...task, name: "Nome atualizado" } : task
+                    task.id === taskId ? { ...task, ...updatedTask } : task
                 );
                 setTasks(updatedTasks);
                 calculateMissionProgress(updatedTasks, mission);
+                setIsEditModalOpen(false);
+                setTaskToEdit(null);
+            } else {
+                alert('Erro ao atualizar tarefa.');
             }
+        } catch (error) {
+            console.error('Erro ao atualizar tarefa:', error);
         }
     };
 
@@ -283,6 +293,9 @@ export const useTaskData = () => {
         isAdmin,
         pageName,
         hasRedeemed,
+        isEditModalOpen,
+        setIsEditModalOpen,
+        taskToEdit,
 
         setIsCreateModalOpen,
         setIsDeleteModalOpen,
@@ -291,6 +304,7 @@ export const useTaskData = () => {
         handleLogout,
         handleCreateTask,
         handleEditTask,
+        handleUpdateTask,
         openDeleteModal,
         handleDelete,
         handleTaskCheckClick,

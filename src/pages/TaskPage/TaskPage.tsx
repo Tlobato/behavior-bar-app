@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './TaskPage.css';
 import Header from '../../components/Header/Header';
 import Sidebar from '../../components/Sidebar/Sidebar';
@@ -10,6 +10,7 @@ import MissionHeader from '../../components/MissionHeader/MissionHeader';
 import { MissionStatus } from '../../types';
 import { FaTasks, FaCheckCircle } from 'react-icons/fa';
 import { useTaskData } from '../../hooks/useTaskData';
+import ScoreUpModal from '../../components/Modal/ScoreUpModal';
 
 const TaskPage: React.FC = () => {
   const {
@@ -46,6 +47,8 @@ const TaskPage: React.FC = () => {
     hasRedeemed
   } = useTaskData();
 
+  const [isScoreUpModalOpen, setIsScoreUpModalOpen] = useState(false);
+
   const renderEmptyState = () => {
     return (
       <div className="empty-state">
@@ -60,6 +63,11 @@ const TaskPage: React.FC = () => {
         )}
       </div>
     );
+  };
+
+  const handleRedeemMissionPointsWithModal = async () => {
+    await handleRedeemMissionPoints();
+    setIsScoreUpModalOpen(true);
   };
 
   return (
@@ -123,18 +131,17 @@ const TaskPage: React.FC = () => {
                 {(!isAdmin && user?.role === 'USER' && isMissionCompleted && mission?.status === 'COMPLETED') && (
                   <button
                     className={`redeem-mission-btn${hasRedeemed ? ' redeemed' : ''}`}
-                    onClick={handleRedeemMissionPoints}
+                    onClick={hasRedeemed ? undefined : handleRedeemMissionPointsWithModal}
                     style={{
                       margin: '30px auto 0 auto',
                       display: 'block',
                       background: hasRedeemed ? '#ccc' : undefined,
                       color: hasRedeemed ? '#666' : undefined,
-                      cursor: hasRedeemed ? 'not-allowed' : 'pointer',
-                      fontWeight: hasRedeemed ? 600 : undefined
+                      cursor: hasRedeemed ? 'not-allowed' : 'pointer'
                     }}
                     disabled={hasRedeemed}
                   >
-                    {hasRedeemed ? <><FaCheckCircle style={{ marginRight: 8, color: '#4CAF50' }} />Pontuação Resgatada!</> : 'Resgatar Pontos da Missão'}
+                    {hasRedeemed ? <><FaCheckCircle color="#43a047" style={{ marginRight: 8 }} /> Pontuação Resgatada!</> : <><FaTasks style={{ marginRight: 8 }} /> Resgatar Pontos da Missão</>}
                   </button>
                 )}
               </>
@@ -170,6 +177,12 @@ const TaskPage: React.FC = () => {
         onConfirm={handleActionConfirm}
         title={actionModalTitle}
         message={actionModalMessage}
+      />
+
+      <ScoreUpModal
+        isOpen={isScoreUpModalOpen}
+        onClose={() => setIsScoreUpModalOpen(false)}
+        points={mission?.rewardPoints || 0}
       />
     </div>
   );

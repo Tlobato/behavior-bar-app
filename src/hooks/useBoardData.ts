@@ -136,7 +136,7 @@ export function useBoardData() {
             const activeInfractions = infractions.filter((inf) => inf.ativo);
 
             setBehaviorState({
-                currentPoints: Math.max(0, updatedUser.rewardPoints ?? 0), // Usa 0 como fallback caso rewardPoints seja undefined
+                currentPoints: Math.min(Math.max(updatedUser.rewardPoints ?? 0, 0), 100), // Garante que fique entre 0 e 100
                 maxPoints: 100,
                 infractions: activeInfractions,
                 lastReset: behaviorState.lastReset,

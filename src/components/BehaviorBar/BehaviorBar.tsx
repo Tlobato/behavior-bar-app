@@ -6,7 +6,7 @@ import { FaGift } from 'react-icons/fa';
 const BehaviorBar: React.FC<BehaviorBarProps> = ({ behaviorState, userName, rewardPoints }) => {
   const { currentPoints, maxPoints } = behaviorState;
   
-  const percentage = (currentPoints / maxPoints) * 100;
+  const percentage = Math.min(Math.max((currentPoints / maxPoints) * 100, 0), 100);
   
   return (
     <div className="behavior-bar-container">

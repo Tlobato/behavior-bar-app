@@ -10,6 +10,8 @@ import RewardEditModal from '../../components/RewardEditModal/RewardEditModal';
 import { FaGift, FaFilter } from 'react-icons/fa';
 import { useRewardsData } from '../../hooks/useRewardsData';
 import GamifiedInfoModal from '../../components/Modal/GamifiedInfoModal';
+import RewardRedemptionSuccessModal from '../../components/Modal/RewardRedemptionSuccessModal';
+import { Reward } from '../../types';
 
 const RewardsPage: React.FC = () => {
   const {
@@ -44,8 +46,32 @@ const RewardsPage: React.FC = () => {
   const [isInsufficientPointsModalOpen, setIsInsufficientPointsModalOpen] = useState(false);
   const [showOnlyActive, setShowOnlyActive] = useState(true);
 
+  // Estado para modal de sucesso do resgate
+  const [isRedemptionSuccessModalOpen, setIsRedemptionSuccessModalOpen] = useState(false);
+  const [redemptionReward, setRedemptionReward] = useState<Reward | null>(null);
+  const [pointsBeforeRedemption, setPointsBeforeRedemption] = useState<number>(0);
+  const [pointsAfterRedemption, setPointsAfterRedemption] = useState<number>(0);
+
   const handleInsufficientPoints = () => {
     setIsInsufficientPointsModalOpen(true);
+  };
+
+  // Função para lidar com resgate de recompensa
+  const handleRewardClickWithModal = async (rewardTitle: string) => {
+    const reward = rewards.find(r => r.title === rewardTitle);
+    if (!reward || !user || !reward.id) return;
+    // Salva pontos antes do resgate
+    setPointsBeforeRedemption(user.rewardPoints ?? 0);
+    try {
+      await handleRewardClick(rewardTitle); // Chama lógica já existente
+      // Busca usuário atualizado para pegar pontos após resgate
+      const updatedPoints = (user.rewardPoints ?? 0) - reward.points;
+      setPointsAfterRedemption(updatedPoints);
+      setRedemptionReward(reward);
+      setIsRedemptionSuccessModalOpen(true);
+    } catch (err) {
+      // Erro já tratado no hook
+    }
   };
 
   const modalContent = getModalContent();
@@ -138,7 +164,7 @@ const RewardsPage: React.FC = () => {
                         !redeemedRewardIds.includes(reward.id || 0)
                       }
                       isRedeemed={redeemedRewardIds.includes(reward.id || 0)}
-                      onClick={() => handleRewardClick(reward.title)}
+                      onClick={() => handleRewardClickWithModal(reward.title)}
                       onEdit={() => handleEditReward(reward.id || 0)}
                       onDelete={() => handleDeleteReward(reward.title, reward.id || 0)}
                       onInsufficientPoints={handleInsufficientPoints}
@@ -177,6 +203,15 @@ const RewardsPage: React.FC = () => {
         onClose={() => setIsEditModalOpen(false)}
         onSave={handleSaveEditedReward}
         reward={rewardToEdit}
+      />
+
+      <RewardRedemptionSuccessModal
+        isOpen={isRedemptionSuccessModalOpen}
+        onClose={() => setIsRedemptionSuccessModalOpen(false)}
+        rewardName={redemptionReward?.title || ''}
+        rewardImage={redemptionReward?.imageUrl || null}
+        pointsBefore={pointsBeforeRedemption}
+        pointsAfter={pointsAfterRedemption}
       />
     </div>
   );

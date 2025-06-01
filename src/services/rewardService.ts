@@ -120,6 +120,11 @@ export const rewardService = {
       formData.append('description', rewardData.description);
       formData.append('pointsRequired', rewardData.points.toString());
 
+      // Adicionar o campo ativo se estiver definido
+      if (rewardData.active !== undefined) {
+        formData.append('active', rewardData.active.toString());
+      }
+
       // Adicionar a imagem, se existir
       if (rewardData.imageFile) {
         formData.append('image', rewardData.imageFile);
@@ -213,5 +218,58 @@ export const rewardService = {
       console.error('Erro ao buscar recompensas disponíveis:', error);
       return [];
     }
-  }
+  },
+
+  // Buscar histórico de resgates do usuário logado
+  async getUserRedemptions(): Promise<any[]> {
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      const response = await axios.get('http://localhost:8080/api/redemptions/my-redemptions', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao buscar histórico de resgates:', error);
+      return [];
+    }
+  },
+
+  // Realizar o resgate de uma recompensa
+  async redeemReward(data: { rewardId: number }): Promise<any> {
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      const response = await axios.post('http://localhost:8080/api/redemptions', data, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      return response.data;
+    } catch (error: any) {
+      throw error;
+    }
+  },
+
+  async getAllRewardsAdmin(): Promise<Reward[]> {
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      const response = await axios.get(`${API_URL}/all`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      return response.data.map((reward: BackendReward) => ({
+        id: reward.id,
+        title: reward.title,
+        description: reward.description,
+        points: reward.pointsRequired,
+        imageUrl: reward.imageUrl,
+        active: reward.active
+      }));
+    } catch (error) {
+      console.error('Erro ao buscar todas as recompensas (admin):', error);
+      return [];
+    }
+  },
 };

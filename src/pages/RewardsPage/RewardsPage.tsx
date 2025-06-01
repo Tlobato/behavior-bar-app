@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './RewardsPage.css';
 import Header from '../../components/Header/Header';
 import Sidebar from '../../components/Sidebar/Sidebar';
@@ -7,8 +7,9 @@ import Modal from '../../components/Modal/Modal';
 import NewRegistrationComponent from '../../components/NewRegistrationComponent/NewRegistrationComponent';
 import RewardCreateModal from '../../components/RewardCreateModal/RewardCreateModal';
 import RewardEditModal from '../../components/RewardEditModal/RewardEditModal';
-import { FaGift } from 'react-icons/fa';
+import { FaGift, FaFilter } from 'react-icons/fa';
 import { useRewardsData } from '../../hooks/useRewardsData';
+import GamifiedInfoModal from '../../components/Modal/GamifiedInfoModal';
 
 const RewardsPage: React.FC = () => {
   const {
@@ -23,6 +24,7 @@ const RewardsPage: React.FC = () => {
     isAdmin,
     user,
     pageName,
+    redeemedRewardIds,
     
     setIsModalOpen,
     setIsCreateModalOpen,
@@ -37,6 +39,14 @@ const RewardsPage: React.FC = () => {
     confirmDeleteReward,
     getModalContent
   } = useRewardsData();
+
+  // Modal para pontos insuficientes
+  const [isInsufficientPointsModalOpen, setIsInsufficientPointsModalOpen] = useState(false);
+  const [showOnlyActive, setShowOnlyActive] = useState(true);
+
+  const handleInsufficientPoints = () => {
+    setIsInsufficientPointsModalOpen(true);
+  };
 
   const modalContent = getModalContent();
 
@@ -87,26 +97,66 @@ const RewardsPage: React.FC = () => {
               </div>
             )}
 
+            {isAdmin && (
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: 16, gap: 8 }}>
+                <button
+                  style={{
+                    background: showOnlyActive ? '#4CAF50' : '#bdbdbd',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 6,
+                    padding: '8px 16px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    fontWeight: 600
+                  }}
+                  onClick={() => setShowOnlyActive((prev) => !prev)}
+                  title={showOnlyActive ? 'Exibindo apenas recompensas ativas' : 'Exibindo todas as recompensas'}
+                >
+                  <FaFilter /> {showOnlyActive ? 'Apenas Ativas' : 'Todas'}
+                </button>
+              </div>
+            )}
+
             {!isLoading && !error && rewards.length > 0 && (
               <div className="rewards-grid">
-                {rewards.map((reward) => (
-                  <RewardCard
-                    key={reward.id || `reward-${Math.random()}`}
-                    title={reward.title}
-                    description={reward.description}
-                    imageUrl={reward.imageUrl || null}
-                    points={reward.points}
-                    isAvailable={reward.active !== false}
-                    onClick={() => handleRewardClick(reward.title)}
-                    onEdit={() => handleEditReward(reward.id || 0)}
-                    onDelete={() => handleDeleteReward(reward.title, reward.id || 0)}
-                  />
-                ))}
+                {rewards
+                  .filter(reward => isAdmin ? (!showOnlyActive || reward.active) : reward.active)
+                  .map((reward) => (
+                    <RewardCard
+                      key={reward.id || `reward-${Math.random()}`}
+                      title={reward.title}
+                      description={reward.description}
+                      imageUrl={reward.imageUrl || null}
+                      points={reward.points}
+                      isAvailable={
+                        reward.active !== false &&
+                        !!user &&
+                        (user.rewardPoints ?? 0) >= reward.points &&
+                        !redeemedRewardIds.includes(reward.id || 0)
+                      }
+                      isRedeemed={redeemedRewardIds.includes(reward.id || 0)}
+                      onClick={() => handleRewardClick(reward.title)}
+                      onEdit={() => handleEditReward(reward.id || 0)}
+                      onDelete={() => handleDeleteReward(reward.title, reward.id || 0)}
+                      onInsufficientPoints={handleInsufficientPoints}
+                    />
+                  ))}
               </div>
             )}
           </div>
         </main>
       </div>
+
+      <GamifiedInfoModal
+        isOpen={isInsufficientPointsModalOpen}
+        onClose={() => setIsInsufficientPointsModalOpen(false)}
+        title="Quase lá!"
+        message="Junte mais pontos para resgatar essa recompensa.✨"
+        emoji="🏆"
+      />
 
       <Modal
         isOpen={isModalOpen}

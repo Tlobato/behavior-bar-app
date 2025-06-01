@@ -19,6 +19,7 @@ export const useRewardsData = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
+  const [redeemedRewardIds, setRedeemedRewardIds] = useState<number[]>([]);
 
   const { user, setUser } = useUser();
   const pageName = usePageTitle();
@@ -40,9 +41,22 @@ export const useRewardsData = () => {
           setUser(updatedUser);
         }
 
-        const rewardsData = await rewardService.getAllRewards();
+        let rewardsData: Reward[] = [];
+        if (isAdmin) {
+          rewardsData = await rewardService.getAllRewardsAdmin();
+        } else {
+          rewardsData = await rewardService.getAllRewards();
+        }
         setRewards(rewardsData);
-        
+
+        // Buscar histórico de resgates do usuário
+        try {
+          const redemptions = await rewardService.getUserRedemptions();
+          setRedeemedRewardIds(redemptions.map((r: any) => r.rewardId));
+        } catch (e) {
+          setRedeemedRewardIds([]); // Se não houver histórico, apenas zera
+        }
+
         setIsDataLoaded(true);
       } catch (err) {
         console.error('Erro ao carregar dados:', err);
@@ -53,7 +67,7 @@ export const useRewardsData = () => {
     };
 
     loadData();
-  }, [user, setUser, isDataLoaded]);
+  }, [user, setUser, isDataLoaded, isAdmin]);
 
   const handleLogout = () => {
     authService.logout();
@@ -95,10 +109,25 @@ export const useRewardsData = () => {
     }
   };
 
-  const handleRewardClick = (rewardTitle: string) => {
-    setSelectedReward(rewardTitle);
-    setModalType('redeem');
-    setIsModalOpen(true);
+  const handleRewardClick = async (rewardTitle: string) => {
+    const reward = rewards.find(r => r.title === rewardTitle);
+    if (!reward || !user || !reward.id) return;
+    try {
+      setIsLoading(true);
+      // Chamar endpoint de resgate
+      await rewardService.redeemReward({ rewardId: reward.id });
+      // Atualizar histórico de resgates
+      const redemptions = await rewardService.getUserRedemptions();
+      setRedeemedRewardIds(redemptions.map((r: any) => r.rewardId));
+      // Atualizar pontos do usuário
+      const updatedUser = await userService.getUserById(user.id);
+      if (updatedUser) setUser(updatedUser);
+      // Aqui você pode exibir um modal de sucesso, animação, etc.
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Erro ao resgatar recompensa.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleEditReward = (rewardId: number) => {
@@ -157,17 +186,17 @@ export const useRewardsData = () => {
 
     try {
       setIsLoading(true);
-      const success = await rewardService.deleteReward(selectedRewardId);
+      const success = await rewardService.deactivateReward(selectedRewardId);
 
       if (success) {
         setRewards(rewards.filter(reward => reward.id !== selectedRewardId));
         setIsModalOpen(false);
       } else {
-        setError('Não foi possível excluir a recompensa. Por favor, tente novamente.');
+        setError('Não foi possível desativar a recompensa. Por favor, tente novamente.');
       }
     } catch (err) {
-      console.error('Erro ao excluir recompensa:', err);
-      setError('Erro ao excluir recompensa. Por favor, tente novamente.');
+      console.error('Erro ao desativar recompensa:', err);
+      setError('Erro ao desativar recompensa. Por favor, tente novamente.');
     } finally {
       setIsLoading(false);
     }
@@ -177,8 +206,8 @@ export const useRewardsData = () => {
     switch (modalType) {
       case 'redeem':
         return {
-          title: "Funcionalidade indisponível",
-          message: `A funcionalidade de resgatar o prêmio "${selectedReward}" ainda será implementada.`
+          title: "Resgate de Recompensa",
+          message: selectedReward ? `Você está resgatando o prêmio "${selectedReward}".` : ''
         };
       case 'edit':
         return {
@@ -212,6 +241,7 @@ export const useRewardsData = () => {
     isAdmin,
     user,
     pageName,
+    redeemedRewardIds,
     
     setIsModalOpen,
     setIsCreateModalOpen,

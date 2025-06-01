@@ -20,6 +20,16 @@
     max-width: 90%;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
     overflow: hidden;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  @media (max-width: 600px) {
+    .reward-modal-content {
+      width: 98vw;
+      padding: 16px;
+      max-height: 96vh;
+    }
   }
   
   .reward-modal-content h2 {

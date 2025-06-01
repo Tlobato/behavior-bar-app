@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './RewardCard.css';
 import { RewardCardProps } from '../../types';
-import { FaImage, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaImage, FaEdit, FaTrash, FaCheckCircle } from 'react-icons/fa';
 import { authService } from '../../services/authService';
 
 const RewardCard: React.FC<RewardCardProps> = ({
@@ -12,7 +12,9 @@ const RewardCard: React.FC<RewardCardProps> = ({
   isAvailable = false,
   onClick,
   onEdit,
-  onDelete
+  onDelete,
+  isRedeemed,
+  onInsufficientPoints
 }) => {
   const isAdmin = authService.isAdmin();
   const [isFlipped, setIsFlipped] = useState(false);
@@ -46,6 +48,11 @@ const RewardCard: React.FC<RewardCardProps> = ({
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (onDelete) onDelete();
+  };
+
+  const handleDisabledClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onInsufficientPoints) onInsufficientPoints();
   };
 
   return (
@@ -84,11 +91,25 @@ const RewardCard: React.FC<RewardCardProps> = ({
                   <FaTrash /> Excluir
                 </button>
               </div>
+            ) : isRedeemed ? (
+              <button
+                className="reward-redeemed-btn"
+                disabled
+              >
+                <FaCheckCircle style={{ color: '#4CAF50', marginRight: 6 }} />
+                Resgatada
+              </button>
+            ) : !isAvailable ? (
+              <button
+                className="reward-redeemed-btn"
+                onClick={handleDisabledClick}
+              >
+                Resgatar Prêmio
+              </button>
             ) : (
               <button
-                className="reward-button"
+                className="redeem-mission-btn"
                 onClick={handleRedeemClick}
-                disabled={!isAvailable}
               >
                 Resgatar Prêmio
               </button>

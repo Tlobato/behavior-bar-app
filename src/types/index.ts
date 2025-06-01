@@ -43,6 +43,8 @@ export interface RewardCardProps {
   onClick?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
+  isRedeemed?: boolean;
+  onInsufficientPoints?: () => void;
 }
 
 export interface UserEditModalProps {

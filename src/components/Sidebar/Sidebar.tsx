@@ -1,6 +1,6 @@
 import React from 'react';
 import './Sidebar.css';
-import { FaUsers, FaStar, FaGift, FaChartBar, FaTasks } from 'react-icons/fa';
+import { FaUsers, FaStar, FaGift, FaChartBar, FaTasks, FaHistory } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { authService } from '../../services/authService';
 
@@ -15,7 +15,7 @@ const Sidebar: React.FC = () => {
   const isOnBoardPage = pathname.includes('/board');
   const isOnRewardsPage = pathname.includes('/rewards');
   const isOnUsersPage = pathname === '/users';
-  const isOnMissionsPage = pathname === '/missions';
+  const isOnMissionsPage = pathname.startsWith('/missions');
 
   return (
     <div className="sidebar">
@@ -39,6 +39,16 @@ const Sidebar: React.FC = () => {
         </div>
       )}
 
+      {isAdmin && (
+        <div
+          className="sidebar-icon"
+          onClick={() => navigate('/reward-redemptions')}
+          title="Histórico de Resgates"
+        >
+          <FaHistory />
+        </div>
+      )}
+
       {!isAdmin && !isOnBoardPage && (
         <div 
           className="sidebar-icon" 
@@ -51,7 +61,7 @@ const Sidebar: React.FC = () => {
         </div>
       )}
 
-      {(isOnBoardPage || isOnUsersPage || isOnMissionsPage) && !isOnRewardsPage && (
+      {(isOnBoardPage || isOnUsersPage || isOnMissionsPage || (pathname.startsWith('/missions/') && !isAdmin)) && !isOnRewardsPage && (
         <div 
           className="sidebar-icon" 
           onClick={() => navigate('/rewards')} 

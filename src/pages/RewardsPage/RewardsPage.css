@@ -106,3 +106,21 @@
   display: flex;
   justify-content: center;
 }
+
+.redemptions-filters-grid {
+  display: grid;
+  grid-template-columns: 200px 1.2fr 160px 180px 120px;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+  max-width: 1100px;
+  min-width: 0;
+}
+
+.redemptions-filters-grid > * {
+  margin-right: 0 !important;
+}
+
+.redemptions-filters-grid > *:not(:last-child) {
+  margin-right: 12px;
+}

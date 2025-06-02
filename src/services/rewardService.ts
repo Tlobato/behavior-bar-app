@@ -272,4 +272,28 @@ export const rewardService = {
       return [];
     }
   },
+
+  /**
+   * Busca o histórico de resgates de recompensas (ADMIN/TUTOR)
+   * @param params Filtros opcionais: userId, status, startDate, endDate, rewardId
+   */
+  async getRewardRedemptions(params: {
+    userId?: number;
+    status?: string;
+    startDate?: string;
+    endDate?: string;
+    rewardId?: number;
+  } = {}) {
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const query = Object.entries(params)
+      .filter(([_, v]) => v !== undefined && v !== null && v !== '')
+      .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v as string)}`)
+      .join('&');
+    const url = `/api/redemptions${query ? `?${query}` : ''}`;
+    const response = await fetch(url, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) throw new Error('Erro ao buscar histórico de resgates');
+    return await response.json();
+  },
 };

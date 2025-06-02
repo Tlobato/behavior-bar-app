@@ -303,3 +303,16 @@ export interface TaskEditModalProps {
   onUpdate: (taskId: number, updatedTask: Partial<MissionTask>) => void;
   task: MissionTask | null;
 }
+
+export interface RewardRedemption {
+  id: number;
+  userId: number;
+  userName: string;
+  rewardId: number;
+  rewardTitle: string;
+  rewardImage: string | null;
+  pointsSpent: number;
+  status: 'PENDING' | 'COMPLETED' | 'CANCELED';
+  redemptionDate: string;
+  deliveryDate?: string | null;
+}

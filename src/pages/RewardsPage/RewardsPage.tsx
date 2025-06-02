@@ -123,7 +123,7 @@ const RewardsPage: React.FC = () => {
               </div>
             )}
 
-            {isAdmin && (
+            {isAdmin && rewards.length > 0 && (
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: 16, gap: 8 }}>
                 <button
                   style={{

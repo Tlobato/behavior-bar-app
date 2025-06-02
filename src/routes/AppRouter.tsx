@@ -8,6 +8,7 @@ import RewardsPage from '../pages/RewardsPage/RewardsPage';
 import MissionPage from '../pages/MissionPage/MissionPage';
 import TaskPage from '../pages/TaskPage/TaskPage'; // Importação da TaskPage
 import AuthFlow from '../pages/AuthFlow';
+import RewardRedemptionsPage from '../pages/RewardRedemptionsPage';
 
 // Componente para proteger rotas privadas
 const PrivateRoute: React.FC<{ children: JSX.Element; requiredRole?: 'ADMIN' | 'USER' | 'TUTOR' }> = ({ children, requiredRole }) => {
@@ -91,6 +92,16 @@ const AppRouter: React.FC = () => {
           element={
             <PrivateRoute requiredRole="USER">
               <TaskPage />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Rota de Histórico de Resgates (Admins e Tutores) */}
+        <Route
+          path="/reward-redemptions"
+          element={
+            <PrivateRoute requiredRole="TUTOR">
+              <RewardRedemptionsPage />
             </PrivateRoute>
           }
         />

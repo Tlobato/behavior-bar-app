@@ -70,10 +70,11 @@
   border: 1px solid #e0e0e0;
 }
 
-.reward-image {
+.reward-card .reward-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  display: block;
 }
 
 .placeholder-image {

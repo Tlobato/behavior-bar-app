@@ -8,7 +8,7 @@ import RewardsPage from '../pages/RewardsPage/RewardsPage';
 import MissionPage from '../pages/MissionPage/MissionPage';
 import TaskPage from '../pages/TaskPage/TaskPage'; // Importação da TaskPage
 import AuthFlow from '../pages/AuthFlow';
-import RewardRedemptionsPage from '../pages/RewardRedemptionsPage';
+import RewardRedemptionsPage from '../pages/RewardRedemptionsPage/RewardRedemptionsPage';
 
 // Componente para proteger rotas privadas
 const PrivateRoute: React.FC<{ children: JSX.Element; requiredRole?: 'ADMIN' | 'USER' | 'TUTOR' }> = ({ children, requiredRole }) => {

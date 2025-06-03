@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './RewardRedemptionsPage.css';
 import { FaHistory } from 'react-icons/fa';
 import Header from '../../components/Header/Header';
@@ -6,6 +6,7 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import { rewardService } from '../../services/rewardService';
 import { userService } from '../../services/userService';
 import { RewardRedemption, User } from '../../types';
+import { useLocation } from 'react-router-dom';
 
 const statusLabels: Record<string, string> = {
   PENDING: 'Pendente',
@@ -27,13 +28,25 @@ const RewardRedemptionsPage: React.FC = () => {
   const [rewardOptions, setRewardOptions] = useState<string[]>([]);
   const [showRewardSuggestions, setShowRewardSuggestions] = useState(false);
   const [rewards, setRewards] = useState<{ id: number; title: string }[]>([]);
+  const location = useLocation();
+  const [highlightId, setHighlightId] = useState<number | null>(null);
+  const highlightTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     fetchUsers();
     fetchRedemptions();
     fetchRewardOptions();
+    // Pega o parâmetro highlight da query string
+    const params = new URLSearchParams(location.search);
+    const highlight = params.get('highlight');
+    if (highlight) {
+      setHighlightId(Number(highlight));
+      // Remove o destaque após 4 segundos
+      if (highlightTimeout.current) clearTimeout(highlightTimeout.current);
+      highlightTimeout.current = setTimeout(() => setHighlightId(null), 4000);
+    }
     // eslint-disable-next-line
-  }, []);
+  }, [location.search]);
 
   const fetchUsers = async () => {
     try {
@@ -196,7 +209,13 @@ const RewardRedemptionsPage: React.FC = () => {
                     </thead>
                     <tbody>
                       {redemptions.map((r, idx) => (
-                        <tr key={r.id} className={idx % 2 === 0 ? 'rewards-table-row-even' : 'rewards-table-row-odd'}>
+                        <tr
+                          key={r.id}
+                          className={
+                            (idx % 2 === 0 ? 'rewards-table-row-even' : 'rewards-table-row-odd') +
+                            (highlightId === r.id ? ' highlight-redemption-row' : '')
+                          }
+                        >
                           <td>{r.id}</td>
                           <td>{r.userName}</td>
                           <td className="reward-title-cell">

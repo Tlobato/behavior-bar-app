@@ -1,0 +1,136 @@
+/* NotificationBell.css */
+
+.notification-bell-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.notification-bell-icon {
+  position: relative;
+  font-size: 22px;
+  color: #555;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  transition: background 0.2s, color 0.2s;
+}
+
+.notification-bell-icon:hover {
+  background: rgba(25, 118, 210, 0.08);
+  color: #1976d2;
+}
+
+.notification-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: #f44336;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 0 4px;
+  min-width: 14px;
+  min-height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(244,67,54,0.15);
+  line-height: 1;
+  z-index: 1;
+}
+
+.notification-dropdown {
+  position: absolute;
+  top: 44px;
+  right: 0;
+  width: 320px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+  z-index: 1002;
+  padding: 0;
+  animation: fadeIn 0.18s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.notification-dropdown-title {
+  font-weight: 700;
+  font-size: 17px;
+  padding: 16px 20px 8px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  color: #1976d2;
+}
+
+.notification-empty {
+  padding: 24px 20px;
+  color: #888;
+  text-align: center;
+  font-size: 15px;
+}
+
+.notification-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 8px 0;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.notification-list li {
+  padding: 12px 20px 8px 20px;
+  border-bottom: 1px solid #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.notification-unread {
+  background: #f5faff;
+  font-weight: 600;
+}
+
+.notification-read {
+  background: #fff;
+  color: #888;
+}
+
+.notification-mark-read {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 13px;
+  cursor: pointer;
+  margin-top: 2px;
+  align-self: flex-start;
+  transition: background 0.2s;
+}
+
+.notification-mark-read:hover {
+  background: #125ea7;
+}
+
+.notification-date {
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 2px;
+}
+
+@media (max-width: 500px) {
+  .notification-dropdown {
+    width: 95vw;
+    right: -20vw;
+    min-width: 220px;
+  }
+} 

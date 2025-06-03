@@ -186,3 +186,14 @@
   padding: 10px;
   color: #888;
 }
+
+.highlight-redemption-row {
+  background: #fffbe6 !important;
+  animation: highlight-fade 1.2s;
+}
+
+@keyframes highlight-fade {
+  0% { background: #ffe066; }
+  60% { background: #fffbe6; }
+  100% { background: #fffbe6; }
+}

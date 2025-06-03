@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Header.css';
 import { FaGift } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { HeaderProps } from '../../types';
+import NotificationBell, { Notification } from '../NotificationBell/NotificationBell';
+import { notificationService } from '../../services/notificationService';
 
 const Header: React.FC<HeaderProps> = ({
   projectName,
@@ -16,13 +18,36 @@ const Header: React.FC<HeaderProps> = ({
   const location = useLocation();
 
   const isRewardsPage = location.pathname.includes('/rewards');
-
   const isUserType = userRole === 'USER';
 
   const goToRewards = () => {
     if (!isRewardsPage) {
       navigate('/rewards');
     }
+  };
+
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  useEffect(() => {
+    async function fetchNotifications() {
+      const data = await notificationService.getNotifications();
+      setNotifications(data);
+    }
+    fetchNotifications();
+  }, []);
+
+  const handleMarkAsRead = async (id: number) => {
+    const success = await notificationService.markAsRead(id);
+    if (success) {
+      setNotifications((prev) => prev.map(n => n.id === id ? { ...n, read: true } : n));
+    }
+  };
+
+  const handleNotificationClick = (notification: Notification) => {
+    if (notification.type === 'REWARD_REDEMPTION' && notification.redemptionId) {
+      navigate(`/reward-redemptions?highlight=${notification.redemptionId}`);
+    }
+    // Outros tipos de notificação podem ser tratados aqui
   };
 
   return (
@@ -39,6 +64,11 @@ const Header: React.FC<HeaderProps> = ({
         </h1>
       </div>
       <div className="header-right">
+        <NotificationBell
+          notifications={notifications}
+          onMarkAsRead={handleMarkAsRead}
+          onNotificationClick={handleNotificationClick}
+        />
         {isUserType && (
           <div className="reward-points-container">
             <span className="reward-points">{rewardPoints}</span>

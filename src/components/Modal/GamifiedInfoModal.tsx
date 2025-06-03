@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import Confetti from 'react-confetti';
 
 interface GamifiedInfoModalProps {
   isOpen: boolean;
@@ -32,7 +31,6 @@ const GamifiedInfoModal: React.FC<GamifiedInfoModalProps> = ({ isOpen, onClose, 
       alignItems: 'center',
       justifyContent: 'center',
     }}>
-      <Confetti width={window.innerWidth} height={window.innerHeight} numberOfPieces={120} recycle={false} />
       <div style={{
         background: '#fff',
         borderRadius: 24,

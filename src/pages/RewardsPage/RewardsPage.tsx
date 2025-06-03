@@ -181,7 +181,7 @@ const RewardsPage: React.FC = () => {
         onClose={() => setIsInsufficientPointsModalOpen(false)}
         title="Quase lá!"
         message="Junte mais pontos para resgatar essa recompensa.✨"
-        emoji="🏆"
+        emoji="🎯"
       />
 
       <Modal

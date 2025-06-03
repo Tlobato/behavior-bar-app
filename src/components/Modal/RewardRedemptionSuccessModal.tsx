@@ -23,17 +23,29 @@ const RewardRedemptionSuccessModal: React.FC<RewardRedemptionSuccessModalProps> 
 }) => {
   const [displayedPoints, setDisplayedPoints] = useState(pointsBefore);
   const [showCelebration, setShowCelebration] = useState(false);
+  const countdownAudioRef = React.useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
+    const audioEl = countdownAudioRef.current; // Captura o valor da ref
+
     if (!isOpen) {
       setDisplayedPoints(pointsBefore);
       setShowCelebration(false);
+      if (audioEl) {
+        audioEl.pause();
+        audioEl.currentTime = 0;
+      }
       return;
     }
     let start = pointsBefore;
     const totalFrames = Math.ceil(ANIMATION_DURATION / FRAME_RATE);
     const decrement = (pointsBefore - pointsAfter) / totalFrames;
     let frame = 0;
+    if (audioEl) {
+      audioEl.currentTime = 0;
+      audioEl.loop = true;
+      audioEl.play();
+    }
     const interval = setInterval(() => {
       frame++;
       start -= decrement;
@@ -41,11 +53,21 @@ const RewardRedemptionSuccessModal: React.FC<RewardRedemptionSuccessModalProps> 
         setDisplayedPoints(pointsAfter);
         setShowCelebration(true);
         clearInterval(interval);
+        if (audioEl) {
+          audioEl.pause();
+          audioEl.currentTime = 0;
+        }
       } else {
         setDisplayedPoints(Math.round(start));
       }
     }, FRAME_RATE);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      if (audioEl) {
+        audioEl.pause();
+        audioEl.currentTime = 0;
+      }
+    };
   }, [isOpen, pointsBefore, pointsAfter]);
 
   // Toca o som ao mostrar a celebração
@@ -71,6 +93,8 @@ const RewardRedemptionSuccessModal: React.FC<RewardRedemptionSuccessModalProps> 
       alignItems: 'center',
       justifyContent: 'center',
     }}>
+      {/* Áudio de contagem decrescente */}
+      <audio ref={countdownAudioRef} src="/sounds/countdown.mp3" preload="auto" />
       {showCelebration && (
         <Confetti width={window.innerWidth} height={window.innerHeight} numberOfPieces={180} recycle={false} />
       )}

@@ -7,6 +7,7 @@ import { rewardService } from '../../services/rewardService';
 import { userService } from '../../services/userService';
 import { RewardRedemption, User } from '../../types';
 import { useLocation } from 'react-router-dom';
+import { authService } from '../../services/authService';
 
 const statusLabels: Record<string, string> = {
   PENDING: 'Pendente',
@@ -31,6 +32,7 @@ const RewardRedemptionsPage: React.FC = () => {
   const location = useLocation();
   const [highlightId, setHighlightId] = useState<number | null>(null);
   const highlightTimeout = useRef<NodeJS.Timeout | null>(null);
+  const currentUser = authService.getCurrentUser();
 
   useEffect(() => {
     fetchUsers();
@@ -117,7 +119,7 @@ const RewardRedemptionsPage: React.FC = () => {
 
   return (
     <div className="RewardsPage">
-      <Header projectName="Behavior Bar" userName="Administrador" onLogout={() => {}} pageName="Histórico de Resgates" />
+      <Header projectName="Behavior Bar" userName={currentUser?.name || ''} onLogout={() => {}} pageName="Histórico de Resgates" />
       <div className="page-content">
         <Sidebar />
         <main className="main-content">

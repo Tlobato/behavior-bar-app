@@ -1,6 +1,6 @@
 import React from 'react';
 import './Sidebar.css';
-import { FaUsers, FaStar, FaGift, FaChartBar, FaTasks, FaHistory } from 'react-icons/fa';
+import { FaUsers, FaGift, FaChartBar, FaTasks, FaHistory } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { authService } from '../../services/authService';
 
@@ -16,6 +16,7 @@ const Sidebar: React.FC = () => {
   const isOnRewardsPage = pathname.includes('/rewards');
   const isOnUsersPage = pathname === '/users';
   const isOnMissionsPage = pathname.startsWith('/missions');
+  const isOnRewardRedemptionsPage = pathname.includes('/reward-redemptions');
 
   return (
     <div className="sidebar">
@@ -39,7 +40,7 @@ const Sidebar: React.FC = () => {
         </div>
       )}
 
-      {isAdmin && (
+      {isAdmin && !isOnRewardRedemptionsPage && (
         <div
           className="sidebar-icon"
           onClick={() => navigate('/reward-redemptions')}
@@ -61,7 +62,7 @@ const Sidebar: React.FC = () => {
         </div>
       )}
 
-      {(isOnBoardPage || isOnUsersPage || isOnMissionsPage || (pathname.startsWith('/missions/') && !isAdmin)) && !isOnRewardsPage && (
+      {!isOnRewardsPage && (
         <div 
           className="sidebar-icon" 
           onClick={() => navigate('/rewards')} 
@@ -70,10 +71,6 @@ const Sidebar: React.FC = () => {
           <FaGift />
         </div>
       )}
-
-      <div className="sidebar-icon placeholder" title="Wishlist (Futuro)">
-        <FaStar />
-      </div>
     </div>
   );
 };

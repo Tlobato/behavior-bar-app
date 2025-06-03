@@ -75,7 +75,7 @@ const addInfraction = (description: string, points: number): BehaviorState => {
 // Resetar histórico no backend para um usuário específico
 const resetBehaviorRecords = async (userId: number): Promise<void> => {
   try {
-    await axios.put(`/api/behavior-records/reset/${userId}`, {
+    await axios.put(`/api/behavior-records/reset/${userId}`, {}, {
       headers: {
         Authorization: `Bearer ${token}`
       }

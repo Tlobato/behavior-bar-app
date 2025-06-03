@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FaBell } from 'react-icons/fa';
+import { FaBell, FaTrash } from 'react-icons/fa';
 import './NotificationBell.css';
 
 export interface Notification {
@@ -15,13 +15,16 @@ interface NotificationBellProps {
   notifications: Notification[];
   onMarkAsRead: (id: number) => void;
   onNotificationClick?: (notification: Notification) => void;
+  onClearAll?: () => void;
 }
 
-const NotificationBell: React.FC<NotificationBellProps> = ({ notifications, onMarkAsRead, onNotificationClick }) => {
+const NotificationBell: React.FC<NotificationBellProps> = ({ notifications, onMarkAsRead, onNotificationClick, onClearAll }) => {
   const [open, setOpen] = useState(false);
   const bellRef = useRef<HTMLDivElement>(null);
 
   const unreadCount = notifications.filter(n => !n.read).length;
+
+  const sortedNotifications = [...notifications].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -47,16 +50,31 @@ const NotificationBell: React.FC<NotificationBellProps> = ({ notifications, onMa
       </div>
       {open && (
         <div className="notification-dropdown">
-          <div className="notification-dropdown-title">Notificações</div>
-          {notifications.length === 0 ? (
+          <div className="notification-dropdown-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span>Notificações</span>
+            {sortedNotifications.length > 0 && (
+              <button
+                className="notification-clear-btn"
+                title="Limpar todas"
+                onClick={onClearAll}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', fontSize: 18, padding: 0 }}
+              >
+                <FaTrash />
+              </button>
+            )}
+          </div>
+          {sortedNotifications.length === 0 ? (
             <div className="notification-empty">Nenhuma notificação</div>
           ) : (
             <ul className="notification-list">
-              {notifications.map((n) => (
+              {sortedNotifications.map((n) => (
                 <li
                   key={n.id}
                   className={n.read ? 'notification-read' : 'notification-unread'}
-                  onClick={() => onNotificationClick && onNotificationClick(n)}
+                  onClick={() => {
+                    if (!n.read) onMarkAsRead(n.id);
+                    if (onNotificationClick) onNotificationClick(n);
+                  }}
                   style={{ cursor: onNotificationClick ? 'pointer' : 'default' }}
                 >
                   <span>{n.message}</span>

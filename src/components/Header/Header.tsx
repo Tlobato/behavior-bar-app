@@ -50,6 +50,13 @@ const Header: React.FC<HeaderProps> = ({
     // Outros tipos de notificação podem ser tratados aqui
   };
 
+  const handleClearAllNotifications = async () => {
+    const success = await notificationService.markAllAsRead();
+    if (success) {
+      setNotifications([]);
+    }
+  };
+
   return (
     <header className="header">
       <div className="header-left">
@@ -68,6 +75,7 @@ const Header: React.FC<HeaderProps> = ({
           notifications={notifications}
           onMarkAsRead={handleMarkAsRead}
           onNotificationClick={handleNotificationClick}
+          onClearAll={handleClearAllNotifications}
         />
         {isUserType && (
           <div className="reward-points-container">

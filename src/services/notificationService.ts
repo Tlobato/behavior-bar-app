@@ -41,4 +41,19 @@ export const notificationService = {
       return false;
     }
   },
+
+  async markAllAsRead(): Promise<boolean> {
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      await axios.patch(`${API_URL}/read-all`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return true;
+    } catch (error) {
+      console.error('Erro ao marcar todas as notificações como lidas:', error);
+      return false;
+    }
+  },
 }; 

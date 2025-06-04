@@ -5,6 +5,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { HeaderProps } from '../../types';
 import NotificationBell, { Notification } from '../NotificationBell/NotificationBell';
 import { notificationService } from '../../services/notificationService';
+import ProfileEditModal from '../ProfileEditModal';
+import { useUser } from '../../context/UserContext';
+import { userService } from '../../services/userService';
 
 const Header: React.FC<HeaderProps> = ({
   projectName,
@@ -27,6 +30,8 @@ const Header: React.FC<HeaderProps> = ({
   };
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const { user, refreshUserData } = useUser();
+  const [isProfileModalOpen, setProfileModalOpen] = useState(false);
 
   useEffect(() => {
     async function fetchNotifications() {
@@ -54,6 +59,32 @@ const Header: React.FC<HeaderProps> = ({
     const success = await notificationService.markAllAsRead();
     if (success) {
       setNotifications([]);
+    }
+  };
+
+  const handleProfileSave = async (data: {
+    name: string;
+    email: string;
+    currentPassword?: string;
+    newPassword?: string;
+    confirmPassword?: string;
+    imageFile?: File | null;
+  }) => {
+    try {
+      if (data.imageFile) {
+        await userService.uploadProfileImage(data.imageFile);
+      }
+      await userService.updateProfile({
+        name: data.name,
+        email: data.email,
+        currentPassword: data.currentPassword,
+        newPassword: data.newPassword,
+        confirmPassword: data.confirmPassword,
+      });
+      await refreshUserData();
+      setProfileModalOpen(false);
+    } catch (e) {
+      alert('Erro ao atualizar perfil.');
     }
   };
 
@@ -97,10 +128,26 @@ const Header: React.FC<HeaderProps> = ({
         )}
 
         <span className="user-name">{userName}</span>
-        <span className="profile-icon">👤</span>
+        <span className="profile-icon" onClick={() => setProfileModalOpen(true)} style={{ cursor: 'pointer' }}>
+          {user && user.profileImageUrl ? (
+            <img src={user.profileImageUrl} alt="Perfil" className="profile-img-thumb" />
+          ) : (
+            '👤'
+          )}
+        </span>
         <button className="logout-button-header" onClick={onLogout}>
           Sair
         </button>
+        <ProfileEditModal
+          isOpen={isProfileModalOpen}
+          onClose={() => setProfileModalOpen(false)}
+          onSave={handleProfileSave}
+          user={user ? {
+            name: user.name,
+            email: user.email,
+            profileImageUrl: user.profileImageUrl || null,
+          } : null}
+        />
       </div>
     </header>
   );

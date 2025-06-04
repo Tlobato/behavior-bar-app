@@ -32,6 +32,7 @@ export interface User {
   email: string;
   password?: string;
   rewardPoints?: number;
+  profileImageUrl?: string | null;
 }
 
 export interface RewardCardProps {

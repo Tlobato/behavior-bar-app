@@ -102,3 +102,12 @@
 .cancel-button:hover {
   background-color: #d32f2f;
 }
+
+/* Ajuste local para espaçamento entre label e input no modal de criar usuário */
+.user-create-form-label {
+  margin-bottom: 4px;
+  display: block;
+  font-weight: 500;
+  color: #444;
+  text-align: left;
+}

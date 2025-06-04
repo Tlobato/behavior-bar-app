@@ -33,7 +33,7 @@ const UserCreateModal: React.FC<UserCreateModalProps> = ({ isOpen, onClose, onCr
         <h2>Criar Novo Usuário</h2>
         <div className="modal-divider"></div>
         <form autoComplete="off">
-          <label>Nome:</label>
+          <label className="user-create-form-label">Nome:</label>
           <input
             type="text"
             name="name"
@@ -42,7 +42,7 @@ const UserCreateModal: React.FC<UserCreateModalProps> = ({ isOpen, onClose, onCr
             autoComplete="off"
           />
 
-          <label>Email:</label>
+          <label className="user-create-form-label">Email:</label>
           <input
             type="email"
             name="email"
@@ -51,7 +51,7 @@ const UserCreateModal: React.FC<UserCreateModalProps> = ({ isOpen, onClose, onCr
             autoComplete="off"
           />
 
-          <label>Senha:</label>
+          <label className="user-create-form-label">Senha:</label>
           <input
             type="password"
             name="password"
@@ -60,7 +60,7 @@ const UserCreateModal: React.FC<UserCreateModalProps> = ({ isOpen, onClose, onCr
             autoComplete="new-password"
           />
 
-          <label>Papel:</label>
+          <label className="user-create-form-label">Papel:</label>
           <select
             name="role"
             value={userData.role}

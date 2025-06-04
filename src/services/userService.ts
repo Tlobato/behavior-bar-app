@@ -16,10 +16,11 @@ export const userService = {
       // Mapeia os dados retornados do backend para os nomes usados no frontend
       return response.data.map((user: any) => ({
         id: user.id,
-        name: user.nome, // Mapeia "nome" para "name"
-        email: user.email, // Mapeia "email" para "email"
-        role: user.role, // Mantém o papel como está
-        rewardPoints: user.rewardPoints // Adiciona o mapeamento dos pontos de recompensa
+        name: user.name, // Já vem como name
+        email: user.email,
+        role: user.role,
+        rewardPoints: user.rewardPoints,
+        profileImageUrl: user.profileImageUrl || null, // Usa a URL completa
       }));
     } catch (error) {
       console.error('Erro ao buscar usuários:', error);
@@ -39,10 +40,11 @@ export const userService = {
       
       return {
         id: response.data.id,
-        name: response.data.nome,
+        name: response.data.name,
         email: response.data.email,
         role: response.data.role,
-        rewardPoints: response.data.rewardPoints
+        rewardPoints: response.data.rewardPoints,
+        profileImageUrl: response.data.profileImageUrl || null, // Usa a URL completa
       };
     } catch (error) {
       console.error('Erro ao buscar usuário por ID:', error);
@@ -129,6 +131,47 @@ export const userService = {
     } catch (error) {
       console.error('Erro ao atualizar pontos de recompensa do usuário:', error);
       return false;
+    }
+  },
+
+  // Atualizar perfil do usuário autenticado
+  async updateProfile(data: {
+    name: string;
+    email: string;
+    currentPassword?: string;
+    newPassword?: string;
+    confirmPassword?: string;
+  }): Promise<boolean> {
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      await axios.patch(`${API_URL}/me`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return true;
+    } catch (error) {
+      console.error('Erro ao atualizar perfil:', error);
+      return false;
+    }
+  },
+
+  // Upload de foto de perfil do usuário autenticado
+  async uploadProfileImage(imageFile: File): Promise<string | null> {
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      const formData = new FormData();
+      formData.append('image', imageFile);
+      const response = await axios.post(`${API_URL}/me/profile-image`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data.imageUrl || null;
+    } catch (error) {
+      console.error('Erro ao fazer upload da foto de perfil:', error);
+      return null;
     }
   },
 };

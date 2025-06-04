@@ -39,8 +39,11 @@
 }
 
 .profile-icon {
-  font-size: 1.2rem;
-  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  min-height: 36px;
 }
 
 /* Botão de logout */
@@ -113,4 +116,17 @@
 .disabled-icon:hover {
   background-color: transparent;
   color: #555;
+}
+
+.profile-img-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e0e0e0;
+  margin-left: 8px;
+  vertical-align: middle;
+  display: inline-block;
+  background: #f5f5f5;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
 }
